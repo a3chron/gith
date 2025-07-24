@@ -15,6 +15,7 @@ type step int
 const (
 	stepAction step = iota
 	stepBranch
+	stepOptions
 	stepComplete
 )
 
@@ -22,28 +23,30 @@ var (
 	mocha = catppuccin.Mocha
 
 	// Styles using Catppuccin Mocha palette
-	titleStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color(mocha.Blue().Hex)).
-			Bold(true)
+	accentStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(mocha.Blue().Hex))
+
+	textStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(mocha.Text().Hex))
+
+	titleStyle = accentStyle.Bold(true)
 
 	logoStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(mocha.Text().Hex)).
 			Bold(true)
 
 	selectedStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color(mocha.Base().Hex)).
-			Background(lipgloss.Color(mocha.Blue().Hex)).
-			Bold(true).
-			Padding(0, 1)
+			Foreground(lipgloss.Color(mocha.Text().Hex)).
+			Bold(true)
 
 	normalStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color(mocha.Text().Hex))
+			Foreground(lipgloss.Color(mocha.Subtext0().Hex))
 
 	dimStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(mocha.Overlay0().Hex))
 
 	completedStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color(mocha.Green().Hex))
+			Foreground(lipgloss.Color(mocha.Subtext0().Hex))
 
 	errorStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(mocha.Red().Hex))
@@ -51,9 +54,7 @@ var (
 	successStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(mocha.Green().Hex))
 
-	bulletStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color(mocha.Blue().Hex)).
-			Bold(true)
+	bulletStyle = accentStyle.Bold(true)
 
 	lineStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(mocha.Surface1().Hex))
@@ -68,6 +69,7 @@ type model struct {
 	selectedBranch string
 	options        []string
 	branches       []string
+	accent         string
 	selected       int
 	err            string
 	success        string
@@ -76,7 +78,7 @@ type model struct {
 func initialModel() model {
 	return model{
 		currentStep: stepAction,
-		options:     []string{"Switch Branch", "Create Branch", "Delete Branch", "Status"},
+		options:     []string{"Switch Branch", "Create Branch", "Delete Branch", "Status", "Options"},
 		selected:    0,
 	}
 }
@@ -136,9 +138,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "q", "ctrl+c", "esc":
 			return m, tea.Quit
-		case "esc":
+		case "ctrl+back":
 			// Go back to previous step
 			switch m.currentStep {
 			case stepBranch:
@@ -209,7 +211,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							m.success = fmt.Sprintf("Changes detected: %d files", len(lines))
 						}
 					}
-					m.currentStep = stepComplete
+					return m, tea.Quit
+				case "Options":
+					m.currentStep = stepOptions
+					return m, tea.Quit
 				}
 			case stepBranch:
 				if len(m.branches) > 0 && m.selected < len(m.branches) {
@@ -253,7 +258,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							m.success = fmt.Sprintf("✓ Deleted branch '%s'", m.selectedBranch)
 						}
 					}
-					m.currentStep = stepComplete
+					return m, tea.Quit
 				}
 			case stepComplete:
 				// Reset to beginning
@@ -283,14 +288,10 @@ func (m model) View() string {
 
 	// Step 1: Select action (always visible)
 	if m.selectedAction == "" {
-		content.WriteString(lineStyle.Render("┌─") + " " + bulletStyle.Render("◆") + " " + dimStyle.Render("Select action") + "\n")
+		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
 		for i, option := range m.options {
 			var bullet, line string
-			if i == len(m.options)-1 {
-				line = lineStyle.Render("└─")
-			} else {
-				line = lineStyle.Render("├─")
-			}
+			line = lineStyle.Render("│")
 
 			if i == m.selected && m.currentStep == stepAction {
 				bullet = bulletStyle.Render("●")
@@ -302,8 +303,8 @@ func (m model) View() string {
 		}
 	} else {
 		// Show completed action selection
-		content.WriteString(lineStyle.Render("┌─") + " " + bulletStyle.Render("◆") + " " + dimStyle.Render("Select action") + "\n")
-		content.WriteString(lineStyle.Render("├─") + " " + completedStyle.Render("●") + " " + completedStyle.Render(m.selectedAction) + "\n")
+		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
+		content.WriteString(lineStyle.Render("│") + " " + completedStyle.Render(m.selectedAction) + "\n" + lineStyle.Render("│"))
 	}
 
 	// Step 2: Select branch (visible after action is selected)
@@ -328,9 +329,13 @@ func (m model) View() string {
 			}
 		} else if m.selectedBranch != "" {
 			// Show completed branch selection
-			content.WriteString(lineStyle.Render("├─") + " " + bulletStyle.Render("◆") + " " + dimStyle.Render("Select branch") + "\n")
+			content.WriteString(lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + dimStyle.Render("Select branch") + "\n")
 			content.WriteString(lineStyle.Render("└─") + " " + completedStyle.Render("●") + " " + completedStyle.Render(m.selectedBranch) + "\n")
 		}
+	}
+
+	if m.currentStep == stepOptions {
+		content.WriteString("\n" + bulletStyle.Render("◆") + " Options will come here soon" + "\n" + lineStyle.Render("│") + "\n" + lineStyle.Render("╰─╌") + " " + successStyle.Render("End"))
 	}
 
 	// Show result
@@ -341,10 +346,10 @@ func (m model) View() string {
 		} else if m.success != "" {
 			content.WriteString(successStyle.Render(m.success) + "\n")
 		}
-		content.WriteString("\n" + dimStyle.Render("Press enter to continue, esc to restart"))
+		content.WriteString("\n\n" + dimStyle.Render("Press enter to continue, esc to restart"))
 	} else {
 		// Show navigation hints
-		content.WriteString("\n" + dimStyle.Render("Use ↑↓ to navigate, enter to select, esc to go back, q to quit"))
+		content.WriteString("\n\n" + dimStyle.Render("Use ↑↓ to navigate, enter to select, esc to go back, q to quit"))
 	}
 
 	return containerStyle.Render(content.String())
@@ -356,3 +361,5 @@ func main() {
 		fmt.Printf("Error: %v\n", err)
 	}
 }
+
+// TODO: add -- ■ (red) Quit state
