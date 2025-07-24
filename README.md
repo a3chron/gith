@@ -2,6 +2,9 @@
 
 A command-line git helper
 
+> [!WARNING]
+> In development, would not recommend using yet
+
 ## Installation
 
 Install directly using Go
@@ -13,12 +16,3 @@ go install github.com/kurtschambach/gith@latest
 ---
 
 built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
-
-## info for me
-
-To tag version:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
