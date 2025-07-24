@@ -71,6 +71,7 @@ type model struct {
 	branches       []string
 	accent         string
 	selected       int
+	output         string
 	err            string
 	success        string
 }
@@ -87,7 +88,8 @@ func fetchBranches() ([]string, error) {
 	// Fetch remote branches first
 	exec.Command("git", "fetch", "-a").Run()
 
-	out, err := exec.Command("git", "branch", "-a").Output()
+	// TODO: maybe -a?
+	out, err := exec.Command("git", "branch").Output()
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +141,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c", "esc":
+			m.err = "User quit"
 			return m, tea.Quit
 		case "ctrl+back":
 			// Go back to previous step
@@ -147,6 +150,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentStep = stepAction
 				m.selected = 0
 				m.err = ""
+				m.output = ""
 				m.branches = nil
 			case stepComplete:
 				m.currentStep = stepAction
@@ -154,6 +158,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selectedBranch = ""
 				m.selected = 0
 				m.err = ""
+				m.output = ""
 				m.success = ""
 				m.branches = nil
 			default:
@@ -177,7 +182,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			switch m.currentStep {
 			case stepAction:
+				m.output = ""
 				m.selectedAction = m.options[m.selected]
+
 				switch m.selectedAction {
 				case "Switch Branch", "Delete Branch":
 					branches, err := fetchBranches()
@@ -196,8 +203,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.currentStep = stepBranch
 					m.err = ""
 				case "Create Branch":
-					m.success = "Create branch functionality not implemented yet"
-					m.currentStep = stepComplete
+					m.err = "Create branch functionality not implemented yet"
+					return m, tea.Quit
 				case "Status":
 					cmd := exec.Command("git", "status", "--porcelain")
 					output, err := cmd.Output()
@@ -208,15 +215,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							m.success = "Working tree clean"
 						} else {
 							lines := strings.Split(strings.TrimSpace(string(output)), "\n")
+							m.output += string(output) + "\n"
 							m.success = fmt.Sprintf("Changes detected: %d files", len(lines))
 						}
 					}
 					return m, tea.Quit
 				case "Options":
 					m.currentStep = stepOptions
+					m.success = "End"
 					return m, tea.Quit
 				}
 			case stepBranch:
+				m.output = ""
+
 				if len(m.branches) > 0 && m.selected < len(m.branches) {
 					m.selectedBranch = m.branches[m.selected]
 
@@ -239,23 +250,25 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						if err != nil {
 							m.err = fmt.Sprintf("Switch failed: %s", string(output))
 						} else {
-							m.success = fmt.Sprintf("✓ Switched to branch '%s'", m.selectedBranch)
+							m.success = fmt.Sprintf("Switched to branch '%s'", m.selectedBranch)
 						}
 					case "Delete Branch":
 						// Try to delete local branch first
 						cmd := exec.Command("git", "branch", "-d", m.selectedBranch)
 						output, err := cmd.CombinedOutput()
 						if err != nil {
+							m.err += string(output) + "\n" // TODO: m.errOut
 							// If that fails, try force delete
 							cmd = exec.Command("git", "branch", "-D", m.selectedBranch)
 							output, err = cmd.CombinedOutput()
 							if err != nil {
 								m.err = fmt.Sprintf("Delete failed: %s", string(output))
 							} else {
-								m.success = fmt.Sprintf("✓ Force deleted branch '%s'", m.selectedBranch)
+								m.success = fmt.Sprintf("Force deleted branch '%s'", m.selectedBranch)
 							}
 						} else {
-							m.success = fmt.Sprintf("✓ Deleted branch '%s'", m.selectedBranch)
+							m.output += string(output) + "\n"
+							m.success = fmt.Sprintf("Deleted branch '%s'", m.selectedBranch)
 						}
 					}
 					return m, tea.Quit
@@ -267,6 +280,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selectedBranch = ""
 				m.selected = 0
 				m.err = ""
+				m.output = ""
 				m.success = ""
 				m.branches = nil
 			}
@@ -277,6 +291,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	var content strings.Builder
+	var line = lineStyle.Render("│")
 
 	// Title
 	content.WriteString(titleStyle.Render(`
@@ -288,66 +303,88 @@ func (m model) View() string {
 
 	// Step 1: Select action (always visible)
 	if m.selectedAction == "" {
-		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
-		for i, option := range m.options {
-			var bullet, line string
-			line = lineStyle.Render("│")
+		var bullet, line string
+		bullet = bulletStyle.Render("◆")
+		if m.err != "" {
+			bullet = errorStyle.Render("■")
+		}
 
-			if i == m.selected && m.currentStep == stepAction {
-				bullet = bulletStyle.Render("●")
-				content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, selectedStyle.Render(option)))
-			} else {
-				bullet = dimStyle.Render("○")
-				content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, normalStyle.Render(option)))
+		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bullet + " " + textStyle.Render("Select action") + "\n")
+
+		if m.err == "" {
+			for i, option := range m.options {
+				if i == m.selected && m.currentStep == stepAction {
+					bullet = bulletStyle.Render("●")
+					content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, selectedStyle.Render(option)))
+				} else {
+					bullet = dimStyle.Render("○")
+					content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, normalStyle.Render(option)))
+				}
 			}
 		}
 	} else {
 		// Show completed action selection
 		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
-		content.WriteString(lineStyle.Render("│") + " " + completedStyle.Render(m.selectedAction) + "\n" + lineStyle.Render("│"))
+		content.WriteString(lineStyle.Render("│") + " " + completedStyle.Render(m.selectedAction) + "\n" + lineStyle.Render("│") + "\n")
 	}
 
 	// Step 2: Select branch (visible after action is selected)
 	if m.selectedAction != "" && (m.selectedAction == "Switch Branch" || m.selectedAction == "Delete Branch") {
-		if m.selectedBranch == "" && len(m.branches) > 0 {
-			content.WriteString(lineStyle.Render("├─") + " " + bulletStyle.Render("◆") + " " + dimStyle.Render("Select branch") + "\n")
-			for i, branch := range m.branches {
-				var bullet, line string
-				if i == len(m.branches)-1 {
-					line = lineStyle.Render("└─")
-				} else {
-					line = lineStyle.Render("├─")
-				}
+		var bullet = bulletStyle.Render("◆")
+		if m.err != "" {
+			bullet = errorStyle.Render("■")
+		}
 
-				if i == m.selected && m.currentStep == stepBranch {
-					bullet = bulletStyle.Render("●")
-					content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, selectedStyle.Render(branch)))
-				} else {
-					bullet = dimStyle.Render("○")
-					content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, normalStyle.Render(branch)))
+		if m.selectedBranch == "" && len(m.branches) > 1 {
+			content.WriteString(bullet + " " + textStyle.Render("Select branch") + "\n")
+			if m.err == "" {
+				for i, branch := range m.branches {
+					var bullet, line string
+
+					if i == m.selected && m.currentStep == stepBranch {
+						bullet = bulletStyle.Render("●")
+						content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, selectedStyle.Render(branch)))
+					} else {
+						bullet = dimStyle.Render("○")
+						content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, normalStyle.Render(branch)))
+					}
 				}
 			}
 		} else if m.selectedBranch != "" {
 			// Show completed branch selection
-			content.WriteString(lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + dimStyle.Render("Select branch") + "\n")
-			content.WriteString(lineStyle.Render("└─") + " " + completedStyle.Render("●") + " " + completedStyle.Render(m.selectedBranch) + "\n")
+			content.WriteString(bullet + " " + textStyle.Render("Select branch") + "\n")
+			content.WriteString(lineStyle.Render("│") + " " + completedStyle.Render(m.selectedBranch) + "\n" + lineStyle.Render("│") + "\n")
 		}
 	}
 
 	if m.currentStep == stepOptions {
-		content.WriteString("\n" + bulletStyle.Render("◆") + " Options will come here soon" + "\n" + lineStyle.Render("│") + "\n" + lineStyle.Render("╰─╌") + " " + successStyle.Render("End"))
+		content.WriteString(bulletStyle.Render("◆") + " Options will come here soon" + "\n")
+	}
+
+	if m.output != "" {
+		var outputArr = strings.Split(m.output, "\n")
+
+		for _, out := range outputArr {
+			if strings.TrimSpace(out) != "" {
+				content.WriteString(line + " " + dimStyle.Render(out) + "\n")
+			}
+		}
 	}
 
 	// Show result
 	if m.currentStep == stepComplete {
-		content.WriteString("\n")
 		if m.err != "" {
-			content.WriteString(errorStyle.Render("✗ "+m.err) + "\n")
+			content.WriteString(errorStyle.Render(m.err) + "\n")
 		} else if m.success != "" {
 			content.WriteString(successStyle.Render(m.success) + "\n")
 		}
 		content.WriteString("\n\n" + dimStyle.Render("Press enter to continue, esc to restart"))
 	} else {
+		if m.err != "" {
+			content.WriteString(line + "\n" + lineStyle.Render("╰─╌") + " " + errorStyle.Render(m.err) + "\n")
+		} else if m.success != "" {
+			content.WriteString(line + "\n" + lineStyle.Render("╰─╌") + " " + successStyle.Render(m.success) + "\n")
+		}
 		// Show navigation hints
 		content.WriteString("\n\n" + dimStyle.Render("Use ↑↓ to navigate, enter to select, esc to go back, q to quit"))
 	}
@@ -361,5 +398,3 @@ func main() {
 		fmt.Printf("Error: %v\n", err)
 	}
 }
-
-// TODO: add -- ■ (red) Quit state
