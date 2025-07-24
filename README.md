@@ -36,3 +36,7 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 ---
 
 -> use the stepComplete for sth or remove
+
+-> add config file (accent)
+
+-> add help command, only show logo there
