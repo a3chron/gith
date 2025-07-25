@@ -15,8 +15,7 @@ builds:
       - arm64
 
     ldflags:
-      - -s -w
-      - -X main.Version={{ .Version }}
+      - -s -w -X main.Version={{ .Version }}
 
 # Archive configuration (zip/tar.gz files)
 archives:
