@@ -55,8 +55,10 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 
 -> add config file (accent)
 
--> add help command, only show logo there
+-> add help command
 
 -> add undo last commit
 
 -> add init repo (&add remote?) with presets for some frameworks, gitignores etc
+
+-> add no git repo error
