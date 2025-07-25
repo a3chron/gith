@@ -40,32 +40,32 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 
 ## TODO
 
-◆ Select action  
- │ Switch Branch  
- │  
- ■ Select branch  
- │ feat/base  
- │  
- ╰─╌ Switch failed: error: Your local changes to the following files would be overwritten by checkout:  
- gith  
- main.go  
- Please commit your changes or stash them before you switch branches.  
+```
+◆ Select action
+ │ Switch Branch
+ │
+ ■ Select branch
+ │ feat/base
+ │
+ ╰─╌ Switch failed: error: Your local changes to the following files would be overwritten by checkout:
+ gith
+ main.go
+ Please commit your changes or stash them before you switch branches.
  Aborting
+```
 
--> Make a errOut (Output) and errMsg (Switch failed)
+- [ ] Make a errOut (Output) and errMsg (Switch failed)
 
----
+- [ ] use the stepComplete for sth or remove
 
--> use the stepComplete for sth or remove
+- [ ] add config file (accent)
 
--> add config file (accent)
+- [ ] add help command
 
--> add help command
+- [ ] add undo last commit
 
--> add undo last commit
+- [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc
 
--> add init repo (&add remote?) with presets for some frameworks, gitignores etc
+- [ ] add no git repo error
 
--> add no git repo error
-
--> git reset --soft HEAD~1
+- [ ] git reset --soft HEAD~1
