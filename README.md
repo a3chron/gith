@@ -5,6 +5,8 @@ A command-line git helper
 > [!WARNING]
 > Still in development, rather big changes possible
 
+![](/assets/preview.png)
+
 ## Installation
 
 Install directly using Go
