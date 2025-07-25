@@ -9,6 +9,10 @@ A command-line git helper
 
 ## Installation
 
+> [!NOTE]
+> If you don't have Go installed, check out the [gith project page](https://a3chron.vercel.app/projects/gith),
+> Go installation is included there.
+
 Install directly using Go
 
 ```bash
