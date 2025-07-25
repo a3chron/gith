@@ -28,6 +28,23 @@ archives:
       - README.md
       - LICENSE
 
+nfpms:
+  - builds:
+      - gith
+    vendor: kurtschambach
+    homepage: "https://a3chron.vercel.app/"
+    maintainer: "Kurt Schambach <kurt.schambach@gmail.com>"
+    description: "TUI git helper"
+    license: MIT
+    formats:
+      - apk
+      - deb
+      - rpm
+    bindir: /usr/bin
+
+checksum:
+  name_template: "checksums.txt"
+
 # GitHub release configuration
 release:
   github:
