@@ -18,8 +18,16 @@ var (
 func initialModel() ui.Model {
 	return ui.Model{
 		CurrentStep: ui.StepAction,
-		Options:     []string{"Switch Branch", "Create Branch", "Delete Branch", "Status", "Options"},
-		Selected:    0,
+		ActionModel: ui.ActionModel{
+			Actions: []string{"Branch", "Status", "Commit", "Tag", "Remote", "Changes", "Options"},
+		},
+		BranchModel: ui.BranchModel{
+			Actions: []string{"Switch branch", "Create branch", "Delete branch"},
+		},
+		ConfigModel: ui.ConfigModel{
+			Accents: []string{"Rosewater", "Flamingo", "Pink", "Mauve", "Red", "Maroon", "Peach", "Yellow", "Green", "Teal", "Blue", "Sapphire", "Sky", "Lavender", "Gray"},
+		},
+		Selected: 0,
 	}
 }
 
