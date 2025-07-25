@@ -1,5 +1,4 @@
 project_name: gith
-version: 1
 
 # Build configuration
 builds:
@@ -29,10 +28,6 @@ archives:
     files:
       - README.md
       - LICENSE
-
-    ldflags:
-      - -s -w
-      - -X main.Version={{ .Version }}
 
 # GitHub release configuration
 release:
