@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -77,21 +79,52 @@ type model struct {
 	success        string
 }
 
+type githubRelease struct {
+	TagName string `json:"tag_name"`
+}
+
 var (
 	Version = "dev"
 )
 
-func printVersion() {
+func printVersion(checkForUpdate bool) {
 	fmt.Printf("gith version %s\n", Version)
+	if checkForUpdate {
+		resp, err := http.Get("https://api.github.com/repos/kurtschambach/gith/releases/latest")
+		if err != nil {
+			fmt.Println("error fetching latest release:", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("unexpected status:", resp.Status)
+			return
+		}
+
+		var latestRelease githubRelease
+		if err := json.NewDecoder(resp.Body).Decode(&latestRelease); err != nil {
+			fmt.Println("error decoding JSON:", err)
+			return
+		}
+
+		if latestRelease.TagName != Version {
+			fmt.Printf("new version available: %s (current: %s)\n", latestRelease.TagName, Version)
+			fmt.Print("To install the latest version run: go install github.com/kurtschambach/gith@latest")
+		} else {
+			fmt.Println("you are using the latest version.")
+		}
+	}
 }
 
 func printHelp() {
 	fmt.Printf(`gith - TUI Git Helper
 
 Usage:
-  gith              Start interactive mode
-  gith version      Show version information
-  gith help         Show this help message
+  gith              	Start interactive mode
+  gith version      	Show version information
+  gith version check	Show version & check for updates
+  gith help         	Show this help message
 
 Interactive Commands:
   ↑↓ or j/k        Navigate menu items
@@ -427,7 +460,11 @@ func main() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "version", "-v", "--version":
-			printVersion()
+			if len(os.Args) == 3 && os.Args[2] == "check" {
+				printVersion(true)
+			} else {
+				printVersion(false)
+			}
 			return
 		case "help", "-h", "--help":
 			printHelp()
