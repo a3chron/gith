@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -44,13 +43,14 @@ func main() {
 		}
 	}
 
-	out, _ := exec.Command("git", "rev-parse", "--is-inside-work-tree").Output()
-	if strings.TrimSpace(string(out)) != "true" {
-		fmt.Print(string(out))
+	out, err := exec.Command("git", "rev-parse", "--is-inside-work-tree").CombinedOutput()
+	if err != nil {
+		fmt.Printf("%s\n", string(out))
+		return
 	}
 
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error: %v", err)
 	}
 }
