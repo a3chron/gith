@@ -160,16 +160,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up", "k":
 			if m.selected > 0 {
 				m.selected--
+			} else {
+				switch m.currentStep {
+				case stepAction:
+					m.selected = len(m.options) - 1
+				case stepBranch:
+					m.selected = len(m.branches) - 1
+				}
 			}
 		case "down", "j":
 			switch m.currentStep {
 			case stepAction:
 				if m.selected < len(m.options)-1 {
 					m.selected++
+				} else {
+					m.selected = 0
 				}
 			case stepBranch:
 				if m.selected < len(m.branches)-1 {
 					m.selected++
+				} else {
+					m.selected = 0
 				}
 			}
 		case "enter":
@@ -318,7 +329,7 @@ func (m model) View() string {
 	} else {
 		// Show completed action selection
 		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + line + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
-		content.WriteString(line + " " + completedStyle.Render(m.selectedAction) + "\n" + line + "\n")
+		content.WriteString(lineStyle.Render("├╌") + " " + completedStyle.Render(m.selectedAction) + "\n" + line + "\n")
 	}
 
 	// Step 2: Select branch (visible after action is selected)
@@ -346,7 +357,7 @@ func (m model) View() string {
 		} else if m.selectedBranch != "" {
 			// Show completed branch selection
 			content.WriteString(bullet + " " + textStyle.Render("Select branch") + "\n")
-			content.WriteString(lineStyle.Render("│") + " " + completedStyle.Render(m.selectedBranch) + "\n" + lineStyle.Render("│") + "\n")
+			content.WriteString(lineStyle.Render("├╌") + " " + completedStyle.Render(m.selectedBranch) + "\n")
 		}
 	}
 
@@ -358,7 +369,8 @@ func (m model) View() string {
 		var outputArr = strings.Split(m.output, "\n")
 
 		for _, out := range outputArr {
-			if strings.TrimSpace(out) != "" {
+			var outTrim = strings.TrimSpace(out)
+			if outTrim != "" && outTrim != "\n" {
 				content.WriteString(line + " " + dimStyle.Render(out) + "\n")
 			}
 		}

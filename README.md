@@ -1,6 +1,6 @@
 # gith
 
-A command-line git helper
+A command-line git helper with catppuccin theme
 
 > [!WARNING]
 > Still in development, rather big changes possible
@@ -62,10 +62,8 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 
 - [ ] add help command
 
-- [ ] add undo last commit
+- [ ] add explicit no git repo error
+
+- [ ] add undo last commit: git reset --soft HEAD~1
 
 - [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc
-
-- [ ] add no git repo error
-
-- [ ] git reset --soft HEAD~1
