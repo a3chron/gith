@@ -30,6 +30,10 @@ archives:
       - README.md
       - LICENSE
 
+    ldflags:
+      - -s -w
+      - -X main.Version={{ .Version }}
+
 # GitHub release configuration
 release:
   github:
