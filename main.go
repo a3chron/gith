@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -74,6 +75,31 @@ type model struct {
 	output         string
 	err            string
 	success        string
+}
+
+var (
+	Version = "dev"
+)
+
+func printVersion() {
+	fmt.Printf("gith version %s\n", Version)
+}
+
+func printHelp() {
+	fmt.Printf(`gith - TUI Git Helper
+
+Usage:
+  gith              Start interactive mode
+  gith version      Show version information
+  gith help         Show this help message
+
+Interactive Commands:
+  ↑↓ or j/k        Navigate menu items
+  Enter            Select item
+  Ctrl+H           Go back to previous step
+  Q/Esc            Quit application
+
+`)
 }
 
 func initialModel() model {
@@ -398,6 +424,21 @@ func (m model) View() string {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "version", "-v", "--version":
+			printVersion()
+			return
+		case "help", "-h", "--help":
+			printHelp()
+			return
+		default:
+			fmt.Printf("Unknown command: %s\n", os.Args[1])
+			fmt.Println("Use 'gith help' for usage information")
+			os.Exit(1)
+		}
+	}
+
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Error: %v\n", err)

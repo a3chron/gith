@@ -1,0 +1,63 @@
+project_name: gith
+
+# Build configuration
+builds:
+  - id: gith
+    binary: gith
+    main: ./main.go
+
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+
+# Archive configuration (zip/tar.gz files)
+archives:
+  - id: gith
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+
+# GitHub release configuration
+release:
+  github:
+    owner: kurtschambach
+    name: gith
+
+  # Release notes
+  header: |
+    ## gith {{ .Version }}
+
+    Welcome to this new release of gith!
+
+  footer: |
+    **Full Changelog**: https://github.com/kurtschambach/gith/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "Merge pull request"
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: Bug fixes
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: Others
+      order: 999
