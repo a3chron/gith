@@ -5,7 +5,8 @@ A command-line git helper
 > [!WARNING]
 > Still in development, rather big changes possible
 
-![](/assets/preview.png)
+![](/assets/preview-actions.png)
+![](/assets/preview-switch-branch.png)
 
 ## Installation
 
@@ -62,3 +63,5 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 -> add init repo (&add remote?) with presets for some frameworks, gitignores etc
 
 -> add no git repo error
+
+-> git reset --soft HEAD~1
