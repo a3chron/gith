@@ -3,7 +3,7 @@
 A command-line git helper
 
 > [!WARNING]
-> In development, would not recommend using yet
+> Still in development, rather big changes possible
 
 ## Installation
 
@@ -11,6 +11,20 @@ Install directly using Go
 
 ```bash
 go install github.com/kurtschambach/gith@latest
+```
+
+## Local Development
+
+Build using:
+
+```bash
+go build -o gith
+```
+
+Then run with:
+
+```bash
+./gith
 ```
 
 ---

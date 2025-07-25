@@ -88,8 +88,7 @@ func fetchBranches() ([]string, error) {
 	// Fetch remote branches first
 	exec.Command("git", "fetch", "-a").Run()
 
-	// TODO: maybe -a?
-	out, err := exec.Command("git", "branch").Output()
+	out, err := exec.Command("git", "branch", "-a").Output()
 	if err != nil {
 		return nil, err
 	}
@@ -143,16 +142,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "ctrl+c", "esc":
 			m.err = "User quit"
 			return m, tea.Quit
-		case "ctrl+back":
+		case "ctrl+h":
 			// Go back to previous step
 			switch m.currentStep {
-			case stepBranch:
-				m.currentStep = stepAction
-				m.selected = 0
-				m.err = ""
-				m.output = ""
-				m.branches = nil
-			case stepComplete:
+			case stepBranch, stepComplete:
 				m.currentStep = stepAction
 				m.selectedAction = ""
 				m.selectedBranch = ""
@@ -303,13 +296,13 @@ func (m model) View() string {
 
 	// Step 1: Select action (always visible)
 	if m.selectedAction == "" {
-		var bullet, line string
+		var bullet string
 		bullet = bulletStyle.Render("◆")
 		if m.err != "" {
 			bullet = errorStyle.Render("■")
 		}
 
-		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bullet + " " + textStyle.Render("Select action") + "\n")
+		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + line + "\n" + bullet + " " + textStyle.Render("Select action") + "\n")
 
 		if m.err == "" {
 			for i, option := range m.options {
@@ -324,8 +317,8 @@ func (m model) View() string {
 		}
 	} else {
 		// Show completed action selection
-		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + lineStyle.Render("│") + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
-		content.WriteString(lineStyle.Render("│") + " " + completedStyle.Render(m.selectedAction) + "\n" + lineStyle.Render("│") + "\n")
+		content.WriteString(lineStyle.Render("╭─╌") + " " + accentStyle.Render("gith") + "\n" + line + "\n" + bulletStyle.Render("◆") + " " + textStyle.Render("Select action") + "\n")
+		content.WriteString(line + " " + completedStyle.Render(m.selectedAction) + "\n" + line + "\n")
 	}
 
 	// Step 2: Select branch (visible after action is selected)
@@ -335,11 +328,11 @@ func (m model) View() string {
 			bullet = errorStyle.Render("■")
 		}
 
-		if m.selectedBranch == "" && len(m.branches) > 1 {
+		if m.selectedBranch == "" && len(m.branches) > 0 {
 			content.WriteString(bullet + " " + textStyle.Render("Select branch") + "\n")
 			if m.err == "" {
 				for i, branch := range m.branches {
-					var bullet, line string
+					var bullet string
 
 					if i == m.selected && m.currentStep == stepBranch {
 						bullet = bulletStyle.Render("●")
@@ -386,7 +379,7 @@ func (m model) View() string {
 			content.WriteString(line + "\n" + lineStyle.Render("╰─╌") + " " + successStyle.Render(m.success) + "\n")
 		}
 		// Show navigation hints
-		content.WriteString("\n\n" + dimStyle.Render("Use ↑↓ to navigate, enter to select, esc to go back, q to quit"))
+		content.WriteString("\n\n" + dimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit"))
 	}
 
 	return containerStyle.Render(content.String())
