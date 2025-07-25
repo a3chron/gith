@@ -1,4 +1,5 @@
 project_name: gith
+version: 1
 
 # Build configuration
 builds:
@@ -16,7 +17,7 @@ builds:
 
     ldflags:
       - -s -w
-      - -X main.Version={{.Version}}
+      - -X main.Version={{ .Version }}
 
 # Archive configuration (zip/tar.gz files)
 archives:
@@ -37,9 +38,7 @@ release:
 
   # Release notes
   header: |
-    ## gith {{ .Version }}
-
-    Welcome to this new release of gith!
+    ## Welcome to this new release of gith! 🎉
 
   footer: |
     **Full Changelog**: https://github.com/kurtschambach/gith/compare/{{ .PreviousTag }}...{{ .Tag }}
