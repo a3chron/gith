@@ -22,7 +22,16 @@ func initialModel() ui.Model {
 			Actions: []string{"Branch", "Status", "Commit", "Tag", "Remote", "Changes", "Options"},
 		},
 		BranchModel: ui.BranchModel{
-			Actions: []string{"Switch branch", "Create branch", "Delete branch"},
+			Actions: []string{"Switch Branch", "Create Branch", "Delete Branch"},
+		},
+		CommitModel: ui.CommitModel{
+			Actions: []string{"Undo Last Commit"},
+		},
+		TagModel: ui.TagModel{
+			Actions: []string{"Add Tag", "Remove Tag", "List Tags", "Push Tag"},
+		},
+		RemoteModel: ui.RemoteModel{
+			Actions: []string{"List Remotes", "Add Remote"},
 		},
 		ConfigModel: ui.ConfigModel{
 			Accents: []string{"Rosewater", "Flamingo", "Pink", "Mauve", "Red", "Maroon", "Peach", "Yellow", "Green", "Teal", "Blue", "Sapphire", "Sky", "Lavender", "Gray"},

@@ -71,12 +71,12 @@ func (m Model) View() string {
 					}
 				} else if m.BranchModel.SelectedAction != "" {
 					// Show completed branch action selection
-					content.WriteString(bullet + " " + TextStyle.Render("Select branch action") + "\n")
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select branch action") + "\n")
 					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedAction) + "\n")
 				}
 
 				// Step 3
-				if m.BranchModel.SelectedAction == "Switch branch" || m.BranchModel.SelectedAction == "Delete branch" {
+				if m.BranchModel.SelectedAction == "Switch Branch" || m.BranchModel.SelectedAction == "Delete Branch" {
 					if m.BranchModel.SelectedBranch == "" && len(m.BranchModel.Branches) > 0 {
 						content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Branch to "+strings.ToLower(strings.Split(m.BranchModel.SelectedAction, " ")[0])) + "\n")
 						if m.Err == "" {
@@ -98,13 +98,92 @@ func (m Model) View() string {
 						content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedBranch) + "\n")
 					}
 				}
+
 			case "Commit":
-				//TODO: thsi and other actions
+				var bullet = BulletStyle.Render("◆")
+				if m.Err != "" {
+					bullet = ErrorStyle.Render("■")
+				}
+
+				if m.CommitModel.SelectedAction == "" && len(m.CommitModel.Actions) > 0 {
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select commit action") + "\n")
+					if m.Err == "" {
+						for i, action := range m.CommitModel.Actions {
+							var bullet string
+
+							if i == m.Selected && m.CurrentStep == StepCommit {
+								bullet = BulletStyle.Render("●")
+								content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, SelectedStyle.Render(action)))
+							} else {
+								bullet = DimStyle.Render("○")
+								content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, NormalStyle.Render(action)))
+							}
+						}
+					}
+				} else if m.CommitModel.SelectedAction != "" {
+					// Show completed branch action selection
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select commit action") + "\n")
+					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
+				}
+
+			case "Tag":
+				var bullet = BulletStyle.Render("◆")
+				if m.Err != "" {
+					bullet = ErrorStyle.Render("■")
+				}
+
+				if m.TagModel.SelectedAction == "" && len(m.TagModel.Actions) > 0 {
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select tag action") + "\n")
+					if m.Err == "" {
+						for i, action := range m.TagModel.Actions {
+							var bullet string
+
+							if i == m.Selected && m.CurrentStep == StepTag {
+								bullet = BulletStyle.Render("●")
+								content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, SelectedStyle.Render(action)))
+							} else {
+								bullet = DimStyle.Render("○")
+								content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, NormalStyle.Render(action)))
+							}
+						}
+					}
+				} else if m.TagModel.SelectedAction != "" {
+					// Show completed branch action selection
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select tag action") + "\n")
+					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAction) + "\n")
+				}
+			case "Remote":
+				var bullet = BulletStyle.Render("◆")
+				if m.Err != "" {
+					bullet = ErrorStyle.Render("■")
+				}
+
+				if m.RemoteModel.SelectedAction == "" && len(m.RemoteModel.Actions) > 0 {
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select remote action") + "\n")
+					if m.Err == "" {
+						for i, action := range m.RemoteModel.Actions {
+							var bullet string
+
+							if i == m.Selected && m.CurrentStep == StepRemote {
+								bullet = BulletStyle.Render("●")
+								content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, SelectedStyle.Render(action)))
+							} else {
+								bullet = DimStyle.Render("○")
+								content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, NormalStyle.Render(action)))
+							}
+						}
+					}
+				} else if m.RemoteModel.SelectedAction != "" {
+					// Show completed branch action selection
+					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select remote action") + "\n")
+					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
+				}
 			}
 		}
 
 		if m.Output != "" {
 			var outputArr = strings.Split(m.Output, "\n")
+			content.WriteString(line + "\n")
 
 			for _, out := range outputArr {
 				var outTrim = strings.TrimSpace(out)

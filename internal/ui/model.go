@@ -26,9 +26,23 @@ type BranchModel struct {
 	SelectedBranch string
 }
 
-// type CommitModel struct
-// type TagModel struct
-// type RemoteModel struct
+type CommitModel struct {
+	Actions        []string
+	SelectedAction string
+}
+
+type TagModel struct {
+	Actions        []string
+	SelectedAction string
+	Remotes        []string
+	SelectedRemote string
+}
+
+type RemoteModel struct {
+	Actions        []string
+	SelectedAction string
+}
+
 // type ChangesModel struct
 
 type ConfigModel struct {
@@ -44,6 +58,9 @@ type Model struct {
 	Selected    int
 	ActionModel ActionModel
 	BranchModel BranchModel
+	CommitModel CommitModel
+	RemoteModel RemoteModel
+	TagModel    TagModel
 	ConfigModel ConfigModel
 	Spinner     spinner.Model
 	Output      string
@@ -120,6 +137,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.Selected = len(m.BranchModel.Actions) - 1
 				case StepBranchSelect:
 					m.Selected = len(m.BranchModel.Branches) - 1
+				case StepCommit:
+					m.Selected = len(m.CommitModel.Actions) - 1
+				case StepTag:
+					m.Selected = len(m.TagModel.Actions) - 1
+				case StepRemote:
+					m.Selected = len(m.RemoteModel.Actions) - 1
 				}
 				// TODO: add other steps
 			}
@@ -131,18 +154,42 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					m.Selected = 0
 				}
+
 			case StepBranchAction:
 				if m.Selected < len(m.BranchModel.Actions)-1 {
 					m.Selected++
 				} else {
 					m.Selected = 0
 				}
+
 			case StepBranchSelect:
 				if m.Selected < len(m.BranchModel.Branches)-1 {
 					m.Selected++
 				} else {
 					m.Selected = 0
 				}
+
+			case StepCommit:
+				if m.Selected < len(m.CommitModel.Actions)-1 {
+					m.Selected++
+				} else {
+					m.Selected = 0
+				}
+
+			case StepTag:
+				if m.Selected < len(m.TagModel.Actions)-1 {
+					m.Selected++
+				} else {
+					m.Selected = 0
+				}
+
+			case StepRemote:
+				if m.Selected < len(m.RemoteModel.Actions)-1 {
+					m.Selected++
+				} else {
+					m.Selected = 0
+				}
+
 			}
 			// TODO: add other steps
 		case "enter":
@@ -171,7 +218,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						}
 					}
 					return m, tea.Quit
-				// TODO: add other actions
+				case "Commit":
+					m.Selected = 0
+					m.CurrentStep = StepCommit
+				case "Tag":
+					m.Selected = 0
+					m.CurrentStep = StepTag
+				case "Remote":
+					m.Selected = 0
+					m.CurrentStep = StepRemote
+				case "Changes":
+					m.CurrentStep = StepChanges
+					m.Err = "Changes will come here soon"
+					return m, tea.Quit
 				case "Options":
 					m.CurrentStep = StepOptions
 					m.Err = "Options will come here soon"
@@ -181,11 +240,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.BranchModel.SelectedAction = m.BranchModel.Actions[m.Selected]
 
 				switch m.BranchModel.SelectedAction {
-				case "Create branch":
+				case "Create Branch":
 					m.Err = "Create branch functionality not implemented yet"
 					return m, tea.Quit
 
-				case "Switch branch", "Delete branch":
+				case "Switch Branch", "Delete Branch":
 					branches, err := git.GetBranches()
 					if err != nil {
 						m.Err = fmt.Sprintf("Failed to fetch branches: %v", err)
@@ -202,11 +261,70 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.CurrentStep = StepBranchSelect
 				}
 
+			case StepCommit:
+				m.CommitModel.SelectedAction = m.CommitModel.Actions[m.Selected]
+
+				switch m.CommitModel.SelectedAction {
+				case "Undo Last Commit":
+					out, err := git.UndoLastCommit()
+					m.Output += out
+
+					if err != nil {
+						m.Err = fmt.Sprintf("%v", err)
+					} else {
+						m.Success = "Undo Commit Successful"
+					}
+
+					return m, tea.Quit
+				}
+
+			case StepTag:
+				m.TagModel.SelectedAction = m.TagModel.Actions[m.Selected]
+
+				switch m.TagModel.SelectedAction {
+				case "List Tags":
+					out, err := git.GetTags() // TODO: only last 10 or sth
+					m.Output += out
+
+					if err != nil {
+						m.Err = fmt.Sprintf("%v", err)
+					} else {
+						m.Success = "Listed Tags"
+					}
+
+					return m, tea.Quit
+
+				case "Add Tag", "Remove Tag", "Push Tag":
+					m.Err = "Tag functionality not implemented yet"
+					return m, tea.Quit
+				}
+
+			case StepRemote:
+				m.RemoteModel.SelectedAction = m.RemoteModel.Actions[m.Selected]
+
+				switch m.RemoteModel.SelectedAction {
+				case "List Remotes":
+					out, err := git.ListRemotes()
+					m.Output += out // TODO: combine same remotes, show read / write in one
+
+					if err != nil {
+						m.Err = fmt.Sprintf("%v", err)
+					} else {
+						m.Success = "Listed all Remotes"
+					}
+
+					return m, tea.Quit
+
+				case "Add Remote":
+					m.Err = "Add Remote functionality not implemented yet"
+					return m, tea.Quit
+				}
+
 			case StepBranchSelect:
 				m.BranchModel.SelectedBranch = m.BranchModel.Branches[m.Selected]
 
 				switch m.BranchModel.SelectedAction {
-				case "Switch branch":
+				case "Switch Branch":
 					// First check if branch exists locally
 					cmd := exec.Command("git", "show-ref", "--verify", "--quiet", "refs/heads/"+m.BranchModel.SelectedBranch)
 					err := cmd.Run()
@@ -226,7 +344,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					} else {
 						m.Success = fmt.Sprintf("Switched to branch '%s'", m.BranchModel.SelectedBranch)
 					}
-				case "Delete branch":
+				case "Delete Branch":
 					// Try to delete local branch first
 					cmd := exec.Command("git", "branch", "-d", m.BranchModel.SelectedBranch)
 					output, err := cmd.CombinedOutput()
