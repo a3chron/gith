@@ -283,7 +283,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				switch m.TagModel.SelectedAction {
 				case "List Tags":
-					out, err := git.GetTags() // TODO: only last 10 or sth
+					out, err := git.GetNLatestTags(10) // TODO: add in config num of tags here
+					m.Output += "10 latest tags:\n---\n"
 					m.Output += out
 
 					if err != nil {
