@@ -54,9 +54,7 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
  Aborting
 ```
 
-- [ ] Make a errOut (Output) and errMsg (Switch failed)
-
-- [ ] use the stepComplete for sth or remove
+- [ ] Make a errOut (Output) and errMsg (Switch failed) or errOut in out and err in err?
 
 - [ ] add config file (accent)
 
@@ -69,3 +67,5 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 - [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc
 
 - [x] for gith --version check for new versions
+
+- [ ] investigate version injection not working

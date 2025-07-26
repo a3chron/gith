@@ -17,7 +17,7 @@ func UpdateRepo() {
 }
 
 func PrintVersion(checkForUpdate bool, Version string) {
-	fmt.Printf("gith version %s\n", Version)
+	fmt.Printf("gith version: %s\n", Version)
 	if checkForUpdate {
 		resp, err := http.Get("https://api.github.com/repos/kurtschambach/gith/releases/latest")
 		if err != nil {
@@ -39,7 +39,7 @@ func PrintVersion(checkForUpdate bool, Version string) {
 
 		if latestRelease.TagName != Version {
 			fmt.Printf("new version available: %s (current: %s)\n", latestRelease.TagName, Version)
-			fmt.Print("To install the latest version run: go install github.com/kurtschambach/gith@latest")
+			fmt.Println("To install the latest version run: go install github.com/kurtschambach/gith@latest")
 		} else {
 			fmt.Println("you are using the latest version.")
 		}

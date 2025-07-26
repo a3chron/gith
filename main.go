@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	Version = "dev"
+	Version = "dev (or version injection still broken)"
 )
 
 func initialModel() ui.Model {
