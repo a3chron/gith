@@ -121,7 +121,7 @@ func (m Model) View() string {
 						}
 					}
 				} else if m.CommitModel.SelectedAction != "" {
-					// Show completed branch action selection
+					// Show completed commit action selection
 					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select commit action") + "\n")
 					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
 				}
@@ -148,9 +148,32 @@ func (m Model) View() string {
 						}
 					}
 				} else if m.TagModel.SelectedAction != "" {
-					// Show completed branch action selection
+					// Show completed tag action selection
 					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select tag action") + "\n")
 					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAction) + "\n")
+				}
+
+				if m.TagModel.SelectedAction == "Remove Tag" || m.TagModel.SelectedAction == "Push Tag" {
+					if m.TagModel.Selected == "" && len(m.TagModel.Options) > 0 {
+						content.WriteString(line + "\n" + bullet + " " + TextStyle.Render(strings.ToLower(m.TagModel.SelectedAction)) + "\n")
+						if m.Err == "" {
+							for i, tag := range m.TagModel.Options {
+								var bullet string
+
+								if i == m.Selected && m.CurrentStep == StepTagSelect {
+									bullet = BulletStyle.Render("●")
+									content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, SelectedStyle.Render(tag)))
+								} else {
+									bullet = DimStyle.Render("○")
+									content.WriteString(fmt.Sprintf("%s %s %s\n", line, bullet, NormalStyle.Render(tag)))
+								}
+							}
+						}
+					} else if m.TagModel.Selected != "" {
+						// Show completed tag selection
+						content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select Tag") + "\n")
+						content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.Selected) + "\n")
+					}
 				}
 			case "Remote":
 				var bullet = BulletStyle.Render("◆")
@@ -174,7 +197,7 @@ func (m Model) View() string {
 						}
 					}
 				} else if m.RemoteModel.SelectedAction != "" {
-					// Show completed branch action selection
+					// Show completed remote action selection
 					content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select remote action") + "\n")
 					content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
 				}

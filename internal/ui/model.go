@@ -34,8 +34,8 @@ type CommitModel struct {
 type TagModel struct {
 	Actions        []string
 	SelectedAction string
-	Remotes        []string
-	SelectedRemote string
+	Options        []string
+	Selected       string
 }
 
 type RemoteModel struct {
@@ -77,6 +77,7 @@ const (
 	StepBranchSelect
 	StepCommit
 	StepTag
+	StepTagSelect
 	StepRemote
 	StepChanges
 	StepOptions // preferences
@@ -295,9 +296,49 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 					return m, tea.Quit
 
-				case "Add Tag", "Remove Tag", "Push Tag":
+				case "Add Tag":
 					m.Err = "Tag functionality not implemented yet"
 					return m, tea.Quit
+
+				case "Remove Tag":
+					out, err := git.GetAllTags()
+
+					if err != nil {
+						m.Output += "\nError:\n"
+						m.Output += fmt.Sprintf("%v", err)
+						m.Err = "Failed to get tags"
+						return m, tea.Quit
+					}
+
+					if strings.TrimSpace(out) == "" {
+						m.Output += "You can add tags with Tags -> Add Tag or `git tag <tag_name>`"
+						m.Err = "No tags found"
+						return m, tea.Quit
+					}
+
+					m.Selected = 0
+					m.TagModel.Options = strings.Split(out, "\n")
+					m.CurrentStep = StepTagSelect
+
+				case "Push Tag":
+					out, err := git.GetNLatestTags(1)
+
+					if err != nil {
+						m.Output += "\nError:\n"
+						m.Output += fmt.Sprintf("%v", err)
+						m.Err = "Failed to get tags"
+						return m, tea.Quit
+					}
+
+					if strings.TrimSpace(out) == "" {
+						m.Output += "You can add tags with Tags -> Add Tag or `git tag <tag_name>`"
+						m.Err = "No tags found"
+						return m, tea.Quit
+					}
+
+					m.Selected = 0
+					m.TagModel.Options = strings.Split(out, "\n")
+					m.CurrentStep = StepTagSelect
 				}
 
 			case StepRemote:
@@ -362,6 +403,29 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					} else {
 						m.Output += string(output) + "\n"
 						m.Success = fmt.Sprintf("Deleted branch '%s'", m.BranchModel.SelectedBranch)
+					}
+				}
+				return m, tea.Quit
+
+			case StepTagSelect:
+				m.TagModel.Selected = m.TagModel.Options[m.Selected]
+
+				switch m.TagModel.SelectedAction {
+				case "Remove Tag":
+					out, err := exec.Command("git", "tag", "-d", m.TagModel.Selected).CombinedOutput()
+
+					if err != nil {
+						m.Err = fmt.Sprintf("Failed to remove: %s", string(out))
+					} else {
+						m.Success = fmt.Sprintf("Removed Tag '%s'", m.TagModel.Selected)
+					}
+				case "Push Tag":
+					out, err := exec.Command("git", "push", "origin", m.TagModel.Selected).CombinedOutput()
+
+					if err != nil {
+						m.Err = fmt.Sprintf("Failed to push: %s", string(out))
+					} else {
+						m.Success = fmt.Sprintf("Pushed Tag '%s'", m.TagModel.Selected)
 					}
 				}
 				return m, tea.Quit

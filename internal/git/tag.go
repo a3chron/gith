@@ -12,7 +12,7 @@ func GetAllTags() (string, error) {
 
 func GetNLatestTags(n int) (string, error) {
 	out, err := GetAllTags()
-	if err != nil {
+	if err != nil || n < 1 {
 		return string(out), err
 	}
 

@@ -69,3 +69,11 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
 - [x] for gith --version check for new versions
 
 - [ ] investigate version injection not working
+
+- [ ] get latest tag in utils von version, in add tag show current latest tag
+
+- [ ] in utils wirteErrOut & writeOut with currentStep to swotch over steps where to add out in out arrays
+
+- [ ] add loading states when fetching sth
+
+- [ ] improve error handling (e.g. if branches no branches / no tags when listing add info No tags found / for switch / delete branch check if no branches found first)
