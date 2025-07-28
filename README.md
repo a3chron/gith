@@ -6,8 +6,8 @@ A command-line git helper with catppuccin theme
 > Still in development
 
 ![](/assets/preview-actions.png)
-![](/assets/preview-switch-branch.png)
 ![](/assets/preview-tags.png)
+![](/assets/preview-switch-branch.png)
 
 ## Installation
 
