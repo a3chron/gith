@@ -3,7 +3,7 @@
 A command-line git helper with catppuccin theme
 
 > [!WARNING]
-> Still in development, rather big changes possible
+> Still in development
 
 ![](/assets/preview-actions.png)
 ![](/assets/preview-switch-branch.png)
