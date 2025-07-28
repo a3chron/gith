@@ -1,6 +1,15 @@
-# gith
+<h3 align="center">
+	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" width="100" alt="Logo"/><br/>
+	Gith (Catppuccin Theme)
+</h3>
 
-A command-line git helper with catppuccin theme
+<p align="center">
+	<a href="https://github.com/kurtschambach/gith/releases/latest"><img src="https://img.shields.io/github/v/release/kurtschambach/gith?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
+	<a href="https://github.com/kurtschambach/gith/issues"><img src="https://img.shields.io/github/issues/kurtschambach/gith?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
+	<img src="https://img.shields.io/github/check-runs/kurtschambach/gith/main?colorA=363a4f&colorB=a6da95&style=for-the-badge">
+</p>
+
+A command-line git helper with catppuccin theme written in Go
 
 > [!WARNING]
 > Still in development
@@ -78,3 +87,10 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 - [ ] add loading states when fetching sth
 
 - [ ] improve error handling (e.g. if branches no branches / no tags when listing add info No tags found / for switch / delete branch check if no branches found first)
+
+
+<br />
+
+<p align="center">
+ <a href="https://github.com/kurtschambach/gith/LICENSE"><img src="https://img.shields.io/github/license/kurtschambach/gith?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
+</p>
