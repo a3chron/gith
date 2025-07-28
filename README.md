@@ -7,6 +7,7 @@ A command-line git helper with catppuccin theme
 
 ![](/assets/preview-actions.png)
 ![](/assets/preview-switch-branch.png)
+![](/assets/preview-tags.png)
 
 ## Installation
 
