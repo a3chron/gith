@@ -24,6 +24,9 @@ A command-line git helper with catppuccin theme written in Go
 
 </details>
 
+For the terminal customization / starship config, check out my [ubuntu customization blog article](https://a3chron.vercel.app/blog/ubuntu-setup).  
+This is the full setup, for only starship scroll down to the starship section.
+
 ## Installation
 
 > [!NOTE]
