@@ -53,7 +53,7 @@ release:
 
   # Release notes
   header: |
-    ## Welcome to this new release of gith! 🎉
+    # Welcome to this new release of gith! 🎉
 
   footer: |
     **Full Changelog**: https://github.com/kurtschambach/gith/compare/{{ .PreviousTag }}...{{ .Tag }}
