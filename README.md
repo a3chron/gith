@@ -36,7 +36,7 @@ Then run with:
 
 ---
 
-built using [BubbleTea](https://github.com/charmbracelet/bubbletea)
+built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heavily based on [opencode](https://github.com/opencode-ai/opencode)
 
 ## TODO
 
