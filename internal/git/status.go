@@ -14,11 +14,13 @@ func IsWorkingTreeClean() (bool, error) {
 	return len(strings.TrimSpace(string(out))) == 0, nil
 }
 
-func GetStatusInfo() (map[string][]string, error) {
+func GetStatusInfo() (map[string][]string, int, error) {
 	out, err := exec.Command("git", "status", "--porcelain").Output()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get status: %w", err)
+		return nil, 0, fmt.Errorf("failed to get status: %w", err)
 	}
+
+	length := len(strings.Split(strings.TrimSpace(string(out)), "\n"))
 
 	status := make(map[string][]string)
 	status["modified"] = []string{}
@@ -26,14 +28,14 @@ func GetStatusInfo() (map[string][]string, error) {
 	status["deleted"] = []string{}
 	status["untracked"] = []string{}
 
-	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
-	for _, line := range lines {
+	lines := strings.SplitSeq(strings.TrimSpace(string(out)), "\n")
+	for line := range lines {
 		if len(line) < 3 {
 			continue
 		}
 
-		statusCode := line[:2]
-		filename := line[3:]
+		statusCode := strings.TrimSpace(line[:2])
+		filename := strings.TrimSpace(line[2:])
 
 		switch {
 		case strings.Contains(statusCode, "M"):
@@ -47,5 +49,5 @@ func GetStatusInfo() (map[string][]string, error) {
 		}
 	}
 
-	return status, nil
+	return status, length, nil
 }

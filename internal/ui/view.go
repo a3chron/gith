@@ -25,27 +25,27 @@ func (m Model) renderMainView() string {
 	var content strings.Builder
 	line := LineStyle.Render("│")
 
-	content.WriteString(m.renderHeader(line))
+	content.WriteString(m.renderHeader())
+	content.WriteString(m.renderOutput(line, 0))
 
 	content.WriteString(m.renderActionSelection(line))
+	content.WriteString(m.renderOutput(line, 1))
 
 	if m.ActionModel.SelectedAction != "" {
 		content.WriteString(m.renderSubActions(line))
+		content.WriteString(m.renderOutput(line, 2))
 	}
 
-	if m.Output != "" {
-		content.WriteString(m.renderOutput(line))
-	}
-
-	content.WriteString(m.renderResult(line))
+	content.WriteString(m.renderResult())
+	content.WriteString(m.renderOutput(line, 3))
 
 	content.WriteString(m.renderNavigationHints())
 
 	return ContainerStyle.Render(content.String())
 }
 
-func (m Model) renderHeader(line string) string {
-	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n" + line + "\n"
+func (m Model) renderHeader() string {
+	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n"
 }
 
 func (m Model) renderActionSelection(line string) string {
@@ -63,6 +63,8 @@ func (m Model) renderActionSelection(line string) string {
 		// Show completed action
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ActionModel.SelectedAction) + "\n")
 	}
+
+	content.WriteString(line + "\n")
 
 	return content.String()
 }
@@ -108,6 +110,8 @@ func (m Model) renderBranchActions(line string) string {
 		}
 	}
 
+	content.WriteString(line + "\n")
+
 	return content.String()
 }
 
@@ -124,6 +128,8 @@ func (m Model) renderCommitActions(line string) string {
 	} else if m.CommitModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
 	}
+
+	content.WriteString(line + "\n")
 
 	return content.String()
 }
@@ -155,6 +161,8 @@ func (m Model) renderTagActions(line string) string {
 		}
 	}
 
+	content.WriteString(line + "\n")
+
 	return content.String()
 }
 
@@ -171,6 +179,8 @@ func (m Model) renderRemoteActions(line string) string {
 	} else if m.RemoteModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
 	}
+
+	content.WriteString(line + "\n")
 
 	return content.String()
 }
@@ -189,29 +199,37 @@ func (m Model) renderOptions(options []string, line string, isCurrentStep bool) 
 		}
 	}
 
+	content.WriteString(line + "\n")
+
 	return content.String()
 }
 
-func (m Model) renderOutput(line string) string {
-	var content strings.Builder
-	outputLines := strings.Split(m.Output, "\n")
+func (m Model) renderOutput(line string, level int) string {
+	if len(m.Output) > level {
+		var content strings.Builder
+		outputLines := strings.Split(m.Output[level], "\n")
 
-	content.WriteString(line + "\n")
-	for _, outputLine := range outputLines {
-		trimmed := strings.TrimSpace(outputLine)
-		if trimmed != "" {
-			content.WriteString(line + " " + DimStyle.Render(outputLine) + "\n")
+		content.WriteString(line + "\n")
+		for _, outputLine := range outputLines {
+			trimmed := strings.TrimSpace(outputLine)
+			if trimmed != "" {
+				content.WriteString(line + " " + DimStyle.Render(outputLine) + "\n")
+			}
 		}
+
+		content.WriteString(line + "\n")
+
+		return content.String()
 	}
 
-	return content.String()
+	return ""
 }
 
-func (m Model) renderResult(line string) string {
+func (m Model) renderResult() string {
 	if m.Err != "" {
-		return line + "\n" + LineStyle.Render("╰─╌") + " " + ErrorStyle.Render(m.Err) + "\n"
+		return LineStyle.Render("╰─╌") + " " + ErrorStyle.Render(m.Err) + "\n"
 	} else if m.Success != "" {
-		return line + "\n" + LineStyle.Render("╰─╌") + " " + SuccessStyle.Render(m.Success) + "\n"
+		return LineStyle.Render("╰─╌") + " " + SuccessStyle.Render(m.Success) + "\n"
 	}
 	return ""
 }
