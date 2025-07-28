@@ -47,4 +47,10 @@ var (
 
 	ContainerStyle = lipgloss.NewStyle().
 			Padding(1, 2)
+
+	GreenStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(mocha.Green().Hex))
+
+	YellowStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(mocha.Yellow().Hex))
+
+	RedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(mocha.Red().Hex))
 )

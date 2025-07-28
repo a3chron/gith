@@ -430,16 +430,16 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 				m.Success = "Working tree clean"
 			} else {
 				if len(status["modified"]) > 0 {
-					m.outputByLevel("Modified:\n "+strings.Join(status["modified"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\cyModified:\n "+strings.Join(status["modified"], "\n ")+"\n╌\n", 1)
 				}
 				if len(status["added"]) > 0 {
-					m.outputByLevel("Added:\n "+strings.Join(status["added"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\cgAdded:\n "+strings.Join(status["added"], "\n ")+"\n╌\n", 1)
 				}
 				if len(status["deleted"]) > 0 {
-					m.outputByLevel("Deleted:\n "+strings.Join(status["deleted"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\crDeleted:\n "+strings.Join(status["deleted"], "\n ")+"\n╌\n", 1)
 				}
 				if len(status["untracked"]) > 0 {
-					m.outputByLevel("Untracked:\n "+strings.Join(status["untracked"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\ctUntracked:\n "+strings.Join(status["untracked"], "\n ")+"\n╌\n", 1)
 				}
 				m.Success = fmt.Sprintf("Changes detected: %d files", length)
 			}
