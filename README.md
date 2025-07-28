@@ -14,9 +14,15 @@ A command-line git helper with catppuccin theme written in Go
 > [!WARNING]
 > Still in development
 
+![](/assets/peek-usage-preview.gif)
+
+<details>
+<summary>More Images</summary>
+
 ![](/assets/preview-actions.png)
 ![](/assets/preview-tags.png)
-![](/assets/preview-switch-branch.png)
+
+</details>
 
 ## Installation
 
@@ -87,7 +93,6 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 - [ ] add loading states when fetching sth
 
 - [ ] improve error handling (e.g. if branches no branches / no tags when listing add info No tags found / for switch / delete branch check if no branches found first)
-
 
 <br />
 
