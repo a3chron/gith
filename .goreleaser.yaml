@@ -68,10 +68,10 @@ changelog:
       - "Merge pull request"
   groups:
     - title: Features
-      regexp: "^feat(\([a-zA-Z0-9_-]+\))?(!)?:\s(.+)"
+      regexp: "^feat(\\([a-zA-Z0-9_-]+\\))?(!)?:\\s(.+)"
       order: 0
     - title: Bug fixes
-      regexp: "^fix(\([a-zA-Z0-9_-]+\))?(!)?:\s(.+)"
+      regexp: "^fix(\\([a-zA-Z0-9_-]+\\))?(!)?:\\s(.+)"
       order: 1
     - title: Others
       order: 999
