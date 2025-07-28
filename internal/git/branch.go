@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 )
@@ -8,7 +9,7 @@ import (
 func GetBranches() ([]string, error) {
 	out, err := exec.Command("git", "branch", "-a").Output()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get branches: %w", err)
 	}
 
 	lines := strings.Split(string(out), "\n")
@@ -21,14 +22,19 @@ func GetBranches() ([]string, error) {
 			continue
 		}
 
-		// Skip current branch (has * prefix)
-		if strings.HasPrefix(line, "* ") {
+		currentBranch, err := GetCurrentBranch()
+		if err != nil {
+			return []string{}, fmt.Errorf("failed to get current branch: %w", err)
+		}
+
+		// Skip current branch
+		if strings.HasPrefix(line, "* ") || line == currentBranch {
 			continue
 		}
 
 		// Handle remote branches
-		if strings.HasPrefix(line, "remotes/origin/") {
-			branch := strings.TrimPrefix(line, "remotes/origin/")
+		if after, hasPrefix := strings.CutPrefix(line, "remotes/origin/"); hasPrefix {
+			branch := after
 			// Skip HEAD pointer
 			if strings.Contains(branch, "HEAD ->") {
 				continue
@@ -47,4 +53,12 @@ func GetBranches() ([]string, error) {
 	}
 
 	return branches, nil
+}
+
+func GetCurrentBranch() (string, error) {
+	out, err := exec.Command("git", "branch", "--show-current").Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to get current branch: %w", err)
+	}
+	return strings.TrimSpace(string(out)), nil
 }

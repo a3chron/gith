@@ -1,8 +1,14 @@
 package git
 
-import "os/exec"
+import (
+	"fmt"
+	"os/exec"
+)
 
 func ListRemotes() (string, error) {
 	out, err := exec.Command("git", "remote", "-v").Output()
-	return string(out), err
+	if err != nil {
+		return "", fmt.Errorf("failed to list remotes: %w", err)
+	}
+	return string(out), nil
 }

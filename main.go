@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/kurtschambach/gith/internal"
@@ -16,8 +16,13 @@ var (
 )
 
 func initialModel() ui.Model {
+	s := spinner.New()
+	s.Spinner = spinner.Dot
+	s.Style = ui.AccentStyle
+
 	return ui.Model{
-		CurrentStep: ui.StepAction,
+		CurrentStep: ui.StepLoad,
+		Loading:     true,
 		ActionModel: ui.ActionModel{
 			Actions: []string{"Branch", "Status", "Commit", "Tag", "Remote", "Changes", "Options"},
 		},
@@ -35,39 +40,50 @@ func initialModel() ui.Model {
 		},
 		ConfigModel: ui.ConfigModel{
 			Accents: []string{"Rosewater", "Flamingo", "Pink", "Mauve", "Red", "Maroon", "Peach", "Yellow", "Green", "Teal", "Blue", "Sapphire", "Sky", "Lavender", "Gray"},
+			Flavors: []string{"Latte", "Frappe", "Macchiato", "Mocha"},
 		},
 		Selected: 0,
+		Spinner:  s,
 	}
 }
 
 func main() {
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "version", "-v", "--version":
-			if len(os.Args) == 3 && os.Args[2] == "check" {
-				internal.PrintVersion(true, Version)
-			} else {
-				internal.PrintVersion(false, Version)
-			}
-			return
-		case "help", "-h", "--help":
-			internal.PrintHelp()
-			return
-		default:
-			fmt.Printf("Unknown command: %s\n", os.Args[1])
-			fmt.Println("Use 'gith help' for usage information")
-			os.Exit(1)
-		}
+		return handleCliArgs()
 	}
 
-	out, err := exec.Command("git", "rev-parse", "--is-inside-work-tree").CombinedOutput()
-	if err != nil {
-		fmt.Printf("%s\n", string(out))
-		return
+	isRepo, err := internal.IsGitRepository()
+	if err != nil || !isRepo {
+		return fmt.Errorf("not in a git repository")
 	}
 
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Error: %v", err)
+		return fmt.Errorf("failed to run program: %w", err)
+	}
+
+	return nil
+}
+
+func handleCliArgs() error {
+	switch os.Args[1] {
+	case "version", "-v", "--version":
+		checkForUpdate := len(os.Args) == 3 && os.Args[2] == "check"
+		internal.PrintVersion(checkForUpdate, Version)
+		return nil
+
+	case "help", "-h", "--help":
+		internal.PrintHelp()
+		return nil
+
+	default:
+		return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1])
 	}
 }

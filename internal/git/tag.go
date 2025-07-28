@@ -1,31 +1,46 @@
 package git
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 )
 
-func GetAllTags() (string, error) {
+func GetAllTagsWithCommit() (string, error) {
 	out, err := exec.Command("git", "tag", "-n", "-l", "--sort=-v:refname").Output()
-	return string(out), err
+	if err != nil {
+		return "", fmt.Errorf("failed to get tags: %w", err)
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
+func GetAllTags() (string, error) {
+	out, err := exec.Command("git", "tag", "-l", "--sort=-v:refname").Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to get tags: %w", err)
+	}
+	return strings.TrimSpace(string(out)), nil
 }
 
 func GetNLatestTags(n int) (string, error) {
+	if n < 1 {
+		return "", fmt.Errorf("invalid number of tags requested: %d", n)
+	}
+
 	out, err := GetAllTags()
-	if err != nil || n < 1 {
-		return string(out), err
+	if err != nil {
+		return "", err
+	}
+
+	if out == "" {
+		return "", nil
 	}
 
 	outArr := strings.Split(out, "\n")
-
 	if len(outArr) <= n {
-		return string(out), err
+		return out, nil
 	}
 
-	outArrCopy := make([]string, n)
-	copy(outArrCopy, outArr)
-
-	result := strings.Join(outArrCopy, "\n")
-
-	return result, err
+	result := strings.Join(outArr[:n], "\n")
+	return result, nil
 }
