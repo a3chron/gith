@@ -35,7 +35,11 @@ func checkAndPrintUpdate(currentVersion string) error {
 	if err != nil {
 		return fmt.Errorf("failed to fetch latest release: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			fmt.Println("failed to close response body:", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status: %s", resp.Status)

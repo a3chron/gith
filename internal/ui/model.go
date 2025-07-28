@@ -106,10 +106,13 @@ type Model struct {
 }
 
 type repoUpdatedMsg struct{}
+type repoUpdateErrorMsg struct{}
 
 func UpdateOnInit() tea.Cmd {
 	return func() tea.Msg {
-		internal.UpdateRepo()
+		if err := internal.UpdateRepo(); err != nil {
+			return repoUpdateErrorMsg{}
+		}
 		return repoUpdatedMsg{}
 	}
 }
@@ -367,6 +370,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case repoUpdatedMsg:
 		m.Loading = false
 		m.CurrentStep = StepAction
+		return m, nil
+
+	case repoUpdateErrorMsg:
+		m.Loading = false
+		m.CurrentStep = StepAction
+		m.Output += "Failed to fetch update from remote"
 		return m, nil
 
 	case spinner.TickMsg:
