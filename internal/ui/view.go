@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// View renders the entire UI based on the current model state.
 func (m Model) View() string {
 	if m.CurrentStep == StepLoad {
 		return m.renderLoadingView()
@@ -12,42 +13,48 @@ func (m Model) View() string {
 	return m.renderMainView()
 }
 
+// renderLoadingView displays a spinner and a loading message.
 func (m Model) renderLoadingView() string {
 	return `
-		  ▘▗ ▌ 
-		▛▌▌▜▘▛▌
-		▙▌▌▐▖▌▌
-		▄▌ - by a3chron
-	` + "\n\n" + m.Spinner.View() + " Running git fetch"
+          ▘▗ ▌
+        ▛▌▌▜▘▛▌
+        ▙▌▌▐▖▌▌
+        ▄▌ - by a3chron
+    ` + "\n\n" + m.Spinner.View() + " Running git fetch"
 }
 
+// renderMainView constructs the main application view from its components.
 func (m Model) renderMainView() string {
 	var content strings.Builder
 	line := LineStyle.Render("│")
 
 	content.WriteString(m.renderHeader(line))
-	content.WriteString(m.renderOutput(line, 0))
+	content.WriteString(m.renderOutput(line, 0)) // For initial/global output
 
 	content.WriteString(m.renderActionSelection(line))
-	content.WriteString(m.renderOutput(line, 1))
+	content.WriteString(m.renderOutput(line, 1)) // Output for level 1
 
 	if m.ActionModel.SelectedAction != "" {
 		content.WriteString(m.renderSubActions(line))
-		content.WriteString(m.renderOutput(line, 2))
+		content.WriteString(m.renderOutput(line, 2)) // Output for level 2
+
+		content.WriteString(m.renderSubActions2(line))
+		content.WriteString(m.renderOutput(line, 3)) // Output for level 3
 	}
 
 	content.WriteString(m.renderResult())
-	content.WriteString(m.renderOutput(line, 3))
 
 	content.WriteString(m.renderNavigationHints())
 
 	return ContainerStyle.Render(content.String())
 }
 
+// renderHeader returns the application title bar.
 func (m Model) renderHeader(line string) string {
-	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n" + line + "\n"
+	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n"
 }
 
+// renderActionSelection renders the primary action choices (Branch, Commit, etc.).
 func (m Model) renderActionSelection(line string) string {
 	var content strings.Builder
 	bullet := m.getBullet(1)
@@ -59,18 +66,16 @@ func (m Model) renderActionSelection(line string) string {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.ActionModel.Actions, m.CurrentStep == StepAction))
 			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-		} else {
-			content.WriteString(line + "\n")
 		}
 	} else {
 		// Show completed action
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ActionModel.SelectedAction) + "\n")
-		content.WriteString(line + "\n")
 	}
 
 	return content.String()
 }
 
+// renderSubActions delegates rendering of the second-level action lists.
 func (m Model) renderSubActions(line string) string {
 	switch m.ActionModel.SelectedAction {
 	case "Branch":
@@ -85,6 +90,18 @@ func (m Model) renderSubActions(line string) string {
 	return ""
 }
 
+// renderSubActions2 delegates rendering of the third-level action lists and confirmations.
+func (m Model) renderSubActions2(line string) string {
+	switch m.ActionModel.SelectedAction {
+	case "Branch":
+		return m.renderBranchSubActions2(line)
+	case "Tag":
+		return m.renderTagSubActions2(line)
+	}
+	return ""
+}
+
+// renderBranchActions now only renders the list of available branch actions.
 func (m Model) renderBranchActions(line string) string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
@@ -95,114 +112,118 @@ func (m Model) renderBranchActions(line string) string {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.BranchModel.Actions, m.CurrentStep == StepBranchAction))
 			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-		} else {
-			content.WriteString(line + "\n")
 		}
 	} else if m.BranchModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedAction) + "\n")
+	}
 
-		if (m.BranchModel.SelectedAction == "Switch Branch" || m.BranchModel.SelectedAction == "Delete Branch") && len(m.BranchModel.Branches) > 0 {
+	return content.String()
+}
+
+// renderBranchSubActions2 handles selection of a specific branch.
+func (m Model) renderBranchSubActions2(line string) string {
+	var content strings.Builder
+	bullet := m.getBullet(3)
+
+	switch m.BranchModel.SelectedAction {
+	case "Switch Branch", "Delete Branch":
+		// If no branch is selected yet, show the list of branches to choose from.
+		if m.BranchModel.SelectedBranch == "" {
 			action := strings.ToLower(strings.Split(m.BranchModel.SelectedAction, " ")[0])
-			bullet3 := m.getBullet(3)
-			content.WriteString(line + "\n" + bullet3 + " " + TextStyle.Render("Branch to "+action) + "\n")
-
-			if m.BranchModel.SelectedBranch == "" {
-				if m.Err == "" {
-					content.WriteString(m.renderOptions(m.BranchModel.Branches, m.CurrentStep == StepBranchSelect))
-					content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-				} else {
-					content.WriteString(line + "\n")
-				}
-			} else {
-				content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedBranch) + "\n")
-				content.WriteString(line + "\n")
+			content.WriteString(bullet + " " + TextStyle.Render("Branch to "+action) + "\n")
+			if len(m.BranchModel.Branches) > 0 && m.Err == "" {
+				content.WriteString(m.renderOptions(m.BranchModel.Branches, m.CurrentStep == StepBranchSelect))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 			}
+		} else { // A branch has been selected, show it as completed.
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedBranch) + "\n")
 		}
 	}
 
 	return content.String()
 }
 
+// renderCommitActions renders the list of available commit actions.
 func (m Model) renderCommitActions(line string) string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select commit action") + "\n")
+	content.WriteString(bullet + " " + TextStyle.Render("Select commit action") + "\n")
 
 	if m.CommitModel.SelectedAction == "" && len(m.CommitModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.CommitModel.Actions, m.CurrentStep == StepCommit))
 			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-		} else {
-			content.WriteString(line + "\n")
 		}
 	} else if m.CommitModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
-		content.WriteString(line + "\n")
 	}
 
 	return content.String()
 }
 
+// renderTagActions now only renders the list of available tag actions.
 func (m Model) renderTagActions(line string) string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select tag action") + "\n")
+	content.WriteString(bullet + " " + TextStyle.Render("Select tag action") + "\n")
 
 	if m.TagModel.SelectedAction == "" && len(m.TagModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.TagModel.Actions, m.CurrentStep == StepTag))
 			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-		} else {
-			content.WriteString(line + "\n")
 		}
 	} else if m.TagModel.SelectedAction != "" {
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAction) + "\n" + line + "\n")
+		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAction) + "\n")
+	}
 
-		if (m.TagModel.SelectedAction == "Remove Tag" || m.TagModel.SelectedAction == "Push Tag") && len(m.TagModel.Options) > 0 {
+	return content.String()
+}
+
+// renderTagSubActions2 handles selection of a specific tag.
+func (m Model) renderTagSubActions2(line string) string {
+	var content strings.Builder
+	bullet := m.getBullet(3)
+
+	switch m.TagModel.SelectedAction {
+	case "Remove Tag", "Push Tag":
+		// If no tag is selected yet, show the list of tags to choose from.
+		if m.TagModel.Selected == "" {
 			actionText := strings.ToLower(m.TagModel.SelectedAction)
-			bullet3 := m.getBullet(3)
-			content.WriteString(line + "\n" + bullet3 + " " + TextStyle.Render(actionText) + "\n")
-
-			if m.TagModel.Selected == "" {
-				if m.Err == "" {
-					content.WriteString(m.renderOptions(m.TagModel.Options, m.CurrentStep == StepTagSelect))
-					content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-				} else {
-					content.WriteString(line + "\n")
-				}
-			} else {
-				content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.Selected) + "\n")
-				content.WriteString(line + "\n")
+			content.WriteString(bullet + " " + TextStyle.Render(actionText) + "\n")
+			if len(m.TagModel.Options) > 0 && m.Err == "" {
+				content.WriteString(m.renderOptions(m.TagModel.Options, m.CurrentStep == StepTagSelect))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 			}
+		} else { // A tag has been selected, show it as completed.
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.Selected) + "\n")
 		}
 	}
 
 	return content.String()
 }
 
+// renderRemoteActions renders the list of available remote actions.
 func (m Model) renderRemoteActions(line string) string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select remote action") + "\n")
+	content.WriteString(bullet + " " + TextStyle.Render("Select remote action") + "\n")
 
 	if m.RemoteModel.SelectedAction == "" && len(m.RemoteModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.RemoteModel.Actions, m.CurrentStep == StepRemote))
 			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
-		} else {
-			content.WriteString(line + "\n")
 		}
 	} else if m.RemoteModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
-		content.WriteString(line + "\n")
 	}
 
 	return content.String()
 }
 
+// renderOptions formats a list of choices for selection.
 func (m Model) renderOptions(options []string, isCurrentStep bool) string {
 	var content strings.Builder
 	accLine := AccentStyle.Render("│")
@@ -221,58 +242,81 @@ func (m Model) renderOptions(options []string, isCurrentStep bool) string {
 	return content.String()
 }
 
+// renderOutput displays command output at a specific interaction level.
+// It handles multi-line and color-coded messages.
 func (m Model) renderOutput(line string, level int) string {
-	if len(m.Output) > level {
-		var content strings.Builder
-		outputLines := strings.SplitSeq(m.Output[level], "\n")
+	// Don't render output for a level that hasn't been reached or has no message.
+	if m.Level > level {
+		return line + "\n"
+	}
 
-		for outputLine := range outputLines {
-			trimmed := strings.TrimLeft(outputLine, " ")
-			if trimmed != "" {
-				if trimmed, found := strings.CutPrefix(trimmed, "\\c"); found {
-					color := trimmed[:1]
-					trimmed = trimmed[1:]
+	if len(m.Output) <= level {
+		return ""
+	}
 
-					switch color {
-					case "g":
-						content.WriteString(line + " " + GreenStyle.Render(trimmed) + "\n")
-					case "y":
-						content.WriteString(line + " " + YellowStyle.Render(trimmed) + "\n")
-					case "r":
-						content.WriteString(line + " " + RedStyle.Render(trimmed) + "\n")
-					case "t":
-						content.WriteString(line + " " + TextStyle.Render(trimmed) + "\n")
-					case "a":
-						content.WriteString(line + " " + AccentStyle.Render(trimmed) + "\n")
-						//TODO: maybe add more & make this a little bit simpler?
-					}
-				} else {
-					content.WriteString(line + " " + DimStyle.Render(outputLine) + "\n")
+	var content strings.Builder
+	outputLines := strings.Split(m.Output[level], "\n")
+
+	var renderedLines []string
+	for _, outputLine := range outputLines {
+		trimmed := strings.TrimSpace(outputLine)
+		if trimmed != "" {
+			// Check for color prefix (e.g., "\cgSuccess!")
+			if coloredText, found := strings.CutPrefix(trimmed, "\\c"); found && len(coloredText) > 1 {
+				color := coloredText[:1]
+				text := coloredText[1:]
+
+				switch color {
+				case "g":
+					renderedLines = append(renderedLines, line+" "+GreenStyle.Render(text))
+				case "y":
+					renderedLines = append(renderedLines, line+" "+YellowStyle.Render(text))
+				case "r":
+					renderedLines = append(renderedLines, line+" "+RedStyle.Render(text))
+				case "t":
+					renderedLines = append(renderedLines, line+" "+TextStyle.Render(text))
+				case "a":
+					renderedLines = append(renderedLines, line+" "+AccentStyle.Render(text))
+				default:
+					// Fallback for unknown color codes
+					// TODO: add all colors & maybe simplify
+					renderedLines = append(renderedLines, line+" "+DimStyle.Render(outputLine))
 				}
+			} else {
+				renderedLines = append(renderedLines, line+" "+DimStyle.Render(outputLine))
 			}
 		}
-
-		content.WriteString(line + "\n")
-
-		return content.String()
 	}
 
-	return ""
+	if len(renderedLines) == 0 {
+		return line + "\n"
+	}
+
+	content.WriteString(line + "\n")
+	for _, l := range renderedLines {
+		content.WriteString(l + "\n")
+	}
+	content.WriteString(line + "\n")
+
+	return content.String()
 }
 
+// renderResult displays the final success or error message.
 func (m Model) renderResult() string {
 	if m.Err != "" {
-		return LineStyle.Render("╰─╌") + " " + ErrorStyle.Render(m.Err) + "\n"
+		return LineStyle.Render("│\n╰─╌") + " " + ErrorStyle.Render(m.Err) + "\n"
 	} else if m.Success != "" {
-		return LineStyle.Render("╰─╌") + " " + SuccessStyle.Render(m.Success) + "\n"
+		return LineStyle.Render("│\n╰─╌") + " " + SuccessStyle.Render(m.Success) + "\n"
 	}
 	return ""
 }
 
+// renderNavigationHints displays help text for the user.
 func (m Model) renderNavigationHints() string {
 	return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 }
 
+// getBullet returns the appropriate bullet character based on the current state.
 func (m Model) getBullet(forLevel int) string {
 	if m.Err != "" && forLevel == m.Level {
 		return ErrorStyle.Render("■")

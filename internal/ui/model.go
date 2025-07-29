@@ -27,12 +27,6 @@ const (
 	StepOptions
 )
 
-type SelectionModel interface {
-	GetActions() []string
-	GetSelectedAction() string
-	SetSelectedAction(string)
-}
-
 type ActionModel struct {
 	Actions        []string
 	SelectedAction string
