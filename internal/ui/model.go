@@ -282,7 +282,7 @@ func (m *Model) handleTagOperation() (*Model, tea.Cmd) {
 	switch m.TagModel.SelectedAction {
 	case "List Tags":
 		out, err := git.GetNLatestTags(10)
-		m.outputByLevel("10 latest tags:\n---\n" + out)
+		m.outputByLevel("\\ct10 latest tags:\n" + out)
 		if err != nil {
 			m.Err = fmt.Sprintf("%v", err)
 		} else {
