@@ -24,6 +24,7 @@ builds:
 archives:
   - id: gith
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
@@ -32,7 +33,9 @@ archives:
       - LICENSE
 
 nfpms:
-  - builds:
+  - id: gith
+    package_name: gith
+    builds:
       - gith
     vendor: kurtschambach
     homepage: "https://a3chron.vercel.app/"
