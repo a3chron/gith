@@ -28,17 +28,17 @@ func (m Model) renderMainView() string {
 	var content strings.Builder
 	line := LineStyle.Render("│")
 
-	content.WriteString(m.renderHeader(line))
+	content.WriteString(m.renderHeader())
 	content.WriteString(m.renderOutput(line, 0)) // For initial/global output
 
-	content.WriteString(m.renderActionSelection(line))
+	content.WriteString(m.renderActionSelection())
 	content.WriteString(m.renderOutput(line, 1)) // Output for level 1
 
 	if m.ActionModel.SelectedAction != "" {
-		content.WriteString(m.renderSubActions(line))
+		content.WriteString(m.renderSubActions())
 		content.WriteString(m.renderOutput(line, 2)) // Output for level 2
 
-		content.WriteString(m.renderSubActions2(line))
+		content.WriteString(m.renderSubActions2())
 		content.WriteString(m.renderOutput(line, 3)) // Output for level 3
 	}
 
@@ -50,12 +50,12 @@ func (m Model) renderMainView() string {
 }
 
 // renderHeader returns the application title bar.
-func (m Model) renderHeader(line string) string {
+func (m Model) renderHeader() string {
 	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n"
 }
 
 // renderActionSelection renders the primary action choices (Branch, Commit, etc.).
-func (m Model) renderActionSelection(line string) string {
+func (m Model) renderActionSelection() string {
 	var content strings.Builder
 	bullet := m.getBullet(1)
 
@@ -76,33 +76,33 @@ func (m Model) renderActionSelection(line string) string {
 }
 
 // renderSubActions delegates rendering of the second-level action lists.
-func (m Model) renderSubActions(line string) string {
+func (m Model) renderSubActions() string {
 	switch m.ActionModel.SelectedAction {
 	case "Branch":
-		return m.renderBranchActions(line)
+		return m.renderBranchActions()
 	case "Commit":
-		return m.renderCommitActions(line)
+		return m.renderCommitActions()
 	case "Tag":
-		return m.renderTagActions(line)
+		return m.renderTagActions()
 	case "Remote":
-		return m.renderRemoteActions(line)
+		return m.renderRemoteActions()
 	}
 	return ""
 }
 
 // renderSubActions2 delegates rendering of the third-level action lists and confirmations.
-func (m Model) renderSubActions2(line string) string {
+func (m Model) renderSubActions2() string {
 	switch m.ActionModel.SelectedAction {
 	case "Branch":
-		return m.renderBranchSubActions2(line)
+		return m.renderBranchSubActions2()
 	case "Tag":
-		return m.renderTagSubActions2(line)
+		return m.renderTagSubActions2()
 	}
 	return ""
 }
 
 // renderBranchActions now only renders the list of available branch actions.
-func (m Model) renderBranchActions(line string) string {
+func (m Model) renderBranchActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
@@ -121,7 +121,7 @@ func (m Model) renderBranchActions(line string) string {
 }
 
 // renderBranchSubActions2 handles selection of a specific branch.
-func (m Model) renderBranchSubActions2(line string) string {
+func (m Model) renderBranchSubActions2() string {
 	var content strings.Builder
 	bullet := m.getBullet(3)
 
@@ -145,7 +145,7 @@ func (m Model) renderBranchSubActions2(line string) string {
 }
 
 // renderCommitActions renders the list of available commit actions.
-func (m Model) renderCommitActions(line string) string {
+func (m Model) renderCommitActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
@@ -164,7 +164,7 @@ func (m Model) renderCommitActions(line string) string {
 }
 
 // renderTagActions now only renders the list of available tag actions.
-func (m Model) renderTagActions(line string) string {
+func (m Model) renderTagActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
@@ -183,7 +183,7 @@ func (m Model) renderTagActions(line string) string {
 }
 
 // renderTagSubActions2 handles selection of a specific tag.
-func (m Model) renderTagSubActions2(line string) string {
+func (m Model) renderTagSubActions2() string {
 	var content strings.Builder
 	bullet := m.getBullet(3)
 
@@ -207,7 +207,7 @@ func (m Model) renderTagSubActions2(line string) string {
 }
 
 // renderRemoteActions renders the list of available remote actions.
-func (m Model) renderRemoteActions(line string) string {
+func (m Model) renderRemoteActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
