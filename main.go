@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	version string
-	commit  string
-	date    string
-	builtBy string
+	version = "dev (or version injection still broken)"
+	commit  = "none"
+	date    = "unknown"
+	builtBy = "unknown"
 )
 
 func initialModel() ui.Model {
