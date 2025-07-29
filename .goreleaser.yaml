@@ -1,4 +1,5 @@
 project_name: gith
+version: 2
 
 # Build configuration
 builds:
@@ -15,7 +16,9 @@ builds:
       - arm64
 
     ldflags:
-      - -s -w -X main.Version={{ .Version }}
+      - -s
+      - -w
+      - -X main.version={{ .Version }}
 
 # Archive configuration (zip/tar.gz files)
 archives:
