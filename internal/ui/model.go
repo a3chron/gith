@@ -212,6 +212,21 @@ func (m *Model) handleBranchOperation() (*Model, tea.Cmd) {
 		m.Selected = 0
 		m.CurrentStep = StepBranchSelect
 		m.Level = 3
+
+	case "List Branches":
+		branches, err := git.GetBranches()
+		if err != nil {
+			m.Err = fmt.Sprintf("Failed to fetch branches: %v", err)
+			return m, nil
+		}
+		if len(branches) == 0 {
+			m.Success = "No branches available"
+			return m, tea.Quit
+		}
+
+		m.outputByLevel(strings.Join(branches, "\n"))
+		m.Success = "Listed branches"
+		return m, tea.Quit
 	}
 	return m, nil
 }

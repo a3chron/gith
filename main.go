@@ -30,7 +30,7 @@ func initialModel() ui.Model {
 			Actions: []string{"Branch", "Status", "Commit", "Tag", "Remote", "Changes", "Options"},
 		},
 		BranchModel: ui.BranchModel{
-			Actions: []string{"Switch Branch", "Create Branch", "Delete Branch"},
+			Actions: []string{"Switch Branch", "Create Branch", "List Branches", "Delete Branch"},
 		},
 		CommitModel: ui.CommitModel{
 			Actions: []string{"Undo Last Commit"},

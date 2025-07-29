@@ -89,7 +89,7 @@ func (m Model) renderBranchActions(line string) string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select branch action") + "\n")
+	content.WriteString(bullet + " " + TextStyle.Render("Select branch action") + "\n")
 
 	if m.BranchModel.SelectedAction == "" && len(m.BranchModel.Actions) > 0 {
 		if m.Err == "" {
