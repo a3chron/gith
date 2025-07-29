@@ -7,8 +7,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/kurtschambach/gith/internal"
-	ui "github.com/kurtschambach/gith/internal/ui"
+	"github.com/a3chron/gith/internal"
+	ui "github.com/a3chron/gith/internal/ui"
 )
 
 var (

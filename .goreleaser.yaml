@@ -32,7 +32,7 @@ nfpms:
     package_name: gith
     ids:
       - gith
-    vendor: kurtschambach
+    vendor: a3chron
     homepage: "https://a3chron.vercel.app/"
     maintainer: "Kurt Schambach <kurt.schambach@gmail.com>"
     description: "TUI git helper"
@@ -49,7 +49,7 @@ checksum:
 # GitHub release configuration
 release:
   github:
-    owner: kurtschambach
+    owner: a3chron
     name: gith
 
   # Release notes
@@ -57,7 +57,7 @@ release:
     # Welcome to this new release of gith! 🎉
 
   footer: |
-    **Full Changelog**: https://github.com/kurtschambach/gith/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://github.com/a3chron/gith/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 changelog:
   sort: asc

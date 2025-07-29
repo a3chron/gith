@@ -35,7 +35,7 @@ func PrintVersion(checkForUpdate bool, version string, commit string, date strin
 
 func checkAndPrintUpdate(currentVersion string) error {
 	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Get("https://api.github.com/repos/kurtschambach/gith/releases/latest")
+	resp, err := client.Get("https://api.github.com/repos/a3chron/gith/releases/latest")
 	if err != nil {
 		return fmt.Errorf("failed to fetch latest release: %w", err)
 	}
@@ -58,7 +58,7 @@ func checkAndPrintUpdate(currentVersion string) error {
 
 	if trimmedLatest != currentVersion {
 		fmt.Printf("---\nNew version available: %s (current: %s)\n", trimmedLatest, currentVersion)
-		fmt.Println("To install the latest version run:\ngo install github.com/kurtschambach/gith@latest")
+		fmt.Println("To install the latest version run:\ngo install github.com/a3chron/gith@latest")
 	} else {
 		fmt.Println("You are using the latest version.")
 	}

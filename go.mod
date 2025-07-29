@@ -1,4 +1,4 @@
-module github.com/kurtschambach/gith
+module github.com/a3chron/gith
 
 go 1.24.5
 

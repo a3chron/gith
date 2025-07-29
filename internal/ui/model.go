@@ -8,8 +8,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/kurtschambach/gith/internal"
-	"github.com/kurtschambach/gith/internal/git"
+	"github.com/a3chron/gith/internal"
+	"github.com/a3chron/gith/internal/git"
 )
 
 type Step int
