@@ -127,10 +127,11 @@ func (m Model) renderBranchSubActions2(line string) string {
 
 	switch m.BranchModel.SelectedAction {
 	case "Switch Branch", "Delete Branch":
+		action := strings.ToLower(strings.Split(m.BranchModel.SelectedAction, " ")[0])
+		content.WriteString(bullet + " " + TextStyle.Render("Branch to "+action) + "\n")
+
 		// If no branch is selected yet, show the list of branches to choose from.
 		if m.BranchModel.SelectedBranch == "" {
-			action := strings.ToLower(strings.Split(m.BranchModel.SelectedAction, " ")[0])
-			content.WriteString(bullet + " " + TextStyle.Render("Branch to "+action) + "\n")
 			if len(m.BranchModel.Branches) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.BranchModel.Branches, m.CurrentStep == StepBranchSelect))
 				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
@@ -188,10 +189,11 @@ func (m Model) renderTagSubActions2(line string) string {
 
 	switch m.TagModel.SelectedAction {
 	case "Remove Tag", "Push Tag":
+		actionText := strings.ToLower(m.TagModel.SelectedAction)
+		content.WriteString(bullet + " " + TextStyle.Render(actionText) + "\n")
+
 		// If no tag is selected yet, show the list of tags to choose from.
 		if m.TagModel.Selected == "" {
-			actionText := strings.ToLower(m.TagModel.SelectedAction)
-			content.WriteString(bullet + " " + TextStyle.Render(actionText) + "\n")
 			if len(m.TagModel.Options) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.TagModel.Options, m.CurrentStep == StepTagSelect))
 				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
