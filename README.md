@@ -54,6 +54,12 @@ Then run with:
 ./gith
 ```
 
+## Customization
+
+I will add a config file & customization options soon.  
+If you can't wait for the other catppuccin accents / flavors,
+you can clone the repo, change everything you need in `/internal/ui/styles.go`.
+
 ---
 
 built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heavily based on [opencode](https://github.com/opencode-ai/opencode)
