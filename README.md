@@ -152,10 +152,6 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] prettier version (& help) output
 
-- [ ] list branches
-
-- [ ] fix double spaces between some things & others not
-
 - [ ] remove tag only show n latest tags & last option "Show older tags" which shows n older tags
 
 <br />
