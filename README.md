@@ -74,29 +74,19 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
  Aborting
 ```
 
-- [ ] Make a errOut (Output) and errMsg (Switch failed) or errOut in out and err in err?
-
-- [ ] add config file (accent)
-
-- [x] add help command
-
-- [x] add explicit no git repo error
-
-- [x] add undo last commit: git reset --soft HEAD~1
+- [ ] add config file (accent & flavor)
 
 - [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc
 
-- [x] for gith --version check for new versions
+- [ ] get latest tag in utils version, in add tag show current latest tag
 
-- [ ] investigate version injection not working
-
-- [ ] get latest tag in utils von version, in add tag show current latest tag
-
-- [ ] in utils wirteErrOut & writeOut with currentStep to swotch over steps where to add out in out arrays
+- [ ] simplify level logic to lewer risk of wrong level outputs -> with this add level var to show current active branch with accent color
 
 - [ ] add loading states when fetching sth
 
-- [ ] improve error handling (e.g. if branches no branches / no tags when listing add info No tags found / for switch / delete branch check if no branches found first)
+- [ ] prettier version (& help) output
+
+- [ ] list branches
 
 <br />
 
