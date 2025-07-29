@@ -100,6 +100,7 @@ type Model struct {
 	TagModel    TagModel
 	ConfigModel ConfigModel
 	Spinner     spinner.Model
+	Level       int
 	Output      []string
 	Err         string
 	Success     string
@@ -177,16 +178,17 @@ func (m *Model) resetState() {
 	m.TagModel.Selected = ""
 	m.RemoteModel.SelectedAction = ""
 	m.Selected = 0
+	m.Level = 1
 	m.Err = ""
 	m.Output = []string{} // TODO add m.Output[0] if exisiting
 	m.Success = ""
 }
 
-func (m *Model) outputByLevel(out string, level int) {
-	for len(m.Output) <= level {
+func (m *Model) outputByLevel(out string) {
+	for len(m.Output) <= m.Level {
 		m.Output = append(m.Output, "")
 	}
-	m.Output[level] += out
+	m.Output[m.Level] += out
 }
 
 func (m *Model) handleBranchOperation() (*Model, tea.Cmd) {
@@ -209,6 +211,7 @@ func (m *Model) handleBranchOperation() (*Model, tea.Cmd) {
 		m.BranchModel.Branches = branches
 		m.Selected = 0
 		m.CurrentStep = StepBranchSelect
+		m.Level = 3
 	}
 	return m, nil
 }
@@ -250,7 +253,7 @@ func (m *Model) deleteBranch() (*Model, tea.Cmd) {
 	cmd := exec.Command("git", "branch", "-d", m.BranchModel.SelectedBranch)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		m.outputByLevel(string(output)+"\n", 3)
+		m.outputByLevel(string(output) + "\n")
 		// If that fails, try force delete
 		cmd = exec.Command("git", "branch", "-D", m.BranchModel.SelectedBranch)
 		output, err = cmd.CombinedOutput()
@@ -260,7 +263,7 @@ func (m *Model) deleteBranch() (*Model, tea.Cmd) {
 			m.Success = fmt.Sprintf("Force deleted branch '%s'", m.BranchModel.SelectedBranch)
 		}
 	} else {
-		m.outputByLevel(string(output)+"\n", 3)
+		m.outputByLevel(string(output) + "\n")
 		m.Success = fmt.Sprintf("Deleted branch '%s'", m.BranchModel.SelectedBranch)
 	}
 	return m, tea.Quit
@@ -270,7 +273,7 @@ func (m *Model) handleTagOperation() (*Model, tea.Cmd) {
 	switch m.TagModel.SelectedAction {
 	case "List Tags":
 		out, err := git.GetNLatestTags(10)
-		m.outputByLevel("10 latest tags:\n---\n"+out, 3)
+		m.outputByLevel("10 latest tags:\n---\n" + out)
 		if err != nil {
 			m.Err = fmt.Sprintf("%v", err)
 		} else {
@@ -299,13 +302,13 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 	}
 
 	if err != nil {
-		m.outputByLevel("\nError:\n"+fmt.Sprintf("%v", err), 2)
+		m.outputByLevel("\nError:\n" + fmt.Sprintf("%v", err))
 		m.Err = "Failed to get tags"
 		return m, tea.Quit
 	}
 
 	if strings.TrimSpace(out) == "" {
-		m.outputByLevel("You can add tags with Tags -> Add Tag or `git tag <tag_name>`", 2)
+		m.outputByLevel("You can add tags with Tags -> Add Tag or `git tag <tag_name>`")
 		m.Err = "No tags found"
 		return m, tea.Quit
 	}
@@ -313,6 +316,7 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 	m.Selected = 0
 	m.TagModel.Options = strings.Split(strings.TrimSpace(out), "\n")
 	m.CurrentStep = StepTagSelect
+	m.Level = 3
 	return m, nil
 }
 
@@ -320,6 +324,7 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 	switch m.TagModel.SelectedAction {
 	case "Remove Tag":
 		out, err := exec.Command("git", "tag", "-d", m.TagModel.Selected).CombinedOutput()
+		m.outputByLevel(string(out))
 		if err != nil {
 			m.Err = fmt.Sprintf("Failed to remove: %s", string(out))
 		} else {
@@ -340,7 +345,7 @@ func (m *Model) handleRemoteOperation() (*Model, tea.Cmd) {
 	switch m.RemoteModel.SelectedAction {
 	case "List Remotes":
 		out, err := git.ListRemotes()
-		m.outputByLevel(out, 2)
+		m.outputByLevel(out)
 		if err != nil {
 			m.Err = fmt.Sprintf("%v", err)
 		} else {
@@ -360,12 +365,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case repoUpdatedMsg:
 		m.Loading = false
 		m.CurrentStep = StepAction
+		m.Level = 1
 		return m, nil
 
 	case repoUpdateErrorMsg:
 		m.Loading = false
 		m.CurrentStep = StepAction
-		m.outputByLevel("Failed to fetch from remote", 0)
+		m.outputByLevel("Failed to fetch from remote")
+		m.Level = 1
 		return m, nil
 
 	case spinner.TickMsg:
@@ -421,6 +428,7 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 	case "Branch":
 		m.Selected = 0
 		m.CurrentStep = StepBranchAction
+		m.Level = 2
 	case "Status":
 		status, length, err := git.GetStatusInfo()
 		if err != nil {
@@ -430,16 +438,16 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 				m.Success = "Working tree clean"
 			} else {
 				if len(status["modified"]) > 0 {
-					m.outputByLevel("\\cyModified:\n "+strings.Join(status["modified"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\cyModified:\n " + strings.Join(status["modified"], "\n ") + "\n╌\n")
 				}
 				if len(status["added"]) > 0 {
-					m.outputByLevel("\\cgAdded:\n "+strings.Join(status["added"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\cgAdded:\n " + strings.Join(status["added"], "\n ") + "\n╌\n")
 				}
 				if len(status["deleted"]) > 0 {
-					m.outputByLevel("\\crDeleted:\n "+strings.Join(status["deleted"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\crDeleted:\n " + strings.Join(status["deleted"], "\n ") + "\n╌\n")
 				}
 				if len(status["untracked"]) > 0 {
-					m.outputByLevel("\\ctUntracked:\n "+strings.Join(status["untracked"], "\n ")+"\n╌\n", 1)
+					m.outputByLevel("\\ctUntracked:\n " + strings.Join(status["untracked"], "\n ") + "\n╌\n")
 				}
 				m.Success = fmt.Sprintf("Changes detected: %d files", length)
 			}
@@ -448,18 +456,23 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 	case "Commit":
 		m.Selected = 0
 		m.CurrentStep = StepCommit
+		m.Level = 2
 	case "Tag":
 		m.Selected = 0
 		m.CurrentStep = StepTag
+		m.Level = 2
 	case "Remote":
 		m.Selected = 0
 		m.CurrentStep = StepRemote
+		m.Level = 2
 	case "Changes":
 		m.CurrentStep = StepChanges
+		m.Level = 2
 		m.Err = "Changes will come here soon"
 		return m, tea.Quit
 	case "Options":
 		m.CurrentStep = StepOptions
+		m.Level = 2
 		m.Err = "Options will come here soon"
 		return m, tea.Quit
 	}
@@ -482,7 +495,7 @@ func (m Model) handleCommitSelection() (tea.Model, tea.Cmd) {
 	switch m.CommitModel.SelectedAction {
 	case "Undo Last Commit":
 		out, err := git.UndoLastCommit()
-		m.outputByLevel(out, 2)
+		m.outputByLevel(out)
 		if err != nil {
 			m.Err = fmt.Sprintf("%v", err)
 		} else {

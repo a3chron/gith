@@ -46,6 +46,7 @@ func initialModel() ui.Model {
 			Flavors: []string{"Latte", "Frappe", "Macchiato", "Mocha"},
 		},
 		Selected: 0,
+		Level:    0,
 		Spinner:  s,
 	}
 }

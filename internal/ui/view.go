@@ -50,7 +50,7 @@ func (m Model) renderHeader(line string) string {
 
 func (m Model) renderActionSelection(line string) string {
 	var content strings.Builder
-	bullet := m.getBullet()
+	bullet := m.getBullet(1)
 
 	content.WriteString(bullet + " " + TextStyle.Render("Select action") + "\n")
 
@@ -85,7 +85,7 @@ func (m Model) renderSubActions(line string) string {
 
 func (m Model) renderBranchActions(line string) string {
 	var content strings.Builder
-	bullet := m.getBullet()
+	bullet := m.getBullet(2)
 
 	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select branch action") + "\n")
 
@@ -98,7 +98,8 @@ func (m Model) renderBranchActions(line string) string {
 
 		if (m.BranchModel.SelectedAction == "Switch Branch" || m.BranchModel.SelectedAction == "Delete Branch") && len(m.BranchModel.Branches) > 0 {
 			action := strings.ToLower(strings.Split(m.BranchModel.SelectedAction, " ")[0])
-			content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Branch to "+action) + "\n")
+			bullet3 := m.getBullet(3)
+			content.WriteString(line + "\n" + bullet3 + " " + TextStyle.Render("Branch to "+action) + "\n")
 
 			if m.BranchModel.SelectedBranch == "" {
 				if m.Err == "" {
@@ -117,7 +118,7 @@ func (m Model) renderBranchActions(line string) string {
 
 func (m Model) renderCommitActions(line string) string {
 	var content strings.Builder
-	bullet := m.getBullet()
+	bullet := m.getBullet(2)
 
 	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select commit action") + "\n")
 
@@ -136,7 +137,7 @@ func (m Model) renderCommitActions(line string) string {
 
 func (m Model) renderTagActions(line string) string {
 	var content strings.Builder
-	bullet := m.getBullet()
+	bullet := m.getBullet(2)
 
 	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select tag action") + "\n")
 
@@ -149,7 +150,8 @@ func (m Model) renderTagActions(line string) string {
 
 		if (m.TagModel.SelectedAction == "Remove Tag" || m.TagModel.SelectedAction == "Push Tag") && len(m.TagModel.Options) > 0 {
 			actionText := strings.ToLower(m.TagModel.SelectedAction)
-			content.WriteString(line + "\n" + bullet + " " + TextStyle.Render(actionText) + "\n")
+			bullet3 := m.getBullet(3)
+			content.WriteString(line + "\n" + bullet3 + " " + TextStyle.Render(actionText) + "\n")
 
 			if m.TagModel.Selected == "" {
 				if m.Err == "" {
@@ -168,7 +170,7 @@ func (m Model) renderTagActions(line string) string {
 
 func (m Model) renderRemoteActions(line string) string {
 	var content strings.Builder
-	bullet := m.getBullet()
+	bullet := m.getBullet(2)
 
 	content.WriteString(line + "\n" + bullet + " " + TextStyle.Render("Select remote action") + "\n")
 
@@ -207,9 +209,9 @@ func (m Model) renderOptions(options []string, line string, isCurrentStep bool) 
 func (m Model) renderOutput(line string, level int) string {
 	if len(m.Output) > level {
 		var content strings.Builder
-		outputLines := strings.Split(m.Output[level], "\n")
+		outputLines := strings.SplitSeq(m.Output[level], "\n")
 
-		for _, outputLine := range outputLines {
+		for outputLine := range outputLines {
 			trimmed := strings.TrimLeft(outputLine, " ")
 			if trimmed != "" {
 				if trimmed, found := strings.CutPrefix(trimmed, "\\c"); found {
@@ -256,8 +258,8 @@ func (m Model) renderNavigationHints() string {
 	return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 }
 
-func (m Model) getBullet() string {
-	if m.Err != "" {
+func (m Model) getBullet(forLevel int) string {
+	if m.Err != "" && forLevel == m.Level {
 		return ErrorStyle.Render("■")
 	}
 	return BulletStyle.Render("◆")
