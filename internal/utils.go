@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -19,12 +20,15 @@ func UpdateRepo() error {
 	return nil
 }
 
-func PrintVersion(checkForUpdate bool, version string) {
-	fmt.Printf("gith version: %s\n", version)
+func PrintVersion(checkForUpdate bool, version string, commit string, date string, builtBy string) {
+	fmt.Printf("gith version: %s\n---\n", version)
+	fmt.Printf("commit: %s\n", commit)
+	fmt.Printf("date: %s\n", date)
+	fmt.Printf("built with %s\n", builtBy)
 
 	if checkForUpdate {
 		if err := checkAndPrintUpdate(version); err != nil {
-			fmt.Printf("Error checking for updates: %v\n", err)
+			fmt.Printf("\n---\nError checking for updates: %v\n", err)
 		}
 	}
 }
@@ -50,8 +54,10 @@ func checkAndPrintUpdate(currentVersion string) error {
 		return fmt.Errorf("failed to decode JSON: %w", err)
 	}
 
-	if latestRelease.TagName != currentVersion {
-		fmt.Printf("New version available: %s (current: %s)\n", latestRelease.TagName, currentVersion)
+	trimmedLatest := strings.TrimPrefix(latestRelease.TagName, "v")
+
+	if trimmedLatest != currentVersion {
+		fmt.Printf("---\nNew version available: %s (current: %s)\n", trimmedLatest, currentVersion)
 		fmt.Println("To install the latest version run:\ngo install github.com/kurtschambach/gith@latest")
 	} else {
 		fmt.Println("You are using the latest version.")
