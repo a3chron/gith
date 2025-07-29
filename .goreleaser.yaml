@@ -15,11 +15,6 @@ builds:
       - amd64
       - arm64
 
-    ldflags:
-      - -s
-      - -w
-      - -X main.version={{ .Version }}
-
 # Archive configuration (zip/tar.gz files)
 archives:
   - id: gith
