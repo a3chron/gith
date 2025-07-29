@@ -40,6 +40,68 @@ Install directly using Go
 go install github.com/a3chron/gith@latest
 ```
 
+## What is and what will work
+
+- [x] Branch
+
+  - [x] Switch Branch (supports checking out remote branches locally)
+
+  - [x] List Branches
+
+  - [x] Delete Branch (with fallback to force delete)
+
+  - [ ] Create Branch
+
+- [x] Status
+
+  - [x] View working tree status (Modified, Added, Deleted, Untracked files)
+
+- [x] Commit
+
+  - [x] Undo Last Commit
+
+  - [ ] Commit staged changes
+
+  - [ ] Commit all changes
+
+  - [ ] Amend last commit
+
+- [x] Tag
+
+  - [x] List Tags (shows 10 latest)
+
+  - [x] Remove Tag (from a list of all local tags)
+
+  - [x] Push Tag (prompts to confirm pusing the latest tag)
+
+  - [ ] Add Tag
+
+- [x] Remote
+
+  - [x] List Remotes
+
+  - [ ] Add Remote
+
+  - [ ] Remove Remote
+
+  - [ ] Update Remote url
+
+  - [ ] Push to remote
+
+  - [ ] Pull from remote
+
+- [ ] Changes
+
+  - [ ] View diff of changes
+
+  - [ ] Stage/unstage individual files
+
+- [ ] Options
+
+  - [ ] Change UI flavor
+
+  - [ ] Change UI accent color
+
 ## Local Development
 
 Build using:
