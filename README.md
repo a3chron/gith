@@ -80,13 +80,15 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] get latest tag in utils version, in add tag show current latest tag
 
-- [ ] simplify level logic to lewer risk of wrong level outputs -> with this add level var to show current active branch with accent color
-
 - [ ] add loading states when fetching sth
 
 - [ ] prettier version (& help) output
 
 - [ ] list branches
+
+- [ ] fix double spaces between some things & others not
+
+- [ ] remove tag only show n latest tags & last option "Show older tags" which shows n older tags
 
 <br />
 
