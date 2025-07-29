@@ -21,6 +21,7 @@ A command-line git helper with catppuccin theme written in Go
 
 ![](/assets/preview-actions.png)
 ![](/assets/preview-tags.png)
+![](/assets/preview-status.png)
 
 </details>
 

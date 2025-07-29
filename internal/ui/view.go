@@ -25,7 +25,7 @@ func (m Model) renderMainView() string {
 	var content strings.Builder
 	line := LineStyle.Render("│")
 
-	content.WriteString(m.renderHeader())
+	content.WriteString(m.renderHeader(line))
 	content.WriteString(m.renderOutput(line, 0))
 
 	content.WriteString(m.renderActionSelection(line))
@@ -44,8 +44,8 @@ func (m Model) renderMainView() string {
 	return ContainerStyle.Render(content.String())
 }
 
-func (m Model) renderHeader() string {
-	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n"
+func (m Model) renderHeader(line string) string {
+	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n" + line + "\n"
 }
 
 func (m Model) renderActionSelection(line string) string {
@@ -209,11 +209,29 @@ func (m Model) renderOutput(line string, level int) string {
 		var content strings.Builder
 		outputLines := strings.Split(m.Output[level], "\n")
 
-		content.WriteString(line + "\n")
 		for _, outputLine := range outputLines {
-			trimmed := strings.TrimSpace(outputLine)
+			trimmed := strings.TrimLeft(outputLine, " ")
 			if trimmed != "" {
-				content.WriteString(line + " " + DimStyle.Render(outputLine) + "\n")
+				if trimmed, found := strings.CutPrefix(trimmed, "\\c"); found {
+					color := trimmed[:1]
+					trimmed = trimmed[1:]
+
+					switch color {
+					case "g":
+						content.WriteString(line + " " + GreenStyle.Render(trimmed) + "\n")
+					case "y":
+						content.WriteString(line + " " + YellowStyle.Render(trimmed) + "\n")
+					case "r":
+						content.WriteString(line + " " + RedStyle.Render(trimmed) + "\n")
+					case "t":
+						content.WriteString(line + " " + TextStyle.Render(trimmed) + "\n")
+					case "a":
+						content.WriteString(line + " " + AccentStyle.Render(trimmed) + "\n")
+						//TODO: maybe add more & make this a little bit simpler?
+					}
+				} else {
+					content.WriteString(line + " " + DimStyle.Render(outputLine) + "\n")
+				}
 			}
 		}
 
