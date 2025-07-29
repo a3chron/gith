@@ -24,10 +24,10 @@ builds:
 archives:
   - id: gith
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    format: tar.gz
+    formats: tar.gz
     format_overrides:
       - goos: windows
-        format: zip
+        formats: zip
     files:
       - README.md
       - LICENSE
@@ -35,7 +35,7 @@ archives:
 nfpms:
   - id: gith
     package_name: gith
-    builds:
+    ids:
       - gith
     vendor: kurtschambach
     homepage: "https://a3chron.vercel.app/"
