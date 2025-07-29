@@ -305,7 +305,7 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 	var err error
 
 	if m.TagModel.SelectedAction == "Remove Tag" {
-		out, err = git.GetAllTags()
+		out, err = git.GetNLatestTags(10)
 	} else {
 		out, err = git.GetNLatestTags(1)
 	}
@@ -324,6 +324,31 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 
 	m.Selected = 0
 	m.TagModel.Options = strings.Split(strings.TrimSpace(out), "\n")
+	m.TagModel.Options = append(m.TagModel.Options, "Load all tags")
+	m.TagModel.Selected = ""
+	m.CurrentStep = StepTagSelect
+	m.Level = 3
+	return m, nil
+}
+
+func (m *Model) loadAllTags() (*Model, tea.Cmd) {
+	out, err := git.GetAllTags()
+
+	if err != nil {
+		m.outputByLevel("\nError:\n" + fmt.Sprintf("%v", err))
+		m.Err = "Failed to get tags"
+		return m, tea.Quit
+	}
+
+	if strings.TrimSpace(out) == "" {
+		m.outputByLevel("You can add tags with Tags -> Add Tag or `git tag <tag_name>`")
+		m.Err = "No tags found"
+		return m, tea.Quit
+	}
+
+	m.Selected = 0
+	m.TagModel.Options = append([]string{"Only load 10 latest tags"}, strings.Split(strings.TrimSpace(out), "\n")...)
+	m.TagModel.Selected = ""
 	m.CurrentStep = StepTagSelect
 	m.Level = 3
 	return m, nil
@@ -332,12 +357,21 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 	switch m.TagModel.SelectedAction {
 	case "Remove Tag":
-		out, err := exec.Command("git", "tag", "-d", m.TagModel.Selected).CombinedOutput()
-		m.outputByLevel(string(out))
-		if err != nil {
-			m.Err = fmt.Sprintf("Failed to remove: %s", string(out))
-		} else {
-			m.Success = fmt.Sprintf("Removed Tag '%s'", m.TagModel.Selected)
+		switch m.TagModel.Selected {
+		case "Load all tags":
+			m.loadAllTags()
+			return m, nil
+		case "Only load 10 latest tags":
+			m.prepareTagSelection()
+			return m, nil
+		default:
+			out, err := exec.Command("git", "tag", "-d", m.TagModel.Selected).CombinedOutput()
+			m.outputByLevel(string(out))
+			if err != nil {
+				m.Err = fmt.Sprintf("Failed to remove: %s", string(out))
+			} else {
+				m.Success = fmt.Sprintf("Removed Tag '%s'", m.TagModel.Selected)
+			}
 		}
 	case "Push Tag":
 		out, err := exec.Command("git", "push", "origin", m.TagModel.Selected).CombinedOutput()

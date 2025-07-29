@@ -127,8 +127,7 @@ func (m Model) renderBranchSubActions2() string {
 
 	switch m.BranchModel.SelectedAction {
 	case "Switch Branch", "Delete Branch":
-		action := strings.ToLower(strings.Split(m.BranchModel.SelectedAction, " ")[0])
-		content.WriteString(bullet + " " + TextStyle.Render("Branch to "+action) + "\n")
+		content.WriteString(bullet + " " + TextStyle.Render(m.BranchModel.SelectedAction) + "\n")
 
 		// If no branch is selected yet, show the list of branches to choose from.
 		if m.BranchModel.SelectedBranch == "" {
@@ -189,8 +188,7 @@ func (m Model) renderTagSubActions2() string {
 
 	switch m.TagModel.SelectedAction {
 	case "Remove Tag", "Push Tag":
-		actionText := strings.ToLower(m.TagModel.SelectedAction)
-		content.WriteString(bullet + " " + TextStyle.Render(actionText) + "\n")
+		content.WriteString(bullet + " " + TextStyle.Render(m.TagModel.SelectedAction) + "\n")
 
 		// If no tag is selected yet, show the list of tags to choose from.
 		if m.TagModel.Selected == "" {

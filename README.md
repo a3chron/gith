@@ -144,7 +144,7 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] add config file (accent & flavor)
 
-- [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc -> move to seperate project gith-init
+- [x] add init repo (&add remote?) with presets for some frameworks, gitignores etc -> move to seperate project gith-init
 
 - [ ] get latest tag in utils version, in add tag show current latest tag
 
@@ -152,7 +152,7 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] prettier version (& help) output
 
-- [ ] remove tag only show n latest tags & last option "Show older tags" which shows n older tags
+- [ ] improve remove tag only show n latest tags wiht "pagination" instead of optional show all
 
 <br />
 
