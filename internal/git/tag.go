@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// TODO: not yet used anywhere
 func GetAllTagsWithCommit() (string, error) {
 	out, err := exec.Command("git", "tag", "-n", "-l", "--sort=-v:refname").Output()
 	if err != nil {
