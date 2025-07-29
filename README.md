@@ -9,7 +9,7 @@
 	<a href="https://github.com/a3chron/gith/actions/workflows/lint.yaml"><img src="https://img.shields.io/github/check-runs/a3chron/gith/main?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
 </p>
 
-A command-line git helper with catppuccin theme written in Go
+A TUI git helper with catppuccin theme written in Go
 
 > [!WARNING]
 > Still in development
@@ -22,6 +22,11 @@ A command-line git helper with catppuccin theme written in Go
 ![](/assets/preview-actions.png)
 ![](/assets/preview-tags.png)
 ![](/assets/preview-status.png)
+
+![](/assets/flavors/latte.png)
+![](/assets/flavors/frappe.png)
+![](/assets/flavors/macchiato.png)
+![](/assets/flavors/mocha.png)
 
 </details>
 
