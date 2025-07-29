@@ -144,7 +144,7 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] add config file (accent & flavor)
 
-- [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc
+- [ ] add init repo (&add remote?) with presets for some frameworks, gitignores etc -> move to seperate project gith-init
 
 - [ ] get latest tag in utils version, in add tag show current latest tag
 
