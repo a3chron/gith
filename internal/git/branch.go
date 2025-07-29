@@ -9,7 +9,7 @@ import (
 func GetBranches() ([]string, error) {
 	out, err := exec.Command("git", "branch", "-a").Output()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get branches: %w", err)
+		return []string{"Failed to get branches"}, fmt.Errorf("%w", err)
 	}
 
 	lines := strings.Split(string(out), "\n")
@@ -24,7 +24,7 @@ func GetBranches() ([]string, error) {
 
 		currentBranch, err := GetCurrentBranch()
 		if err != nil {
-			return []string{}, fmt.Errorf("failed to get current branch: %w", err)
+			return []string{currentBranch}, fmt.Errorf("%w", err)
 		}
 
 		// Skip current branch
@@ -58,7 +58,7 @@ func GetBranches() ([]string, error) {
 func GetCurrentBranch() (string, error) {
 	out, err := exec.Command("git", "branch", "--show-current").Output()
 	if err != nil {
-		return "", fmt.Errorf("failed to get current branch: %w", err)
+		return "Failed to get current branch", fmt.Errorf("%w", err)
 	}
 	return strings.TrimSpace(string(out)), nil
 }
