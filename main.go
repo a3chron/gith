@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	Version = "dev (or version injection still broken)"
+	version = "dev (or version injection still broken)"
 )
 
 func initialModel() ui.Model {
@@ -76,7 +76,7 @@ func handleCliArgs() error {
 	switch os.Args[1] {
 	case "version", "-v", "--version":
 		checkForUpdate := len(os.Args) == 3 && os.Args[2] == "check"
-		internal.PrintVersion(checkForUpdate, Version)
+		internal.PrintVersion(checkForUpdate, version)
 		return nil
 
 	case "help", "-h", "--help":
