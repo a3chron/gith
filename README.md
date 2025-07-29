@@ -6,7 +6,7 @@
 <p align="center">
 	<a href="https://github.com/kurtschambach/gith/releases/latest"><img src="https://img.shields.io/github/v/release/kurtschambach/gith?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
 	<a href="https://github.com/kurtschambach/gith/issues"><img src="https://img.shields.io/github/issues/kurtschambach/gith?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
-	<img src="https://img.shields.io/github/check-runs/kurtschambach/gith/main?colorA=363a4f&colorB=a6da95&style=for-the-badge">
+	<a href="https://github.com/kurtschambach/gith/actions/workflows/lint.yaml"><img src="https://img.shields.io/github/check-runs/kurtschambach/gith/main?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
 </p>
 
 A command-line git helper with catppuccin theme written in Go
@@ -24,6 +24,9 @@ A command-line git helper with catppuccin theme written in Go
 ![](/assets/preview-status.png)
 
 </details>
+
+For the terminal customization / starship config, check out my [ubuntu customization blog article](https://a3chron.vercel.app/blog/ubuntu-setup).  
+This is the full setup, for only starship scroll down to the starship section.
 
 ## Installation
 
