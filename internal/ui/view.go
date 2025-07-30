@@ -15,12 +15,19 @@ func (m Model) View() string {
 
 // renderLoadingView displays a spinner and a loading message.
 func (m Model) renderLoadingView() string {
-	return `
-          ▘▗ ▌
-        ▛▌▌▜▘▛▌
-        ▙▌▌▐▖▌▌
-        ▄▌ - by a3chron
-    ` + "\n\n" + m.Spinner.View() + " Running git fetch"
+	bigLogo := `
+		        ██┐         ██┐
+		        └─┘   ██┐   ██│
+		██████┐ ██┐ ██████┐ ██████┐
+		██┌─██│ ██│ └─██┌─┘ ██┌─██│
+		██│ ██│ ██│   ██│   ██│ ██│
+		██████│ ██│   ████┐ ██│ ██│
+		└───██│ └─┘   └───┘ └─┘ └─┘
+		    ██│
+		██████│
+		└─────┘
+	`
+	return bigLogo + "\n\n" + m.Spinner.View() + " Running git fetch"
 }
 
 // renderMainView constructs the main application view from its components.
