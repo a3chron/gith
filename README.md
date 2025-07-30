@@ -121,27 +121,13 @@ Then run with:
 
 I will add a config file & customization options soon.  
 If you can't wait for the other catppuccin accents / flavors,
-you can clone the repo, change everything you need in `/internal/ui/styles.go`.
+you can clone the repo, and change everything you need in `/internal/ui/styles.go`.
 
 ---
 
 built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heavily based on [opencode](https://github.com/opencode-ai/opencode)
 
 ## TODO
-
-```
-◆ Select action
- │ Switch Branch
- │
- ■ Select branch
- │ feat/base
- │
- ╰─╌ Switch failed: error: Your local changes to the following files would be overwritten by checkout:
- gith
- main.go
- Please commit your changes or stash them before you switch branches.
- Aborting
-```
 
 - [ ] add config file (accent & flavor)
 
