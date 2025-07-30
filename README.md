@@ -126,11 +126,11 @@ gith
 
   - [ ] Stage/unstage individual files
 
-- [ ] Options
+- [x] Options
 
-  - [ ] Change UI flavor
+  - [x] Change UI flavor
 
-  - [ ] Change UI accent color
+  - [x] Change UI accent color
 
 ## Local Development
 
