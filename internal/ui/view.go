@@ -3,6 +3,9 @@ package ui
 import (
 	"fmt"
 	"strings"
+
+	"github.com/a3chron/gith/internal/config"
+	"github.com/charmbracelet/lipgloss"
 )
 
 // View renders the entire UI based on the current model state.
@@ -93,6 +96,8 @@ func (m Model) renderSubActions() string {
 		return m.renderTagActions()
 	case "Remote":
 		return m.renderRemoteActions()
+	case "Options":
+		return m.renderOptionsActions()
 	}
 	return ""
 }
@@ -106,6 +111,8 @@ func (m Model) renderSubActions2() string {
 		return m.renderTagSubActions2()
 	case "Remote":
 		return m.renderRemoteSubActions2()
+	case "Options":
+		return m.renderOptionsSubActions2()
 	}
 	return ""
 }
@@ -249,6 +256,104 @@ func (m Model) renderRemoteActions() string {
 		}
 	} else if m.RemoteModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
+	}
+
+	return content.String()
+}
+
+// renderOptionsActions renders the list of available options actions.
+func (m Model) renderOptionsActions() string {
+	var content strings.Builder
+	bullet := m.getBullet(2)
+
+	content.WriteString(bullet + " " + TextStyle.Render("Select options action") + "\n")
+
+	if m.ConfigModel.SelectedAction == "" && len(m.ConfigModel.Actions) > 0 {
+		if m.Err == "" {
+			content.WriteString(m.renderOptions(m.ConfigModel.Actions, m.CurrentStep == StepOptions))
+			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+		}
+	} else if m.ConfigModel.SelectedAction != "" {
+		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ConfigModel.SelectedAction) + "\n")
+	}
+
+	return content.String()
+}
+
+// renderOptionsSubActions2 handles selection of specific configuration options.
+func (m Model) renderOptionsSubActions2() string {
+	var content strings.Builder
+	bullet := m.getBullet(3)
+
+	// Safety check for CurrentConfig
+	if m.CurrentConfig == nil {
+		return ""
+	}
+
+	switch m.ConfigModel.SelectedAction {
+	case "Change Flavor":
+		content.WriteString(bullet + " " + TextStyle.Render("Select flavor") + "\n")
+
+		if m.ConfigModel.SelectedFlavor == "" {
+			if len(m.ConfigModel.Flavors) > 0 && m.Err == "" {
+				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Current: ") + AccentStyle.Render(m.CurrentConfig.Flavor) + "\n")
+				content.WriteString(m.renderOptionsWithPreview(m.ConfigModel.Flavors, m.CurrentStep == StepOptionsFlavorSelect, "flavor"))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else {
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ConfigModel.SelectedFlavor) + "\n")
+		}
+
+	case "Change Accent":
+		content.WriteString(bullet + " " + TextStyle.Render("Select accent") + "\n")
+
+		if m.ConfigModel.SelectedAccent == "" {
+			if len(m.ConfigModel.Accents) > 0 && m.Err == "" {
+				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Current: ") + AccentStyle.Render(m.CurrentConfig.Accent) + "\n")
+				content.WriteString(m.renderOptionsWithPreview(m.ConfigModel.Accents, m.CurrentStep == StepOptionsAccentSelect, "accent"))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else {
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ConfigModel.SelectedAccent) + "\n")
+		}
+	}
+
+	return content.String()
+}
+
+// Update renderOptionsWithPreview with safety checks:
+func (m Model) renderOptionsWithPreview(options []string, isCurrentStep bool, optionType string) string {
+	var content strings.Builder
+	accLine := AccentStyle.Render("│")
+
+	// Safety check for CurrentConfig
+	if m.CurrentConfig == nil {
+		return content.String()
+	}
+
+	for i, option := range options {
+		var bullet string
+		var preview string
+
+		// Create a preview of what the option would look like
+		switch optionType {
+		case "flavor":
+			flavor := config.GetCatppuccinFlavor(option)
+			accentColor := config.GetAccentColor(flavor, m.CurrentConfig.Accent)
+			preview = lipgloss.NewStyle().Foreground(lipgloss.Color(accentColor.Hex)).Render("●")
+		case "accent":
+			flavor := config.GetCatppuccinFlavor(m.CurrentConfig.Flavor)
+			accentColor := config.GetAccentColor(flavor, option)
+			preview = lipgloss.NewStyle().Foreground(lipgloss.Color(accentColor.Hex)).Render("●")
+		}
+
+		if i == m.Selected && isCurrentStep {
+			bullet = BulletStyle.Render("●")
+			content.WriteString(fmt.Sprintf("%s %s %s %s\n", accLine, bullet, SelectedStyle.Render(option), preview))
+		} else {
+			bullet = DimStyle.Render("○")
+			content.WriteString(fmt.Sprintf("%s %s %s %s\n", accLine, bullet, NormalStyle.Render(option), preview))
+		}
 	}
 
 	return content.String()

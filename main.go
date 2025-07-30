@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/a3chron/gith/internal"
+	"github.com/a3chron/gith/internal/config"
 	ui "github.com/a3chron/gith/internal/ui"
 )
 
@@ -42,8 +43,9 @@ func initialModel() ui.Model {
 			Actions: []string{"List Remotes", "Add Remote", "Remove Remote"},
 		},
 		ConfigModel: ui.ConfigModel{
-			Accents: []string{"Rosewater", "Flamingo", "Pink", "Mauve", "Red", "Maroon", "Peach", "Yellow", "Green", "Teal", "Blue", "Sapphire", "Sky", "Lavender", "Gray"},
-			Flavors: []string{"Latte", "Frappe", "Macchiato", "Mocha"},
+			Actions: []string{"Change Flavor", "Change Accent", "Reset to Defaults"},
+			Flavors: config.GetAvailableFlavors(),
+			Accents: config.GetAvailableAccents(),
 		},
 		Selected: 0,
 		Level:    0,
@@ -62,6 +64,19 @@ func run() error {
 	if len(os.Args) > 1 {
 		return handleCliArgs()
 	}
+
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		// Fall back to defaults if config loading fails
+		fmt.Fprintf(os.Stderr, "Warning: failed to load config, using defaults: %v\n", err)
+		cfg = &config.Config{
+			Accent: config.DefaultConfig.Accent,
+			Flavor: config.DefaultConfig.Flavor,
+		}
+	}
+
+	// Initialize styles with the loaded config
+	ui.UpdateStyles(cfg)
 
 	isRepo, err := internal.IsGitRepository()
 	if err != nil || !isRepo {
@@ -87,7 +102,64 @@ func handleCliArgs() error {
 		internal.PrintHelp()
 		return nil
 
+	case "config":
+		return handleConfigCommand()
+
 	default:
 		return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1])
 	}
+}
+
+func handleConfigCommand() error {
+	if len(os.Args) < 3 {
+		return printConfigUsage()
+	}
+
+	switch os.Args[2] {
+	case "show":
+		return showConfig()
+	case "reset":
+		return resetConfig()
+	case "path":
+		return showConfigPath()
+	default:
+		return printConfigUsage()
+	}
+}
+
+func printConfigUsage() error {
+	fmt.Println("Config commands:")
+	fmt.Println("  gith config show   - Show current configuration")
+	fmt.Println("  gith config reset  - Reset configuration to defaults")
+	fmt.Println("  gith config path   - Show configuration file path")
+	return nil
+}
+
+func showConfig() error {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+
+	fmt.Printf("Current configuration:\n")
+	fmt.Printf("  Flavor: %s\n", cfg.Flavor)
+	fmt.Printf("  Accent: %s\n", cfg.Accent)
+	return nil
+}
+
+func resetConfig() error {
+	if err := config.SaveConfig(&config.DefaultConfig); err != nil {
+		return fmt.Errorf("failed to reset config: %w", err)
+	}
+	fmt.Println("Configuration reset to defaults")
+	return nil
+}
+
+func showConfigPath() error {
+	path, err := config.GetConfigPath()
+	if err != nil {
+		return fmt.Errorf("failed to get config path: %w", err)
+	}
+	fmt.Println(path)
+	return nil
 }

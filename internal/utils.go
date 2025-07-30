@@ -344,6 +344,7 @@ Usage:
   gith                 Start interactive mode
   gith version         Show version information  
   gith version check   Show version & check for updates
+  gith config help     Show config related help message
   gith help            Show this help message
 
 Interactive Commands:

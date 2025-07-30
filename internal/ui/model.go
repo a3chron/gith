@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/a3chron/gith/internal"
+	"github.com/a3chron/gith/internal/config"
 	"github.com/a3chron/gith/internal/git"
 )
 
@@ -26,16 +27,14 @@ const (
 	StepRemoteSelect
 	StepChanges
 	StepOptions
+	StepOptionsFlavorSelect
+	StepOptionsAccentSelect
 )
 
 type ActionModel struct {
 	Actions        []string
 	SelectedAction string
 }
-
-func (a *ActionModel) GetActions() []string       { return a.Actions }
-func (a *ActionModel) GetSelectedAction() string  { return a.SelectedAction }
-func (a *ActionModel) SetSelectedAction(s string) { a.SelectedAction = s }
 
 type BranchModel struct {
 	Actions        []string
@@ -44,18 +43,10 @@ type BranchModel struct {
 	SelectedBranch string
 }
 
-func (b *BranchModel) GetActions() []string       { return b.Actions }
-func (b *BranchModel) GetSelectedAction() string  { return b.SelectedAction }
-func (b *BranchModel) SetSelectedAction(s string) { b.SelectedAction = s }
-
 type CommitModel struct {
 	Actions        []string
 	SelectedAction string
 }
-
-func (c *CommitModel) GetActions() []string       { return c.Actions }
-func (c *CommitModel) GetSelectedAction() string  { return c.SelectedAction }
-func (c *CommitModel) SetSelectedAction(s string) { c.SelectedAction = s }
 
 type TagModel struct {
 	Actions        []string
@@ -64,10 +55,6 @@ type TagModel struct {
 	Selected       string
 }
 
-func (t *TagModel) GetActions() []string       { return t.Actions }
-func (t *TagModel) GetSelectedAction() string  { return t.SelectedAction }
-func (t *TagModel) SetSelectedAction(s string) { t.SelectedAction = s }
-
 type RemoteModel struct {
 	Actions        []string
 	SelectedAction string
@@ -75,32 +62,32 @@ type RemoteModel struct {
 	Selected       string
 }
 
-func (r *RemoteModel) GetActions() []string       { return r.Actions }
-func (r *RemoteModel) GetSelectedAction() string  { return r.SelectedAction }
-func (r *RemoteModel) SetSelectedAction(s string) { r.SelectedAction = s }
-
 type ConfigModel struct {
-	Accent  string
-	Flavor  string
-	Flavors []string
-	Accents []string
+	Actions        []string
+	SelectedAction string
+	Flavors        []string
+	SelectedFlavor string
+	Accents        []string
+	SelectedAccent string
+	PreviewMode    bool
 }
 
 type Model struct {
-	CurrentStep Step
-	Loading     bool
-	Selected    int
-	ActionModel ActionModel
-	BranchModel BranchModel
-	CommitModel CommitModel
-	RemoteModel RemoteModel
-	TagModel    TagModel
-	ConfigModel ConfigModel
-	Spinner     spinner.Model
-	Level       int
-	Output      []string
-	Err         string
-	Success     string
+	CurrentStep   Step
+	Loading       bool
+	Selected      int
+	ActionModel   ActionModel
+	BranchModel   BranchModel
+	CommitModel   CommitModel
+	RemoteModel   RemoteModel
+	TagModel      TagModel
+	ConfigModel   ConfigModel
+	CurrentConfig *config.Config
+	Spinner       spinner.Model
+	Level         int
+	Output        []string
+	Err           string
+	Success       string
 }
 
 type repoUpdatedMsg struct{}
@@ -140,6 +127,12 @@ func (m Model) getCurrentOptions() []string {
 		return m.RemoteModel.Actions
 	case StepRemoteSelect:
 		return m.RemoteModel.Options
+	case StepOptions:
+		return m.ConfigModel.Actions
+	case StepOptionsFlavorSelect:
+		return m.ConfigModel.Flavors
+	case StepOptionsAccentSelect:
+		return m.ConfigModel.Accents
 	default:
 		return []string{}
 	}
@@ -450,6 +443,112 @@ func (m *Model) executeRemoteAction() (*Model, tea.Cmd) {
 	return m, tea.Quit
 }
 
+func (m Model) handleOptionsActionSelection() (tea.Model, tea.Cmd) {
+	// Ensure CurrentConfig is not nil
+	if m.CurrentConfig == nil {
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			m.Err = fmt.Sprintf("Failed to load config: %v", err)
+			return m, tea.Quit
+		}
+		m.CurrentConfig = cfg
+	}
+
+	m.ConfigModel.SelectedAction = m.ConfigModel.Actions[m.Selected]
+
+	switch m.ConfigModel.SelectedAction {
+	case "Change Flavor":
+		m.ConfigModel.Flavors = config.GetAvailableFlavors()
+		m.Selected = 0
+		// Set current selection to match current config
+		for i, flavor := range m.ConfigModel.Flavors {
+			if flavor == m.CurrentConfig.Flavor {
+				m.Selected = i
+				break
+			}
+		}
+		m.CurrentStep = StepOptionsFlavorSelect
+		m.Level = 3
+
+	case "Change Accent":
+		m.ConfigModel.Accents = config.GetAvailableAccents()
+		m.Selected = 0
+		// Set current selection to match current config
+		for i, accent := range m.ConfigModel.Accents {
+			if accent == m.CurrentConfig.Accent {
+				m.Selected = i
+				break
+			}
+		}
+		m.CurrentStep = StepOptionsAccentSelect
+		m.Level = 3
+
+	case "Reset to Defaults":
+		m.CurrentConfig = &config.Config{
+			Accent: config.DefaultConfig.Accent,
+			Flavor: config.DefaultConfig.Flavor,
+		}
+		if err := config.SaveConfig(m.CurrentConfig); err != nil {
+			m.Err = fmt.Sprintf("Failed to save config: %v", err)
+		} else {
+			UpdateStyles(m.CurrentConfig)
+			m.Success = "Configuration reset to defaults"
+		}
+		return m, tea.Quit
+	}
+	return m, nil
+}
+
+func (m Model) handleOptionsFlavorSelection() (tea.Model, tea.Cmd) {
+	// Ensure CurrentConfig is not nil
+	if m.CurrentConfig == nil {
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			m.Err = fmt.Sprintf("Failed to load config: %v", err)
+			return m, tea.Quit
+		}
+		m.CurrentConfig = cfg
+	}
+
+	selectedFlavor := m.ConfigModel.Flavors[m.Selected]
+	m.ConfigModel.SelectedFlavor = selectedFlavor
+
+	// Update config and save
+	m.CurrentConfig.Flavor = selectedFlavor
+	if err := config.SaveConfig(m.CurrentConfig); err != nil {
+		m.Err = fmt.Sprintf("Failed to save config: %v", err)
+	} else {
+		UpdateStyles(m.CurrentConfig)
+		m.Success = fmt.Sprintf("Flavor changed to %s", selectedFlavor)
+	}
+	return m, tea.Quit
+}
+
+func (m Model) handleOptionsAccentSelection() (tea.Model, tea.Cmd) {
+	// Ensure CurrentConfig is not nil
+	if m.CurrentConfig == nil {
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			m.Err = fmt.Sprintf("Failed to load config: %v", err)
+			return m, tea.Quit
+		}
+		m.CurrentConfig = cfg
+	}
+
+	selectedAccent := m.ConfigModel.Accents[m.Selected]
+	m.ConfigModel.SelectedAccent = selectedAccent
+
+	// Update config and save
+	m.CurrentConfig.Accent = selectedAccent
+	if err := config.SaveConfig(m.CurrentConfig); err != nil {
+		m.Err = fmt.Sprintf("Failed to save config: %v", err)
+	} else {
+		UpdateStyles(m.CurrentConfig)
+		m.Success = fmt.Sprintf("Accent changed to %s", selectedAccent)
+	}
+	return m, tea.Quit
+}
+
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case repoUpdatedMsg:
@@ -509,6 +608,12 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.handleRemoteActionSelection()
 	case StepRemoteSelect:
 		return m.handleRemoteSelection()
+	case StepOptions:
+		return m.handleOptionsActionSelection()
+	case StepOptionsFlavorSelect:
+		return m.handleOptionsFlavorSelection()
+	case StepOptionsAccentSelect:
+		return m.handleOptionsAccentSelection()
 	}
 	return m, nil
 }
@@ -563,10 +668,9 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 		m.Err = "Changes will come here soon"
 		return m, tea.Quit
 	case "Options":
+		m.Selected = 0
 		m.CurrentStep = StepOptions
 		m.Level = 2
-		m.Err = "Options will come here soon"
-		return m, tea.Quit
 	}
 	return m, nil
 }
