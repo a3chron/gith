@@ -36,7 +36,7 @@
 <details>
 <summary>Catppuccin flavors preview</summary>
 
-![](/assets/preview.webp)
+![](/assets/preview-flavors.webp)
 
 </details>
 
