@@ -32,7 +32,13 @@
 > Still in development
 
 ![](/assets/peek-usage-preview.gif)
+
+<details>
+<summary>Catppuccin flavors preview</summary>
+
 ![](/assets/preview.webp)
+
+</details>
 
 <details>
 <summary>More Images</summary>
