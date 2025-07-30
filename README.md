@@ -15,6 +15,7 @@ A TUI git helper with catppuccin theme written in Go
 > Still in development
 
 ![](/assets/peek-usage-preview.gif)
+![](/assets/preview.webp)
 
 <details>
 <summary>More Images</summary>
@@ -22,11 +23,6 @@ A TUI git helper with catppuccin theme written in Go
 ![](/assets/preview-actions.png)
 ![](/assets/preview-tags.png)
 ![](/assets/preview-status.png)
-
-![](/assets/flavors/latte.png)
-![](/assets/flavors/frappe.png)
-![](/assets/flavors/macchiato.png)
-![](/assets/flavors/mocha.png)
 
 </details>
 
