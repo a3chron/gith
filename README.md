@@ -1,26 +1,16 @@
 <div align="center">
-<table>
-<tr>
-<td>
 <pre>
-         ██┐         ██┐
-         └─┘   ██┐   ██│
- ██████┐ ██┐ ██████┐ ██████┐
- ██┌─██│ ██│ └─██┌─┘ ██┌─██│
- ██│ ██│ ██│   ██│   ██│ ██│
- ██████│ ██│   ████┐ ██│ ██│
- └───██│ └─┘   └───┘ └─┘ └─┘
-     ██│  A TUI git helper
- ██████│  with catppuccin theme,
- └─────┘  written in Go
+         ██┐         ██┐        
+         └─┘   ██┐   ██│        
+ ██████┐ ██┐ ██████┐ ██████┐    
+ ██┌─██│ ██│ └─██┌─┘ ██┌─██│    
+ ██│ ██│ ██│   ██│   ██│ ██│    
+ ██████│ ██│   ████┐ ██│ ██│    
+ └───██│ └─┘   └───┘ └─┘ └─┘    
+     ██│  A TUI git helper      
+ ██████│  catppuccin theme      
+ └─────┘  written in Go         
 </pre>
-</td>
-<td width="20"></td>
-<td>
-<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" width="100" alt="Logo"/>
-</td>
-</tr>
-</table>
 </div>
 
 <p align="center">
