@@ -141,6 +141,8 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] improve remove tag only show n latest tags wiht "pagination" instead of optional show all
 
+- [ ] add confirmation for things like force branch delete
+
 <br />
 
 <p align="center">
