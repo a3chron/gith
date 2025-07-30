@@ -31,7 +31,6 @@ const (
 	Bold   = "\033[1m"
 )
 
-// Box drawing characters
 const (
 	TopLeft     = "╭"
 	TopRight    = "╮"
@@ -126,10 +125,8 @@ func printUpdateBox(message, color string, showUpgrade bool) {
 	}
 	maxWidth += 4
 
-	fmt.Println() // Empty line before update box
-
 	// Top border
-	fmt.Printf("%s%s%s\n", TopLeft, strings.Repeat(Horizontal, maxWidth-2), TopRight)
+	fmt.Printf("\n%s%s%s\n", TopLeft, strings.Repeat(Horizontal, maxWidth-2), TopRight)
 
 	// Content lines
 	for _, line := range lines {

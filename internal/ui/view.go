@@ -104,6 +104,8 @@ func (m Model) renderSubActions2() string {
 		return m.renderBranchSubActions2()
 	case "Tag":
 		return m.renderTagSubActions2()
+	case "Remote":
+		return m.renderRemoteSubActions2()
 	}
 	return ""
 }
@@ -205,6 +207,28 @@ func (m Model) renderTagSubActions2() string {
 			}
 		} else { // A tag has been selected, show it as completed.
 			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.Selected) + "\n")
+		}
+	}
+
+	return content.String()
+}
+
+func (m Model) renderRemoteSubActions2() string {
+	var content strings.Builder
+	bullet := m.getBullet(3)
+
+	switch m.RemoteModel.SelectedAction {
+	case "Remove Remote":
+		content.WriteString(bullet + " " + TextStyle.Render(m.RemoteModel.SelectedAction) + "\n")
+
+		// If no remote is selected yet, show the list of remotes to choose from.
+		if m.RemoteModel.Selected == "" {
+			if len(m.RemoteModel.Options) > 0 && m.Err == "" {
+				content.WriteString(m.renderOptions(m.RemoteModel.Options, m.CurrentStep == StepRemoteSelect))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else { // A remote has been selected, show it as completed.
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.Selected) + "\n")
 		}
 	}
 

@@ -98,9 +98,9 @@ gith
 
 - [x] Tag
 
-  - [x] List Tags (shows 10 latest)
+  - [x] List Tags (shows 10 latest, sorted by semantic versioning)
 
-  - [x] Remove Tag (from a list of all local tags)
+  - [x] Remove Tag
 
   - [x] Push Tag (prompts to confirm pusing the latest tag)
 
@@ -112,7 +112,7 @@ gith
 
   - [ ] Add Remote
 
-  - [ ] Remove Remote
+  - [x] Remove Remote
 
   - [ ] Update Remote url
 
@@ -160,19 +160,19 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] add config file (accent & flavor)
 
-- [x] add init repo (&add remote?) with presets for some frameworks, gitignores etc -> move to seperate project gith-init
-
 - [ ] get latest tag in utils version, in add tag show current latest tag
 
 - [ ] add loading states when fetching sth
-
-- [ ] prettier version (& help) output
 
 - [ ] improve remove tag only show n latest tags wiht "pagination" instead of optional show all
 
 - [ ] add confirmation for things like force branch delete
 
-- [ ] version info and maybe other too, adjust for small terminals
+- [ ] adjust version info for small terminals
+
+- [ ] "remove remote" add dimmed remote url in selection
+
+- [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, siwth these two
 
 <br />
 

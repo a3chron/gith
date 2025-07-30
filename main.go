@@ -39,7 +39,7 @@ func initialModel() ui.Model {
 			Actions: []string{"Add Tag", "Remove Tag", "List Tags", "Push Tag"},
 		},
 		RemoteModel: ui.RemoteModel{
-			Actions: []string{"List Remotes", "Add Remote"},
+			Actions: []string{"List Remotes", "Add Remote", "Remove Remote"},
 		},
 		ConfigModel: ui.ConfigModel{
 			Accents: []string{"Rosewater", "Flamingo", "Pink", "Mauve", "Red", "Maroon", "Peach", "Yellow", "Green", "Teal", "Blue", "Sapphire", "Sky", "Lavender", "Gray"},

@@ -23,6 +23,7 @@ const (
 	StepTag
 	StepTagSelect
 	StepRemote
+	StepRemoteSelect
 	StepChanges
 	StepOptions
 )
@@ -70,6 +71,8 @@ func (t *TagModel) SetSelectedAction(s string) { t.SelectedAction = s }
 type RemoteModel struct {
 	Actions        []string
 	SelectedAction string
+	Options        []string
+	Selected       string
 }
 
 func (r *RemoteModel) GetActions() []string       { return r.Actions }
@@ -135,6 +138,8 @@ func (m Model) getCurrentOptions() []string {
 		return m.TagModel.Options
 	case StepRemote:
 		return m.RemoteModel.Actions
+	case StepRemoteSelect:
+		return m.RemoteModel.Options
 	default:
 		return []string{}
 	}
@@ -387,11 +392,12 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 func (m *Model) handleRemoteOperation() (*Model, tea.Cmd) {
 	switch m.RemoteModel.SelectedAction {
 	case "List Remotes":
-		out, err := git.ListRemotes()
-		m.outputByLevel(out)
-		if err != nil {
-			m.Err = fmt.Sprintf("%v", err)
+		out, err := git.GetRemotes()
+		if err != "" {
+			m.outputByLevel("\\crError:\n" + err)
+			m.Err = out
 		} else {
+			m.outputByLevel(out)
 			m.Success = "Listed all Remotes"
 		}
 		return m, tea.Quit
@@ -399,8 +405,49 @@ func (m *Model) handleRemoteOperation() (*Model, tea.Cmd) {
 	case "Add Remote":
 		m.Err = "Add Remote functionality not implemented yet"
 		return m, tea.Quit
+
+	case "Remove Remote":
+		return m.prepareRemoteSelection()
 	}
 	return m, nil
+}
+
+func (m *Model) prepareRemoteSelection() (*Model, tea.Cmd) {
+	out, err := git.GetRemotesClean()
+
+	if err != "" {
+		m.outputByLevel("\\crError:\n" + err)
+		m.Err = out
+		return m, tea.Quit
+	}
+
+	if strings.TrimSpace(out) == "" {
+		m.outputByLevel("You can add remotes with Remote -> Add Remote or `git remote add <remote_name> <remote_url>`")
+		m.Err = "No remotes found"
+		return m, tea.Quit
+	}
+
+	m.Selected = 0
+	m.RemoteModel.Options = strings.Split(strings.TrimSpace(out), "\n")
+	m.RemoteModel.Selected = ""
+	m.CurrentStep = StepRemoteSelect
+	m.Level = 3
+	return m, nil
+}
+
+func (m *Model) executeRemoteAction() (*Model, tea.Cmd) {
+	switch m.RemoteModel.SelectedAction {
+	case "Remove Remote":
+		out, err := git.RemoveRemote(m.RemoteModel.Selected)
+		if err != "" {
+			m.outputByLevel("\\crError:\n%s" + err)
+			m.Err = out
+		} else {
+			m.outputByLevel(out)
+			m.Success = fmt.Sprintf("Removed Remote '%s'", m.RemoteModel.Selected)
+		}
+	}
+	return m, tea.Quit
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -460,6 +507,8 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.handleTagSelection()
 	case StepRemote:
 		return m.handleRemoteActionSelection()
+	case StepRemoteSelect:
+		return m.handleRemoteSelection()
 	}
 	return m, nil
 }
@@ -562,4 +611,9 @@ func (m Model) handleTagSelection() (tea.Model, tea.Cmd) {
 func (m Model) handleRemoteActionSelection() (tea.Model, tea.Cmd) {
 	m.RemoteModel.SelectedAction = m.RemoteModel.Actions[m.Selected]
 	return m.handleRemoteOperation()
+}
+
+func (m Model) handleRemoteSelection() (tea.Model, tea.Cmd) {
+	m.RemoteModel.Selected = m.RemoteModel.Options[m.Selected]
+	return m.executeRemoteAction()
 }
