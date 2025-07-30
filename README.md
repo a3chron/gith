@@ -166,6 +166,8 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] add confirmation for things like force branch delete
 
+- [ ] version info and maybe other too, adjust for small terminals
+
 <br />
 
 <p align="center">
