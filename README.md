@@ -58,6 +58,12 @@ Install directly using Go
 go install github.com/a3chron/gith@latest
 ```
 
+After the installation finished, just run:
+
+```bash
+gith
+```
+
 ## What is and what will work
 
 - [x] Branch
