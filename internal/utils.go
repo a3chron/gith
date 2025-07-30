@@ -108,7 +108,11 @@ func printVersionBox(version, commit, date, builtBy string) {
 }
 
 func printUpdateBox(message, color string, showUpgrade bool) {
-	lines := []string{message}
+	lines := []string{}
+	for line := range strings.SplitSeq(message, "\n") {
+		lines = append(lines, line)
+	}
+
 	if showUpgrade {
 		lines = append(lines, "To install the latest version run:")
 		lines = append(lines, "go install github.com/a3chron/gith@latest")
@@ -155,7 +159,7 @@ func checkVersionComparison(currentVersion string) (*VersionComparison, error) {
 			Latest:      latestOfficial,
 			Difference:  "dev",
 			Color:       Green,
-			Message:     fmt.Sprintf("Development version: %s (latest official: %s)", currentVersion, latestOfficial),
+			Message:     fmt.Sprintf("Development version: %s\nLatest official: %s", currentVersion, latestOfficial),
 			ShowUpgrade: false,
 		}, nil
 	}
