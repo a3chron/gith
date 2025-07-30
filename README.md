@@ -148,9 +148,14 @@ Then run with:
 
 ## Customization
 
-I will add a config file & customization options soon.  
-If you can't wait for the other catppuccin accents / flavors,
-you can clone the repo, and change everything you need in `/internal/ui/styles.go`.
+You can set the flavor and accent you want in the Options.  
+Just run `gith` and select "Options".
+
+When running gith the first time, a config file storing your settings will be created at
+`XDG_CONFIG_HOME/gith/config.json` if `XDG_CONFIG_HOME` is set,
+or at `~/.config/gith/config.json`.
+
+You can also manually edit the config-file, altough the edit with gith makes sure to not use invalid options.
 
 ---
 
