@@ -1,15 +1,33 @@
-<h3 align="center">
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" width="100" alt="Logo"/><br/>
-	Gith (Catppuccin Theme)
-</h3>
+<div align="center">
+<table>
+<tr>
+<td>
+<pre>
+         ██┐         ██┐
+         └─┘   ██┐   ██│
+ ██████┐ ██┐ ██████┐ ██████┐
+ ██┌─██│ ██│ └─██┌─┘ ██┌─██│
+ ██│ ██│ ██│   ██│   ██│ ██│
+ ██████│ ██│   ████┐ ██│ ██│
+ └───██│ └─┘   └───┘ └─┘ └─┘
+     ██│  A TUI git helper
+ ██████│  with catppuccin theme,
+ └─────┘  written in Go
+</pre>
+</td>
+<td width="20"></td>
+<td>
+<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" width="100" alt="Logo"/>
+</td>
+</tr>
+</table>
+</div>
 
 <p align="center">
 	<a href="https://github.com/a3chron/gith/releases/latest"><img src="https://img.shields.io/github/v/release/a3chron/gith?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
 	<a href="https://github.com/a3chron/gith/issues"><img src="https://img.shields.io/github/issues/a3chron/gith?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
 	<a href="https://github.com/a3chron/gith/actions/workflows/lint.yaml"><img src="https://img.shields.io/github/check-runs/a3chron/gith/main?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
 </p>
-
-A TUI git helper with catppuccin theme written in Go
 
 > [!WARNING]
 > Still in development
