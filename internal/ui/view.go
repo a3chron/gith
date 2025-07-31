@@ -420,7 +420,7 @@ func (m Model) renderTagInput() string {
 		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
 		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 	} else {
-		content.WriteString(line + " " + DimStyle.Render("> "+inputText) + "\n")
+		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
 	}
 
 	return content.String()
