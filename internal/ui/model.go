@@ -686,11 +686,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Err = "User cancelled"
 				return m, tea.Quit
 			case "ctrl+h":
-				// Go back to tag add selection
-				m.TagModel.InputMode = false
-				m.TagModel.ManualInput = ""
-				m.CurrentStep = StepTagAdd
-				return m, nil
+				m.resetState()
 			case "enter":
 				return m.handleTagInputSubmit()
 			case "backspace":

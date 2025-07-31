@@ -226,7 +226,7 @@ func (m Model) renderTagSubActions2() string {
 		if m.TagModel.SelectedAddTag == "" {
 			// Show add options (patch, minor, major, manual)
 			if len(m.TagModel.AddOptions) > 0 && m.Err == "" {
-				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Latest tag: "+m.TagModel.CurrentTag) + "\n")
+				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Latest tag:") + " " + NormalStyle.Render(m.TagModel.CurrentTag) + "\n")
 				content.WriteString(m.renderOptions(m.TagModel.AddOptions, m.CurrentStep == StepTagAdd))
 				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 			}
