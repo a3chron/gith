@@ -163,8 +163,6 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 ## TODO
 
-- [ ] get latest tag in utils version, in add tag show current latest tag
-
 - [ ] add loading states when fetching sth
 
 - [ ] improve remove tag only show n latest tags wiht "pagination" instead of optional show all
@@ -178,6 +176,8 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 - [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, siwth these two
 
 - [ ] "Push Tag" Load All functionality
+
+- [ ] double space before success end
 
 <br />
 
