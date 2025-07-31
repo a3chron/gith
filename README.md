@@ -83,7 +83,7 @@ You can also manually edit the config file, although editing with gith ensures t
 
 ## What is and what will work
 
-- [x] Branch
+- [ ] Branch
 
   - [x] Switch Branch (supports checking out remote branches locally)
 
@@ -97,7 +97,7 @@ You can also manually edit the config file, although editing with gith ensures t
 
   - [x] View working tree status (Modified, Added, Deleted, Untracked files)
 
-- [x] Commit
+- [ ] Commit
 
   - [x] Undo Last Commit
 
@@ -115,9 +115,9 @@ You can also manually edit the config file, although editing with gith ensures t
 
   - [x] Push Tag (prompts to confirm pusing the latest tag)
 
-  - [ ] Add Tag
+  - [x] Add Tag
 
-- [x] Remote
+- [ ] Remote
 
   - [x] List Remotes
 
@@ -173,9 +173,11 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] adjust version info for small terminals
 
-- [ ] "remove remote" add dimmed remote url in selection
+- [ ] "remove remote" add dimmed remote url in selection -> for all add Label with name & optional description
 
 - [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, siwth these two
+
+- [ ] "Push Tag" Load All functionality
 
 <br />
 
