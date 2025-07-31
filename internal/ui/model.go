@@ -474,11 +474,20 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 			}
 		}
 	case "Push Tag":
-		out, err := exec.Command("git", "push", "origin", m.TagModel.Selected).CombinedOutput()
-		if err != nil {
-			m.Err = fmt.Sprintf("Failed to push: %s", string(out))
-		} else {
-			m.Success = fmt.Sprintf("Pushed Tag '%s'", m.TagModel.Selected)
+		switch m.TagModel.Selected {
+		case "Load all tags":
+			//m.loadAllTags()
+			m.Err = "Not implemented yet"
+		case "Only load 10 latest tags": //TODO: add to options from start
+			//m.prepareTagSelection()
+			m.Err = "Not implemented yet"
+		default:
+			out, err := exec.Command("git", "push", "origin", m.TagModel.Selected).CombinedOutput()
+			if err != nil {
+				m.Err = fmt.Sprintf("Failed to push: %s", string(out))
+			} else {
+				m.Success = fmt.Sprintf("Pushed Tag '%s'", m.TagModel.Selected)
+			}
 		}
 	}
 	return m, tea.Quit
