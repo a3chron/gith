@@ -50,6 +50,10 @@ func (m Model) renderMainView() string {
 
 		content.WriteString(m.renderSubActions2())
 		content.WriteString(m.renderOutput(line, 3)) // Output for level 3
+
+		if m.CurrentStep == StepTagInput {
+			content.WriteString(m.renderOutput(line, 4)) // Output for level 4
+		}
 	}
 
 	content.WriteString(m.renderResult())
@@ -215,6 +219,26 @@ func (m Model) renderTagSubActions2() string {
 		} else { // A tag has been selected, show it as completed.
 			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.Selected) + "\n")
 		}
+
+	case "Add Tag":
+		content.WriteString(bullet + " " + TextStyle.Render("Add Tag") + "\n")
+
+		if m.TagModel.SelectedAddTag == "" {
+			// Show add options (patch, minor, major, manual)
+			if len(m.TagModel.AddOptions) > 0 && m.Err == "" {
+				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Latest tag: "+m.TagModel.CurrentTag) + "\n")
+				content.WriteString(m.renderOptions(m.TagModel.AddOptions, m.CurrentStep == StepTagAdd))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
+			// Show input field
+			if m.Err == "" {
+				content.WriteString(m.renderTagInput())
+			}
+		} else {
+			// Show completed selection
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAddTag) + "\n")
+		}
 	}
 
 	return content.String()
@@ -378,6 +402,25 @@ func (m Model) renderOptions(options []string, isCurrentStep bool) string {
 	return content.String()
 }
 
+func (m Model) renderTagInput() string {
+	var content strings.Builder
+	line := AccentStyle.Render("│")
+
+	content.WriteString(line + " " + TextStyle.Render("Enter tag name:") + "\n")
+
+	// Show input field with cursor
+	inputText := m.TagModel.ManualInput
+	cursor := "_"
+
+	// Add cursor at the end
+	displayText := inputText + cursor
+
+	content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
+	content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+
+	return content.String()
+}
+
 // renderOutput displays command output at a specific interaction level.
 // It handles multi-line and color-coded messages.
 func (m Model) renderOutput(line string, level int) string {
@@ -449,6 +492,9 @@ func (m Model) renderResult() string {
 
 // renderNavigationHints displays help text for the user.
 func (m Model) renderNavigationHints() string {
+	if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
+		return "\n\n" + DimStyle.Render("Type tag name, enter to confirm, ctrl+h to go back, esc to quit")
+	}
 	return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 }
 

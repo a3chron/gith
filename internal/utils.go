@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -215,8 +214,8 @@ func getLatestOfficialVersion() (string, error) {
 
 func compareVersions(current, latest string) *VersionComparison {
 	// Parse versions
-	currentParts, err1 := parseVersion(current)
-	latestParts, err2 := parseVersion(latest)
+	currentMajor, currentMinor, currentPatch, _, err1 := ParseSemanticVersion(current)
+	latestMajor, latestMinor, latestPatch, _, err2 := ParseSemanticVersion(latest)
 
 	if err1 != nil || err2 != nil {
 		return &VersionComparison{
@@ -230,7 +229,7 @@ func compareVersions(current, latest string) *VersionComparison {
 	}
 
 	// Compare versions
-	if currentParts[0] < latestParts[0] {
+	if currentMajor < latestMajor {
 		// Major version difference
 		return &VersionComparison{
 			Current:     current,
@@ -240,7 +239,7 @@ func compareVersions(current, latest string) *VersionComparison {
 			Message:     fmt.Sprintf("Major update available: %s → %s", current, latest),
 			ShowUpgrade: true,
 		}
-	} else if currentParts[0] > latestParts[0] {
+	} else if currentMajor > latestMajor {
 		// Newer major version
 		return &VersionComparison{
 			Current:     current,
@@ -252,7 +251,7 @@ func compareVersions(current, latest string) *VersionComparison {
 		}
 	}
 
-	if currentParts[1] < latestParts[1] {
+	if currentMinor < latestMinor {
 		// Minor version difference
 		return &VersionComparison{
 			Current:     current,
@@ -262,7 +261,7 @@ func compareVersions(current, latest string) *VersionComparison {
 			Message:     fmt.Sprintf("Minor update available: %s → %s", current, latest),
 			ShowUpgrade: true,
 		}
-	} else if currentParts[1] > latestParts[1] {
+	} else if currentMinor > latestMinor {
 		// Newer minor version
 		return &VersionComparison{
 			Current:     current,
@@ -274,7 +273,7 @@ func compareVersions(current, latest string) *VersionComparison {
 		}
 	}
 
-	if currentParts[2] < latestParts[2] {
+	if currentPatch < latestPatch {
 		// Patch version difference
 		return &VersionComparison{
 			Current:     current,
@@ -284,7 +283,7 @@ func compareVersions(current, latest string) *VersionComparison {
 			Message:     fmt.Sprintf("Patch update available: %s → %s", current, latest),
 			ShowUpgrade: true,
 		}
-	} else if currentParts[2] > latestParts[2] {
+	} else if currentPatch > latestPatch {
 		// Newer patch version
 		return &VersionComparison{
 			Current:     current,
@@ -307,34 +306,57 @@ func compareVersions(current, latest string) *VersionComparison {
 	}
 }
 
-func parseVersion(version string) ([3]int, error) {
-	// Remove 'v' prefix if present
-	version = strings.TrimPrefix(version, "v")
-
-	// Use regex to match semantic version pattern
-	re := regexp.MustCompile(`^(\d+)\.(\d+)\.(\d+)(?:-.*)?(?:\+.*)?$`)
-	matches := re.FindStringSubmatch(version)
-
-	if matches == nil {
-		return [3]int{}, fmt.Errorf("invalid version format: %s", version)
+func ParseSemanticVersion(tag string) (major, minor, patch int, prefix string, err error) {
+	prefix = ""
+	if strings.HasPrefix(tag, "v") {
+		prefix = "v"
+		tag = tag[1:]
 	}
 
-	major, err := strconv.Atoi(matches[1])
+	parts := strings.Split(tag, ".")
+	if len(parts) != 3 {
+		return 0, 0, 0, prefix, fmt.Errorf("invalid semantic version format")
+	}
+
+	major, err = strconv.Atoi(parts[0])
 	if err != nil {
-		return [3]int{}, err
+		return 0, 0, 0, prefix, err
 	}
 
-	minor, err := strconv.Atoi(matches[2])
+	minor, err = strconv.Atoi(parts[1])
 	if err != nil {
-		return [3]int{}, err
+		return 0, 0, 0, prefix, err
 	}
 
-	patch, err := strconv.Atoi(matches[3])
+	patch, err = strconv.Atoi(parts[2])
 	if err != nil {
-		return [3]int{}, err
+		return 0, 0, 0, prefix, err
 	}
 
-	return [3]int{major, minor, patch}, nil
+	return major, minor, patch, prefix, nil
+}
+
+func GenerateNextSemanticVersion(currentTag, versionType string) (string, error) {
+	major, minor, patch, prefix, err := ParseSemanticVersion(currentTag)
+	if err != nil {
+		return "", err
+	}
+
+	switch versionType {
+	case "Patch":
+		patch++
+	case "Minor":
+		minor++
+		patch = 0
+	case "Major":
+		major++
+		minor = 0
+		patch = 0
+	default:
+		return "", fmt.Errorf("invalid version type")
+	}
+
+	return fmt.Sprintf("%s%d.%d.%d", prefix, major, minor, patch), nil
 }
 
 func PrintHelp() {

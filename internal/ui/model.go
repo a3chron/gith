@@ -23,6 +23,8 @@ const (
 	StepCommit
 	StepTag
 	StepTagSelect
+	StepTagAdd
+	StepTagInput
 	StepRemote
 	StepRemoteSelect
 	StepChanges
@@ -53,6 +55,11 @@ type TagModel struct {
 	SelectedAction string
 	Options        []string
 	Selected       string
+	AddOptions     []string
+	SelectedAddTag string
+	CurrentTag     string
+	ManualInput    string
+	InputMode      bool
 }
 
 type RemoteModel struct {
@@ -123,6 +130,8 @@ func (m Model) getCurrentOptions() []string {
 		return m.TagModel.Actions
 	case StepTagSelect:
 		return m.TagModel.Options
+	case StepTagAdd:
+		return m.TagModel.AddOptions
 	case StepRemote:
 		return m.RemoteModel.Actions
 	case StepRemoteSelect:
@@ -168,11 +177,14 @@ func (m *Model) resetState() {
 	m.CommitModel.SelectedAction = ""
 	m.TagModel.SelectedAction = ""
 	m.TagModel.Selected = ""
+	m.TagModel.CurrentTag = ""
+	m.TagModel.ManualInput = ""
+	m.TagModel.InputMode = false
 	m.RemoteModel.SelectedAction = ""
 	m.Selected = 0
 	m.Level = 1
-	m.Err = ""
 	m.Output = []string{} // TODO add m.Output[0] if exisiting
+	m.Err = ""
 	m.Success = ""
 }
 
@@ -289,13 +301,57 @@ func (m *Model) handleTagOperation() (*Model, tea.Cmd) {
 		return m, tea.Quit
 
 	case "Add Tag":
-		m.Err = "Tag functionality not implemented yet"
-		return m, tea.Quit
+		return m.prepareTagAddition()
 
 	case "Remove Tag", "Push Tag":
 		return m.prepareTagSelection()
 	}
 	return m, nil
+}
+
+func (m Model) handleTagAddSelection() (tea.Model, tea.Cmd) {
+	m.TagModel.SelectedAddTag = m.TagModel.AddOptions[m.Selected]
+
+	if m.TagModel.SelectedAddTag == "Manual Input" {
+		// Switch to input mode
+		m.TagModel.InputMode = true
+		m.TagModel.ManualInput = ""
+		m.CurrentStep = StepTagInput
+		return m, nil
+	} else {
+		// Extract the version from the option (e.g., "Patch (v1.2.4)" -> "v1.2.4")
+		start := strings.Index(m.TagModel.SelectedAddTag, "(")
+		end := strings.Index(m.TagModel.SelectedAddTag, ")")
+		if start != -1 && end != -1 && end > start {
+			newTag := m.TagModel.SelectedAddTag[start+1 : end]
+			return m.createTag(newTag)
+		} else {
+			m.Err = "Failed to parse version from selection"
+			return m, tea.Quit
+		}
+	}
+}
+
+// function to handle manual tag input submission
+func (m Model) handleTagInputSubmit() (tea.Model, tea.Cmd) {
+	if strings.TrimSpace(m.TagModel.ManualInput) == "" {
+		m.Err = "Tag name cannot be empty"
+		return m, tea.Quit
+	}
+
+	return m.createTag(strings.TrimSpace(m.TagModel.ManualInput))
+}
+
+func (m *Model) createTag(tagName string) (*Model, tea.Cmd) {
+	out, err := exec.Command("git", "tag", tagName).CombinedOutput()
+	if err != nil {
+		m.outputByLevel(string(out))
+		m.Err = fmt.Sprintf("Failed to create tag: %s", string(out))
+	} else {
+		m.outputByLevel(fmt.Sprintf("\\cgCreated tag: %s", tagName))
+		m.Success = fmt.Sprintf("Successfully created tag '%s'", tagName)
+	}
+	return m, tea.Quit
 }
 
 func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
@@ -325,6 +381,51 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 	m.TagModel.Options = append(m.TagModel.Options, "Load all tags")
 	m.TagModel.Selected = ""
 	m.CurrentStep = StepTagSelect
+	m.Level = 3
+	return m, nil
+}
+
+func (m *Model) prepareTagAddition() (*Model, tea.Cmd) {
+	// Get the latest tag
+	out, err := git.GetNLatestTags(1)
+	if err != nil {
+		m.outputByLevel("\\crError:\n" + fmt.Sprintf("%v", err))
+		m.Err = "Failed to get latest tag"
+		return m, tea.Quit
+	}
+
+	latestTag := strings.TrimSpace(out)
+	m.TagModel.CurrentTag = latestTag
+
+	// Prepare add options
+	if latestTag == "" {
+		// No existing tags, only allow manual input
+		m.TagModel.AddOptions = []string{"Manual Input"}
+		m.outputByLevel("\\ctNo existing tags found. You can create the first tag manually.")
+	} else {
+		// Check if latest tag is semantic version
+		if _, _, _, _, err := internal.ParseSemanticVersion(latestTag); err == nil {
+			// Valid semantic version, offer all options
+			patchVersion, _ := internal.GenerateNextSemanticVersion(latestTag, "Patch")
+			minorVersion, _ := internal.GenerateNextSemanticVersion(latestTag, "Minor")
+			majorVersion, _ := internal.GenerateNextSemanticVersion(latestTag, "Major")
+
+			m.TagModel.AddOptions = []string{
+				fmt.Sprintf("Patch (%s)", patchVersion),
+				fmt.Sprintf("Minor (%s)", minorVersion),
+				fmt.Sprintf("Major (%s)", majorVersion),
+				"Manual Input",
+			}
+			m.outputByLevel(fmt.Sprintf("\\ctCurrent latest tag: %s", latestTag))
+		} else {
+			// Not semantic version, only allow manual input
+			m.TagModel.AddOptions = []string{"Manual Input"}
+			m.outputByLevel("\\ctNote:\n You will get automatic completions for adding tags when using semantic versioning")
+		}
+	}
+
+	m.Selected = 0
+	m.CurrentStep = StepTagAdd
 	m.Level = 3
 	return m, nil
 }
@@ -569,6 +670,32 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.Spinner.Tick
 
 	case tea.KeyMsg:
+		if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
+			switch msg.String() {
+			case "ctrl+c", "esc":
+				m.Err = "User cancelled"
+				return m, tea.Quit
+			case "ctrl+h":
+				// Go back to tag add selection
+				m.TagModel.InputMode = false
+				m.TagModel.ManualInput = ""
+				m.CurrentStep = StepTagAdd
+				return m, nil
+			case "enter":
+				return m.handleTagInputSubmit()
+			case "backspace":
+				if len(m.TagModel.ManualInput) > 0 {
+					m.TagModel.ManualInput = m.TagModel.ManualInput[:len(m.TagModel.ManualInput)-1]
+				}
+			default:
+				// Add character to input
+				if len(msg.String()) == 1 {
+					m.TagModel.ManualInput += msg.String()
+				}
+			}
+			return m, nil
+		}
+
 		switch msg.String() {
 		case "q", "ctrl+c", "esc":
 			m.Err = "User quit"
@@ -604,6 +731,10 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.handleTagActionSelection()
 	case StepTagSelect:
 		return m.handleTagSelection()
+	case StepTagAdd:
+		return m.handleTagAddSelection()
+	case StepTagInput:
+		return m.handleTagInputSubmit()
 	case StepRemote:
 		return m.handleRemoteActionSelection()
 	case StepRemoteSelect:
