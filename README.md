@@ -70,6 +70,17 @@ After the installation finished, just run:
 gith
 ```
 
+## Customization
+
+You can set your preferred flavor and accent in the Options.  
+Just run `gith` and select "Options".
+
+When running gith the first time, a config file storing your settings will be created at
+`XDG_CONFIG_HOME/gith/config.json` if `XDG_CONFIG_HOME` is set,
+otherwise at `~/.config/gith/config.json`.
+
+You can also manually edit the config file, although editing with gith ensures that no invalid configurations are used.
+
 ## What is and what will work
 
 - [x] Branch
@@ -145,17 +156,6 @@ Then run with:
 ```bash
 ./gith
 ```
-
-## Customization
-
-You can set the flavor and accent you want in the Options.  
-Just run `gith` and select "Options".
-
-When running gith the first time, a config file storing your settings will be created at
-`XDG_CONFIG_HOME/gith/config.json` if `XDG_CONFIG_HOME` is set,
-or at `~/.config/gith/config.json`.
-
-You can also manually edit the config-file, altough the edit with gith makes sure to not use invalid options.
 
 ---
 
