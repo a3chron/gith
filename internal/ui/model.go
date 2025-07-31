@@ -190,6 +190,7 @@ func (m *Model) resetState() {
 }
 
 func (m *Model) outputByLevel(out string) {
+	// Fill output array up to current level
 	for len(m.Output) <= m.Level {
 		m.Output = append(m.Output, "")
 	}
@@ -484,7 +485,15 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 		default:
 			out, err := exec.Command("git", "push", "origin", m.TagModel.Selected).CombinedOutput()
 			if err != nil {
-				m.Err = fmt.Sprintf("Failed to push: %s", string(out))
+				//FIXME: next line is a hotfix for some very weird bug with the output when usng raw out
+				outResult := []string{}
+				for line := range strings.SplitSeq(string(out), "\n") {
+					if strings.TrimSpace(line) != "" {
+						outResult = append(outResult, strings.TrimSpace(line))
+					}
+				}
+				m.outputByLevel("\\crError:\n" + strings.Join(outResult, "\n"))
+				m.Err = "Failed to push"
 			} else {
 				m.Success = fmt.Sprintf("Pushed Tag '%s'", m.TagModel.Selected)
 			}
