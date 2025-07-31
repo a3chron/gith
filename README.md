@@ -163,8 +163,6 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 ## TODO
 
-- [ ] add config file (accent & flavor)
-
 - [ ] get latest tag in utils version, in add tag show current latest tag
 
 - [ ] add loading states when fetching sth
