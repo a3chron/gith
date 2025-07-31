@@ -410,7 +410,7 @@ func (m Model) renderTagInput() string {
 
 	if m.Success == "" {
 		line = AccentStyle.Render("│")
-		content.WriteString(line + " " + TextStyle.Render("Enter tag name:") + "\n")
+		content.WriteString(line + " " + NormalStyle.Render("Enter tag name:") + "\n")
 	}
 
 	// Add cursor at the end
