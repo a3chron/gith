@@ -404,19 +404,24 @@ func (m Model) renderOptions(options []string, isCurrentStep bool) string {
 
 func (m Model) renderTagInput() string {
 	var content strings.Builder
-	line := AccentStyle.Render("│")
-
-	content.WriteString(line + " " + TextStyle.Render("Enter tag name:") + "\n")
-
-	// Show input field with cursor
-	inputText := m.TagModel.ManualInput
 	cursor := "_"
+	line := LineStyle.Render("│")
+	inputText := m.TagModel.ManualInput
+
+	if m.Success == "" {
+		line = AccentStyle.Render("│")
+		content.WriteString(line + " " + TextStyle.Render("Enter tag name:") + "\n")
+	}
 
 	// Add cursor at the end
 	displayText := inputText + cursor
 
-	content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
-	content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+	if m.Success == "" {
+		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+	} else {
+		content.WriteString(line + " " + DimStyle.Render("> "+inputText) + "\n")
+	}
 
 	return content.String()
 }

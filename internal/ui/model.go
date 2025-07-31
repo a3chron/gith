@@ -177,6 +177,7 @@ func (m *Model) resetState() {
 	m.CommitModel.SelectedAction = ""
 	m.TagModel.SelectedAction = ""
 	m.TagModel.Selected = ""
+	m.TagModel.SelectedAddTag = ""
 	m.TagModel.CurrentTag = ""
 	m.TagModel.ManualInput = ""
 	m.TagModel.InputMode = false
