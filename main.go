@@ -13,10 +13,10 @@ import (
 )
 
 var (
-	Version = "dev (or version injection still broken)"
-	Commit  = "none"
-	Date    = "unknown"
-	BuiltBy = "unknown"
+	version = "dev (or version injection still broken)"
+	commit  = "none"
+	date    = "unknown"
+	builtBy = "unknown"
 )
 
 func initialModel() ui.Model {
@@ -95,7 +95,7 @@ func handleCliArgs() error {
 	switch os.Args[1] {
 	case "version", "-v", "--version":
 		checkForUpdate := len(os.Args) == 3 && os.Args[2] == "check"
-		internal.PrintVersion(checkForUpdate, Version, Commit, Date, BuiltBy)
+		internal.PrintVersion(checkForUpdate, version, commit, date, builtBy)
 		return nil
 
 	case "help", "-h", "--help":
