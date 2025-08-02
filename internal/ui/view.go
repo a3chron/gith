@@ -508,8 +508,14 @@ func (m Model) renderNavigationHints() string {
 
 // getBullet returns the appropriate bullet character based on the current state.
 func (m Model) getBullet(forLevel int) string {
-	if m.Err != "" && forLevel == m.Level {
-		return ErrorStyle.Render("■")
+	if forLevel == m.Level {
+		if m.Err != "" {
+			// bullet for failed (=last) selection
+			return ErrorStyle.Render("□")
+		}
+		// bullet for current selection
+		return BulletStyle.Render("◆")
 	}
-	return BulletStyle.Render("◆")
+	// bullet for already selected
+	return BulletStyle.Render("◇")
 }
