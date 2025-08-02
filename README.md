@@ -85,7 +85,35 @@ You can also manually edit the config file, although editing with gith ensures t
 
 **If you have anything you'd like to configure in the settings or options, don't hesitate to open an issue.**
 
-## What is and what will work
+## Troubleshooting
+
+**I update gith via `go install github.com/a3chron/gith@latest`, but nothing changes / version stays the same**
+
+> [!INFO]
+> If you get any output when running `go install github.com/a3chron/gith@latest`,
+> you probably don't have this issue.  
+> Consider opening an issue.
+
+Sometimes it takes some time for the go proxy server to recognize a new release,
+so it is possible that the latest release for the proxy server is still the old one.
+
+In that case, just request a lookup for the specific version, for example `v0.6.0` if this is the latest release:
+
+```bash
+go install github.com/a3chron/gith@v0.6.0
+```
+
+You should now see the output:
+
+```bash
+go: downloading github.com/a3chron/gith v0.6.0
+```
+
+> [!NOTE]
+> You can check for the latest release on [github](https://github.com/a3chron/gith/releases/latest)
+> or by simply running `gith version check`
+
+## What is and what will be
 
 - [ ] Branch
 
