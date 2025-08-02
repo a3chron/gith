@@ -179,6 +179,8 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] double space before success end
 
+- [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
+
 <br />
 
 <p align="center">
