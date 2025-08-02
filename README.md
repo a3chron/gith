@@ -213,6 +213,8 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
 
+- [ ] add completions
+
 <br />
 
 <p align="center">

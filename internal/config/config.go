@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	catppuccin "github.com/catppuccin/go"
 )
@@ -63,10 +64,10 @@ func LoadConfig() (*Config, error) {
 	}
 
 	// Validate config values
-	if !isValidFlavor(config.Flavor) {
+	if !IsValidFlavor(config.Flavor) {
 		config.Flavor = DefaultConfig.Flavor
 	}
-	if !isValidAccent(config.Accent) {
+	if !IsValidAccent(config.Accent) {
 		config.Accent = DefaultConfig.Accent
 	}
 
@@ -102,14 +103,14 @@ func SaveConfig(config *Config) error {
 
 // GetCatppuccinFlavor returns the catppuccin flavor based on config
 func GetCatppuccinFlavor(flavorName string) catppuccin.Flavor {
-	switch flavorName {
-	case "Latte":
+	switch strings.ToLower(flavorName) {
+	case "latte":
 		return catppuccin.Latte
-	case "Frappe":
+	case "frappe":
 		return catppuccin.Frappe
-	case "Macchiato":
+	case "macchiato":
 		return catppuccin.Macchiato
-	case "Mocha":
+	case "mocha":
 		return catppuccin.Mocha
 	default:
 		return catppuccin.Mocha
@@ -118,36 +119,36 @@ func GetCatppuccinFlavor(flavorName string) catppuccin.Flavor {
 
 // GetAccentColor returns the accent color based on config
 func GetAccentColor(flavor catppuccin.Flavor, accentName string) catppuccin.Color {
-	switch accentName {
-	case "Rosewater":
+	switch strings.ToLower(accentName) {
+	case "rosewater":
 		return flavor.Rosewater()
-	case "Flamingo":
+	case "flamingo":
 		return flavor.Flamingo()
-	case "Pink":
+	case "pink":
 		return flavor.Pink()
-	case "Mauve":
+	case "mauve":
 		return flavor.Mauve()
-	case "Red":
+	case "red":
 		return flavor.Red()
-	case "Maroon":
+	case "maroon":
 		return flavor.Maroon()
-	case "Peach":
+	case "peach":
 		return flavor.Peach()
-	case "Yellow":
+	case "yellow":
 		return flavor.Yellow()
-	case "Green":
+	case "green":
 		return flavor.Green()
-	case "Teal":
+	case "teal":
 		return flavor.Teal()
-	case "Blue":
+	case "blue":
 		return flavor.Blue()
-	case "Sapphire":
+	case "sapphire":
 		return flavor.Sapphire()
-	case "Sky":
+	case "sky":
 		return flavor.Sky()
-	case "Lavender":
+	case "lavender":
 		return flavor.Lavender()
-	case "Gray":
+	case "gray":
 		return flavor.Overlay2()
 	default:
 		return flavor.Blue()
@@ -155,18 +156,20 @@ func GetAccentColor(flavor catppuccin.Flavor, accentName string) catppuccin.Colo
 }
 
 // Validation helpers
-func isValidFlavor(flavor string) bool {
-	validFlavors := []string{"Latte", "Frappe", "Macchiato", "Mocha"}
-	return slices.Contains(validFlavors, flavor)
+func IsValidFlavor(flavor string) bool {
+	lowerFlavor := strings.ToLower(flavor)
+	validFlavors := []string{"latte", "frappe", "macchiato", "mocha"}
+	return slices.Contains(validFlavors, lowerFlavor)
 }
 
-func isValidAccent(accent string) bool {
+func IsValidAccent(accent string) bool {
+	lowerAccent := strings.ToLower(accent)
 	validAccents := []string{
-		"Rosewater", "Flamingo", "Pink", "Mauve", "Red", "Maroon",
-		"Peach", "Yellow", "Green", "Teal", "Blue", "Sapphire",
-		"Sky", "Lavender", "Gray",
+		"rosewater", "flamingo", "pink", "mauve", "red", "maroon",
+		"peach", "yellow", "green", "teal", "blue", "sapphire",
+		"sky", "lavender", "gray",
 	}
-	return slices.Contains(validAccents, accent)
+	return slices.Contains(validAccents, lowerAccent)
 }
 
 // GetAvailableFlavors returns list of available flavors

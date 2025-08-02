@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -139,6 +140,8 @@ func handleConfigCommand() error {
 		return resetConfig()
 	case "path":
 		return showConfigPath()
+	case "update":
+		return updateConfig()
 	default:
 		return printConfigUsage()
 	}
@@ -146,9 +149,12 @@ func handleConfigCommand() error {
 
 func printConfigUsage() error {
 	fmt.Println("Config commands:")
-	fmt.Println("  gith config show   - Show current configuration")
-	fmt.Println("  gith config reset  - Reset configuration to defaults")
-	fmt.Println("  gith config path   - Show configuration file path")
+	fmt.Println("  gith config show   	- Show current configuration")
+	fmt.Println("  gith config reset  	- Reset configuration to defaults")
+	fmt.Println("  gith config path   	- Show configuration file path")
+	fmt.Println("  gith config update [--flavor=<flavor>] [--accent=<accent>]   - Update configuration")
+	fmt.Println("    <flavor> can be any of the catppuccin flavors (case insensitive)")
+	fmt.Println("    <accent> can be any of the catppuccin accents (case insensitive)")
 	return nil
 }
 
@@ -161,6 +167,64 @@ func showConfig() error {
 	fmt.Printf("Current configuration:\n")
 	fmt.Printf("  Flavor: %s\n", cfg.Flavor)
 	fmt.Printf("  Accent: %s\n", cfg.Accent)
+	return nil
+}
+
+func updateConfig() error {
+	if len(os.Args) <= 3 {
+		return printConfigUsage()
+	}
+
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+
+	// TODO: when adding more to configure, make sure to handle this automatically
+
+	first := strings.ToLower(os.Args[3])
+	second := ""
+
+	if len(os.Args) >= 5 {
+		second = strings.ToLower(os.Args[4])
+	}
+
+	if flavor, found := strings.CutPrefix(first, "--flavor="); found {
+		if config.IsValidFlavor(flavor) {
+			cfg.Flavor = flavor
+		} else {
+			return fmt.Errorf("not a valid flavor: %s\nlist of valid flavors: %s", flavor, config.GetAvailableFlavors())
+		}
+	} else if accent, found := strings.CutPrefix(first, "--accent="); found {
+		if config.IsValidAccent(accent) {
+			cfg.Accent = accent
+		} else {
+			return fmt.Errorf("not a valid accent: %s\nlist of valid accent: %s", accent, config.GetAvailableAccents())
+		}
+	} else {
+		return fmt.Errorf("'%s' is not a valid flag\nRun 'gith config help' to see valid flags", strings.TrimPrefix(strings.Split(first, "=")[0], "--"))
+	}
+
+	if second != "" {
+		if flavor, found := strings.CutPrefix(second, "--flavor="); found {
+			if config.IsValidFlavor(flavor) {
+				cfg.Flavor = flavor
+			} else {
+				return fmt.Errorf("not a valid flavor: %s\nlist of valid flavors: %s", flavor, config.GetAvailableFlavors())
+			}
+		} else if accent, found := strings.CutPrefix(second, "--accent="); found {
+			if config.IsValidAccent(accent) {
+				cfg.Accent = accent
+			} else {
+				return fmt.Errorf("not a valid accent: %s\nlist of valid accent: %s", accent, config.GetAvailableAccents())
+			}
+		} else {
+			return fmt.Errorf("'%s' is not a valid flag\nRun 'gith config help' to see valid flags", strings.TrimPrefix(strings.Split(first, "=")[0], "--"))
+		}
+	}
+
+	config.SaveConfig(cfg)
+
 	return nil
 }
 
