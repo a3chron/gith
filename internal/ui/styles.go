@@ -2,6 +2,7 @@ package ui
 
 import (
 	"github.com/a3chron/gith/internal/config"
+	catppuccingo "github.com/catppuccin/go"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -25,11 +26,15 @@ var (
 	RedStyle       lipgloss.Style
 )
 
-// UpdateStyles updates all styles based on the provided config
-func UpdateStyles(cfg *config.Config) {
+func UpdateStylesByConfig(cfg *config.Config) {
 	flavor := config.GetCatppuccinFlavor(cfg.Flavor)
 	accentColor := config.GetAccentColor(flavor, cfg.Accent)
 
+	UpdateStyles(flavor, accentColor)
+}
+
+// UpdateStyles updates all styles based on the provided config
+func UpdateStyles(flavor catppuccingo.Flavor, accentColor catppuccingo.Color) {
 	// Update all styles
 	AccentStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color(accentColor.Hex))
@@ -87,6 +92,6 @@ func InitializeStyles() error {
 		// Fall back to default config if loading fails
 		cfg = &config.DefaultConfig
 	}
-	UpdateStyles(cfg)
+	UpdateStylesByConfig(cfg)
 	return nil
 }

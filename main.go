@@ -93,7 +93,7 @@ func run() error {
 	}
 
 	// Initialize styles with the loaded config
-	ui.UpdateStyles(cfg)
+	ui.UpdateStylesByConfig(cfg)
 
 	isRepo, err := internal.IsGitRepository()
 	if err != nil || !isRepo {

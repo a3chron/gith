@@ -166,6 +166,17 @@ func (m *Model) handleNavigation(key string) {
 			m.Selected = 0
 		}
 	}
+
+	// handle preview when selecting a theme
+	if m.CurrentStep == StepOptionsAccentSelect {
+		flavor := config.GetCatppuccinFlavor(m.CurrentConfig.Flavor)
+		UpdateStyles(flavor, config.GetAccentColor(flavor, m.ConfigModel.Accents[m.Selected]))
+	}
+
+	if m.CurrentStep == StepOptionsFlavorSelect {
+		flavor := config.GetCatppuccinFlavor(m.ConfigModel.Flavors[m.Selected])
+		UpdateStyles(flavor, config.GetAccentColor(flavor, m.CurrentConfig.Accent))
+	}
 }
 
 func (m *Model) resetState() {
@@ -610,7 +621,7 @@ func (m Model) handleOptionsActionSelection() (tea.Model, tea.Cmd) {
 		if err := config.SaveConfig(m.CurrentConfig); err != nil {
 			m.Err = fmt.Sprintf("Failed to save config: %v", err)
 		} else {
-			UpdateStyles(m.CurrentConfig)
+			UpdateStylesByConfig(m.CurrentConfig)
 			m.Success = "Configuration reset to defaults"
 		}
 		return m, tea.Quit
@@ -637,7 +648,7 @@ func (m Model) handleOptionsFlavorSelection() (tea.Model, tea.Cmd) {
 	if err := config.SaveConfig(m.CurrentConfig); err != nil {
 		m.Err = fmt.Sprintf("Failed to save config: %v", err)
 	} else {
-		UpdateStyles(m.CurrentConfig)
+		UpdateStylesByConfig(m.CurrentConfig)
 		m.Success = fmt.Sprintf("Flavor changed to %s", selectedFlavor)
 	}
 	return m, tea.Quit
@@ -662,7 +673,7 @@ func (m Model) handleOptionsAccentSelection() (tea.Model, tea.Cmd) {
 	if err := config.SaveConfig(m.CurrentConfig); err != nil {
 		m.Err = fmt.Sprintf("Failed to save config: %v", err)
 	} else {
-		UpdateStyles(m.CurrentConfig)
+		UpdateStylesByConfig(m.CurrentConfig)
 		m.Success = fmt.Sprintf("Accent changed to %s", selectedAccent)
 	}
 	return m, tea.Quit
