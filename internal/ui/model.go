@@ -76,7 +76,6 @@ type ConfigModel struct {
 	SelectedFlavor string
 	Accents        []string
 	SelectedAccent string
-	PreviewMode    bool
 }
 
 type Model struct {
