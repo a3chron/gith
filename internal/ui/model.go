@@ -192,6 +192,9 @@ func (m *Model) resetState() {
 	m.TagModel.ManualInput = ""
 	m.TagModel.InputMode = false
 	m.RemoteModel.SelectedAction = ""
+	m.ConfigModel.SelectedAccent = ""
+	m.ConfigModel.SelectedFlavor = ""
+	m.ConfigModel.SelectedAction = ""
 	m.Selected = 0
 	m.Level = 1
 	m.Output = []string{} // TODO add m.Output[0] if exisiting
