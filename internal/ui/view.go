@@ -500,6 +500,9 @@ func (m Model) renderNavigationHints() string {
 	if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
 		return "\n\n" + DimStyle.Render("Type tag name, enter to confirm, ctrl+h to go back, esc to quit")
 	}
+	if m.CurrentStep == StepOptionsAccentSelect {
+		return "\n\n" + DimStyle.Render("Select Accent to preview, enter to confirm, ctrl+h to go back, esc to quit")
+	}
 	return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 }
 
