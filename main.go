@@ -223,7 +223,11 @@ func updateConfig() error {
 		}
 	}
 
-	config.SaveConfig(cfg)
+	saveErr := config.SaveConfig(cfg)
+	if saveErr != nil {
+		return fmt.Errorf("failed to save config: %w", saveErr)
+	}
+	fmt.Println("Configuration updated")
 
 	return nil
 }
