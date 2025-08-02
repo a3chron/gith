@@ -85,6 +85,20 @@ You can also manually edit the config file, although editing with gith ensures t
 
 **If you have anything you'd like to configure in the settings or options, don't hesitate to open an issue.**
 
+## Usage in scripts
+
+You are able to easily change flavor and accent of gith in scripts:
+
+```bash
+gith config update --flavor=Latte --accent=Red
+```
+
+Useful for example if you want a script to switch between
+light and dark mode in all your catppuccin themed apps.
+
+> [!INFO]
+> Run `gith config help` for more info
+
 ## Troubleshooting
 
 **I update gith via `go install github.com/a3chron/gith@latest`, but nothing changes / version stays the same**
