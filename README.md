@@ -189,6 +189,29 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] Change UI accent color
 
+## Completions
+
+For package installation the completions will be installed automatically.  
+When installing via `go install` you can get completions for the few commands there are by running the following command:
+
+**fish**
+
+```bash
+gith completion fish > ~/.config/fish/completions/gith.fish
+```
+
+**bash**
+
+```bash
+gith completion bash > ~/.local/share/bash-completion/completions/gith
+```
+
+**Zsh**
+
+```bash
+gith completion zsh > ~/.local/share/zsh/site-functions/_gith
+```
+
 ## Local Development
 
 Build using:

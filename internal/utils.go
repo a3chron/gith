@@ -54,7 +54,7 @@ func PrintVersion(checkForUpdate bool, version string, commit string, date strin
 
 	if checkForUpdate {
 		if comparison, err := checkVersionComparison(version); err != nil {
-			printUpdateBox("Error checking for updates: "+err.Error(), Gray, false)
+			printUpdateBox("Error checking for updates", Gray, false) // TODO: +err.Error() for message, but can be long, maybe add verbosity and just print
 		} else {
 			printUpdateBox(comparison.Message, comparison.Color, comparison.ShowUpgrade)
 		}
@@ -363,11 +363,13 @@ func PrintHelp() {
 	fmt.Print(`gith - TUI Git Helper
 
 Usage:
-  gith                 Start interactive mode
-  gith version         Show version information  
-  gith version check   Show version & check for updates
-  gith config help     Show config related help message
-  gith help            Show this help message
+  gith                     Start interactive mode
+
+  gith version             Show version information  
+  gith version check       Show version & check for updates
+
+  gith config help         Show config related help message
+  gith help                Show this help message
 
 Interactive Commands:
   ↑↓ or j/k            Navigate menu items
@@ -383,7 +385,91 @@ Features:
   • Git status checking
   • Configuration options
 
+Shell Completions:
+  gith completion fish > ~/.config/fish/completions/gith.fish
+  gith completion bash > ~/.local/share/bash-completion/completions/gith
+  gith completion zsh > ~/.local/share/zsh/site-functions/_gith
 `)
+}
+
+func GenerateCompletions(shell string) error {
+	switch shell {
+	case "fish":
+		fmt.Print(`# Fish completion for gith
+complete -c gith -n "__fish_use_subcommand" -a "version config help" -d "Available commands"
+complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
+complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
+complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
+complete -c gith -n "__fish_seen_subcommand_from config update" -l accent -d "Catppuccin accent" -a "rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender"
+complete -c gith -s h -l help -d "Show help"
+`)
+	case "bash":
+		fmt.Print(`# Bash completion for gith
+_gith() {
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    
+    case "${prev}" in
+        gith)
+            opts="version config help"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        version)
+            opts="check"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        config)
+            opts="show reset path update help"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        --flavor)
+            opts="latte frappe macchiato mocha"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        --accent)
+            opts="rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+    esac
+}
+complete -F _gith gith
+`)
+	case "zsh":
+		fmt.Print(`#compdef gith
+_gith() {
+    local context state line
+    _arguments \
+        '1:command:(version config help)' \
+        '*::arg:->args'
+    
+    case $state in
+        args)
+            case $words[1] in
+                version)
+                    _arguments '1:subcommand:(check)'
+                    ;;
+                config)
+                    _arguments \
+                        '1:subcommand:(show reset path update help)' \
+                        '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
+                        '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
+                    ;;
+            esac
+            ;;
+    esac
+}
+`)
+	default:
+		return fmt.Errorf("unsupported shell: %s", shell)
+	}
+	return nil
 }
 
 func IsGitRepository() (bool, error) {

@@ -123,6 +123,17 @@ func handleCliArgs() error {
 	case "config":
 		return handleConfigCommand()
 
+	case "completion":
+		if len(os.Args) < 3 {
+			fmt.Fprintf(os.Stderr, "Usage: gith completion <shell>\nSupported shells: bash, zsh, fish\n")
+			os.Exit(1)
+		}
+		if err := internal.GenerateCompletions(os.Args[2]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		return nil
+
 	default:
 		return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1])
 	}
