@@ -83,6 +83,8 @@ otherwise at `~/.config/gith/config.json`.
 
 You can also manually edit the config file, although editing with gith ensures that no invalid configurations are used.
 
+**If you have anything you'd like to configure in the settings or options, don't hesitate to open an issue.**
+
 ## What is and what will work
 
 - [ ] Branch
