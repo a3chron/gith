@@ -34,6 +34,14 @@ jobs:
         with:
           go-version: 1.24
 
+      - name: Check mod files
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+
+      - name: Verify module hashes
+        run: go mod verify
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
