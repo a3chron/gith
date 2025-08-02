@@ -64,6 +64,8 @@ Install directly using Go
 go install github.com/a3chron/gith@latest
 ```
 
+or using one of the [pre-built releases](https://github.com/a3chron/gith/releases/latest).
+
 After the installation finished, just run:
 
 ```bash

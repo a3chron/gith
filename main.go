@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,11 +14,27 @@ import (
 )
 
 var (
-	version = "dev (or version injection still broken)"
+	version = "dev"
 	commit  = "none"
 	date    = "unknown"
 	builtBy = "unknown"
 )
+
+func getVersion() string {
+	// If version was set by GoReleaser, use it
+	if version != "dev" {
+		return version
+	}
+
+	// Fallback for go install: try to get version from build info
+	if info, ok := debug.ReadBuildInfo(); ok {
+		if info.Main.Version != "(devel)" && info.Main.Version != "" {
+			return info.Main.Version
+		}
+	}
+
+	return "dev"
+}
 
 func initialModel() ui.Model {
 	s := spinner.New()
@@ -95,7 +112,7 @@ func handleCliArgs() error {
 	switch os.Args[1] {
 	case "version", "-v", "--version":
 		checkForUpdate := len(os.Args) == 3 && os.Args[2] == "check"
-		internal.PrintVersion(checkForUpdate, version, commit, date, builtBy)
+		internal.PrintVersion(checkForUpdate, getVersion(), commit, date, builtBy)
 		return nil
 
 	case "help", "-h", "--help":
