@@ -52,6 +52,17 @@
 For the terminal customization / starship config, check out my [ubuntu customization blog article](https://a3chron.vercel.app/blog/ubuntu-setup).  
 This is the full setup, for only starship scroll down to the starship section.
 
+## Table of Contents
+- [Installation](#installation)
+- [Customization](#customization)
+- [Usage in scripts](#usage-in-scripts)
+- [Troubleshooting](#troubleshooting)
+- [What is an what will be (features)](#what-is-and-what-will-be)
+- [Completions](#completions)
+- [Contributing](#contributing)
+- [Thanks](#thanks)
+- [TODOs](#todos)
+
 ## Installation
 
 > [!NOTE]
@@ -212,7 +223,10 @@ gith completion bash > ~/.local/share/bash-completion/completions/gith
 gith completion zsh > ~/.local/share/zsh/site-functions/_gith
 ```
 
-## Local Development
+## Contributing
+
+Contributions are welcome, but please remember to use [conventional commits](https://www.conventionalcommits.org/) (at least when naming the PR).
+For features or possible improvements please create an issue.
 
 Build using:
 
@@ -226,11 +240,16 @@ Then run with:
 ./gith
 ```
 
----
+## Thanks
 
-built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heavily based on [opencode](https://github.com/opencode-ai/opencode)
+- [BubbleTea](https://github.com/charmbracelet/bubbletea) for making it possible to build this
+- [opencode](https://github.com/opencode-ai/opencode) for the design inspiration (I copied their starting dialog 1:1)
 
-## TODO
+## TODOs
+
+This is mostly a list for me, but here so you can see what you don't need to create an issue for.
+Also good starting point if you'd want to contribute, but please create an issue stating that you started working on it, 
+so we don't do the same thing twice.
 
 - [ ] add loading states when fetching sth
 
@@ -246,11 +265,9 @@ built using [BubbleTea](https://github.com/charmbracelet/bubbletea), design heav
 
 - [ ] "Push Tag" Load All functionality
 
-- [ ] double space before success end
+- [ ] bug: double space before success end
 
 - [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
-
-- [ ] add completions
 
 <br />
 
