@@ -20,6 +20,8 @@ const (
 	StepAction
 	StepBranchAction
 	StepBranchSelect
+	StepBranchCreate
+	StepBranchInput
 	StepCommit
 	StepTag
 	StepTagSelect
@@ -43,6 +45,9 @@ type BranchModel struct {
 	SelectedAction string
 	Branches       []string
 	SelectedBranch string
+	Options        []string
+	SelectedOption string
+	Input          string
 }
 
 type CommitModel struct {
@@ -54,12 +59,11 @@ type TagModel struct {
 	Actions        []string
 	SelectedAction string
 	Options        []string
-	Selected       string
+	SelectedOption string
 	AddOptions     []string
 	SelectedAddTag string
 	CurrentTag     string
 	ManualInput    string
-	InputMode      bool
 }
 
 type RemoteModel struct {
@@ -119,22 +123,29 @@ func (m Model) getCurrentOptions() []string {
 	switch m.CurrentStep {
 	case StepAction:
 		return m.ActionModel.Actions
+
 	case StepBranchAction:
 		return m.BranchModel.Actions
 	case StepBranchSelect:
 		return m.BranchModel.Branches
+	case StepBranchCreate:
+		return m.BranchModel.Options
+
 	case StepCommit:
 		return m.CommitModel.Actions
+
 	case StepTag:
 		return m.TagModel.Actions
 	case StepTagSelect:
 		return m.TagModel.Options
 	case StepTagAdd:
 		return m.TagModel.AddOptions
+
 	case StepRemote:
 		return m.RemoteModel.Actions
 	case StepRemoteSelect:
 		return m.RemoteModel.Options
+
 	case StepOptions:
 		return m.ConfigModel.Actions
 	case StepOptionsFlavorSelect:
@@ -182,16 +193,22 @@ func (m *Model) handleNavigation(key string) {
 func (m *Model) resetState() {
 	m.CurrentStep = StepAction
 	m.ActionModel.SelectedAction = ""
+
 	m.BranchModel.SelectedBranch = ""
 	m.BranchModel.SelectedAction = ""
+	m.BranchModel.SelectedOption = ""
+	m.BranchModel.Input = ""
+
 	m.CommitModel.SelectedAction = ""
+
 	m.TagModel.SelectedAction = ""
-	m.TagModel.Selected = ""
+	m.TagModel.SelectedOption = ""
 	m.TagModel.SelectedAddTag = ""
 	m.TagModel.CurrentTag = ""
 	m.TagModel.ManualInput = ""
-	m.TagModel.InputMode = false
+
 	m.RemoteModel.SelectedAction = ""
+
 	m.ConfigModel.SelectedAccent = ""
 	m.ConfigModel.SelectedFlavor = ""
 	m.ConfigModel.SelectedAction = ""
@@ -213,8 +230,7 @@ func (m *Model) outputByLevel(out string) {
 func (m *Model) handleBranchOperation() (*Model, tea.Cmd) {
 	switch m.BranchModel.SelectedAction {
 	case "Create Branch":
-		m.Err = "Create branch functionality not implemented yet"
-		return m, tea.Quit
+		return m.prepareBranchAddition()
 
 	case "Switch Branch", "Delete Branch":
 		branches, err := git.GetBranches()
@@ -250,12 +266,58 @@ func (m *Model) handleBranchOperation() (*Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m *Model) prepareBranchAddition() (*Model, tea.Cmd) {
+	m.BranchModel.Options = []string{"feat/", "fix/", "refactor/", "docs/", "Manual Input"}
+
+	m.Selected = 0
+	m.CurrentStep = StepBranchCreate
+	m.Level = 3
+	return m, nil
+}
+
 func (m *Model) executeBranchAction() (*Model, tea.Cmd) {
 	switch m.BranchModel.SelectedAction {
 	case "Switch Branch":
 		return m.switchBranch()
 	case "Delete Branch":
 		return m.deleteBranch()
+	}
+	return m, tea.Quit
+}
+
+func (m Model) handleBranchCreateSelection() (tea.Model, tea.Cmd) {
+	m.BranchModel.SelectedOption = m.BranchModel.Options[m.Selected]
+
+	if m.BranchModel.SelectedOption == "Manual Input" {
+		// Switch to input mode
+		m.BranchModel.Input = ""
+		m.CurrentStep = StepBranchInput
+		return m, nil
+	} else {
+		// Add prefix to input & switch to input mode
+		m.BranchModel.Input = m.BranchModel.SelectedOption
+		m.CurrentStep = StepBranchInput
+		return m, nil
+	}
+}
+
+// function to handle manual branch input submission
+func (m *Model) handleBranchInputSubmit() (*Model, tea.Cmd) {
+	if strings.TrimSpace(m.BranchModel.Input) == "" {
+		m.Err = "Branch name cannot be empty"
+		return m, tea.Quit
+	}
+
+	return m.createBranch(strings.TrimSpace(m.BranchModel.Input))
+}
+
+func (m *Model) createBranch(branchName string) (*Model, tea.Cmd) {
+	out, err := exec.Command("git", "checkout", "-b", branchName).CombinedOutput()
+	if err != nil {
+		m.outputByLevel(string(out))
+		m.Err = fmt.Sprintf("Failed to create branch: %s", string(out))
+	} else {
+		m.Success = fmt.Sprintf("Successfully created branch '%s'", branchName)
 	}
 	return m, tea.Quit
 }
@@ -329,7 +391,6 @@ func (m Model) handleTagAddSelection() (tea.Model, tea.Cmd) {
 
 	if m.TagModel.SelectedAddTag == "Manual Input" {
 		// Switch to input mode
-		m.TagModel.InputMode = true
 		m.TagModel.ManualInput = ""
 		m.CurrentStep = StepTagInput
 		return m, nil
@@ -363,7 +424,6 @@ func (m *Model) createTag(tagName string) (*Model, tea.Cmd) {
 		m.outputByLevel(string(out))
 		m.Err = fmt.Sprintf("Failed to create tag: %s", string(out))
 	} else {
-		m.outputByLevel(fmt.Sprintf("\\cgCreated tag: %s", tagName))
 		m.Success = fmt.Sprintf("Successfully created tag '%s'", tagName)
 	}
 	return m, tea.Quit
@@ -394,7 +454,7 @@ func (m *Model) prepareTagSelection() (*Model, tea.Cmd) {
 	m.Selected = 0
 	m.TagModel.Options = strings.Split(strings.TrimSpace(out), "\n")
 	m.TagModel.Options = append(m.TagModel.Options, "Load all tags")
-	m.TagModel.Selected = ""
+	m.TagModel.SelectedOption = ""
 	m.CurrentStep = StepTagSelect
 	m.Level = 3
 	return m, nil
@@ -462,7 +522,7 @@ func (m *Model) loadAllTags() (*Model, tea.Cmd) {
 
 	m.Selected = 0
 	m.TagModel.Options = append([]string{"Only load 10 latest tags"}, strings.Split(strings.TrimSpace(out), "\n")...)
-	m.TagModel.Selected = ""
+	m.TagModel.SelectedOption = ""
 	m.CurrentStep = StepTagSelect
 	m.Level = 3
 	return m, nil
@@ -471,7 +531,7 @@ func (m *Model) loadAllTags() (*Model, tea.Cmd) {
 func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 	switch m.TagModel.SelectedAction {
 	case "Remove Tag":
-		switch m.TagModel.Selected {
+		switch m.TagModel.SelectedOption {
 		case "Load all tags":
 			m.loadAllTags()
 			return m, nil
@@ -479,16 +539,16 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 			m.prepareTagSelection()
 			return m, nil
 		default:
-			out, err := exec.Command("git", "tag", "-d", m.TagModel.Selected).CombinedOutput()
+			out, err := exec.Command("git", "tag", "-d", m.TagModel.SelectedOption).CombinedOutput()
 			m.outputByLevel(string(out))
 			if err != nil {
 				m.Err = fmt.Sprintf("Failed to remove: %s", string(out))
 			} else {
-				m.Success = fmt.Sprintf("Removed Tag '%s'", m.TagModel.Selected)
+				m.Success = fmt.Sprintf("Removed Tag '%s'", m.TagModel.SelectedOption)
 			}
 		}
 	case "Push Tag":
-		switch m.TagModel.Selected {
+		switch m.TagModel.SelectedOption {
 		case "Load all tags":
 			//m.loadAllTags()
 			m.Err = "Not implemented yet"
@@ -496,7 +556,7 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 			//m.prepareTagSelection()
 			m.Err = "Not implemented yet"
 		default:
-			out, err := exec.Command("git", "push", "origin", m.TagModel.Selected).CombinedOutput()
+			out, err := exec.Command("git", "push", "origin", m.TagModel.SelectedOption).CombinedOutput()
 			if err != nil {
 				//FIXME: next line is a hotfix for some very weird bug with the output when usng raw out
 				outResult := []string{}
@@ -508,7 +568,7 @@ func (m *Model) executeTagAction() (*Model, tea.Cmd) {
 				m.outputByLevel("\\crError:\n" + strings.Join(outResult, "\n"))
 				m.Err = "Failed to push"
 			} else {
-				m.Success = fmt.Sprintf("Pushed Tag '%s'", m.TagModel.Selected)
+				m.Success = fmt.Sprintf("Pushed Tag '%s'", m.TagModel.SelectedOption)
 			}
 		}
 	}
@@ -702,7 +762,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.Spinner.Tick
 
 	case tea.KeyMsg:
-		if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
+		if m.CurrentStep == StepTagInput || m.CurrentStep == StepBranchInput {
 			switch msg.String() {
 			case "ctrl+c", "esc":
 				m.Err = "User cancelled"
@@ -710,15 +770,29 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+h":
 				m.resetState()
 			case "enter":
-				return m.handleTagInputSubmit()
+				if m.CurrentStep == StepTagInput {
+					return m.handleTagInputSubmit()
+				} else {
+					return m.handleBranchInputSubmit()
+				}
 			case "backspace":
-				if len(m.TagModel.ManualInput) > 0 {
-					m.TagModel.ManualInput = m.TagModel.ManualInput[:len(m.TagModel.ManualInput)-1]
+				if m.CurrentStep == StepTagInput {
+					if len(m.TagModel.ManualInput) > 0 {
+						m.TagModel.ManualInput = m.TagModel.ManualInput[:len(m.TagModel.ManualInput)-1]
+					}
+				} else {
+					if len(m.BranchModel.Input) > 0 {
+						m.BranchModel.Input = m.BranchModel.Input[:len(m.BranchModel.Input)-1]
+					}
 				}
 			default:
 				// Add character to input
 				if len(msg.String()) == 1 {
-					m.TagModel.ManualInput += msg.String()
+					if m.CurrentStep == StepTagInput {
+						m.TagModel.ManualInput += msg.String()
+					} else {
+						m.BranchModel.Input += msg.String()
+					}
 				}
 			}
 			return m, nil
@@ -749,12 +823,19 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 	switch m.CurrentStep {
 	case StepAction:
 		return m.handleActionSelection()
+
 	case StepBranchAction:
 		return m.handleBranchActionSelection()
 	case StepBranchSelect:
 		return m.handleBranchSelection()
+	case StepBranchCreate:
+		return m.handleBranchCreateSelection()
+	case StepBranchInput:
+		return m.handleBranchInputSubmit()
+
 	case StepCommit:
 		return m.handleCommitSelection()
+
 	case StepTag:
 		return m.handleTagActionSelection()
 	case StepTagSelect:
@@ -763,10 +844,12 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.handleTagAddSelection()
 	case StepTagInput:
 		return m.handleTagInputSubmit()
+
 	case StepRemote:
 		return m.handleRemoteActionSelection()
 	case StepRemoteSelect:
 		return m.handleRemoteSelection()
+
 	case StepOptions:
 		return m.handleOptionsActionSelection()
 	case StepOptionsFlavorSelect:
@@ -867,7 +950,7 @@ func (m Model) handleTagActionSelection() (tea.Model, tea.Cmd) {
 }
 
 func (m Model) handleTagSelection() (tea.Model, tea.Cmd) {
-	m.TagModel.Selected = m.TagModel.Options[m.Selected]
+	m.TagModel.SelectedOption = m.TagModel.Options[m.Selected]
 	return m.executeTagAction()
 }
 

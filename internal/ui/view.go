@@ -158,6 +158,24 @@ func (m Model) renderBranchSubActions2() string {
 		} else { // A branch has been selected, show it as completed.
 			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedBranch) + "\n")
 		}
+	case "Create Branch":
+		content.WriteString(bullet + " " + TextStyle.Render("Create Branch") + "\n")
+
+		if m.BranchModel.SelectedOption == "" {
+			// Show add options (feat, fix, refactor, ..., manual)
+			if len(m.BranchModel.Options) > 0 && m.Err == "" {
+				content.WriteString(m.renderOptions(m.BranchModel.Options, m.CurrentStep == StepBranchCreate))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else if m.CurrentStep == StepBranchInput {
+			// Show input field
+			if m.Err == "" {
+				content.WriteString(m.renderBranchInput())
+			}
+		} else {
+			// Show completed selection
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedOption) + "\n")
+		}
 	}
 
 	return content.String()
@@ -211,13 +229,13 @@ func (m Model) renderTagSubActions2() string {
 		content.WriteString(bullet + " " + TextStyle.Render(m.TagModel.SelectedAction) + "\n")
 
 		// If no tag is selected yet, show the list of tags to choose from.
-		if m.TagModel.Selected == "" {
+		if m.TagModel.SelectedOption == "" {
 			if len(m.TagModel.Options) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.TagModel.Options, m.CurrentStep == StepTagSelect))
 				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else { // A tag has been selected, show it as completed.
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.Selected) + "\n")
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedOption) + "\n")
 		}
 
 	case "Add Tag":
@@ -230,7 +248,7 @@ func (m Model) renderTagSubActions2() string {
 				content.WriteString(m.renderOptions(m.TagModel.AddOptions, m.CurrentStep == StepTagAdd))
 				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 			}
-		} else if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
+		} else if m.CurrentStep == StepTagInput {
 			// Show input field
 			if m.Err == "" {
 				content.WriteString(m.renderTagInput())
@@ -426,6 +444,31 @@ func (m Model) renderTagInput() string {
 	return content.String()
 }
 
+// TODO: maybe combine this and above into one, a lot common
+func (m Model) renderBranchInput() string {
+	var content strings.Builder
+	cursor := "_"
+	line := LineStyle.Render("│")
+	inputText := m.BranchModel.Input
+
+	if m.Success == "" {
+		line = AccentStyle.Render("│")
+		content.WriteString(line + " " + NormalStyle.Render("Enter branch name:") + "\n")
+	}
+
+	// Add cursor at the end
+	displayText := inputText + cursor
+
+	if m.Success == "" {
+		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+	} else {
+		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+	}
+
+	return content.String()
+}
+
 // renderOutput displays command output at a specific interaction level.
 // It handles multi-line and color-coded messages.
 func (m Model) renderOutput(line string, level int) string {
@@ -497,13 +540,14 @@ func (m Model) renderResult() string {
 
 // renderNavigationHints displays help text for the user.
 func (m Model) renderNavigationHints() string {
-	if m.CurrentStep == StepTagInput && m.TagModel.InputMode {
-		return "\n\n" + DimStyle.Render("Type tag name, enter to confirm, ctrl+h to go back, esc to quit")
-	}
-	if m.CurrentStep == StepOptionsAccentSelect {
+	switch m.CurrentStep {
+	case StepTagInput, StepBranchInput:
+		return "\n\n" + DimStyle.Render("Type name, enter to confirm, ctrl+h to go back, esc to quit")
+	case StepOptionsAccentSelect:
 		return "\n\n" + DimStyle.Render("Select Accent to preview, enter to confirm, ctrl+h to go back, esc to quit")
+	default:
+		return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 	}
-	return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 }
 
 // getBullet returns the appropriate bullet character based on the current state.

@@ -53,6 +53,7 @@ For the terminal customization / starship config, check out my [ubuntu customiza
 This is the full setup, for only starship scroll down to the starship section.
 
 ## Table of Contents
+
 - [Installation](#installation)
 - [Customization](#customization)
 - [Usage in scripts](#usage-in-scripts)
@@ -140,7 +141,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
 ## What is and what will be
 
-- [ ] Branch
+- [x] Branch
 
   - [x] Switch Branch (supports checking out remote branches locally)
 
@@ -148,7 +149,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] Delete Branch (with fallback to force delete)
 
-  - [ ] Create Branch
+  - [x] Create Branch
 
 - [x] Status
 
@@ -248,7 +249,7 @@ Then run with:
 ## TODOs
 
 This is mostly a list for me, but here so you can see what you don't need to create an issue for.
-Also good starting point if you'd want to contribute, but please create an issue stating that you started working on it, 
+Also good starting point if you'd want to contribute, but please create an issue stating that you started working on it,
 so we don't do the same thing twice.
 
 - [ ] add loading states when fetching sth
@@ -257,7 +258,7 @@ so we don't do the same thing twice.
 
 - [ ] add confirmation for things like force branch delete
 
-- [ ] adjust version info for small terminals
+- [ ] adjust version info for small terminals & imprve display / coloring
 
 - [ ] "remove remote" add dimmed remote url in selection -> for all add Label with name & optional description
 
