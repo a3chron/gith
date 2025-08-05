@@ -20,16 +20,25 @@ func GetStatusInfo() (map[string][]string, int, error) {
 		return nil, 0, fmt.Errorf("failed to get status: %w", err)
 	}
 
-	length := len(strings.Split(strings.TrimSpace(string(out)), "\n"))
+	trimmed := strings.TrimSpace(string(out))
+	if trimmed == "" {
+		// Working tree clean
+		return map[string][]string{
+			"modified":  {},
+			"added":     {},
+			"deleted":   {},
+			"untracked": {},
+		}, 0, nil
+	}
 
+	lines := strings.Split(trimmed, "\n")
 	status := make(map[string][]string)
 	status["modified"] = []string{}
 	status["added"] = []string{}
 	status["deleted"] = []string{}
 	status["untracked"] = []string{}
 
-	lines := strings.SplitSeq(strings.TrimSpace(string(out)), "\n")
-	for line := range lines {
+	for _, line := range lines {
 		if len(line) < 3 {
 			continue
 		}
@@ -49,5 +58,5 @@ func GetStatusInfo() (map[string][]string, int, error) {
 		}
 	}
 
-	return status, length, nil
+	return status, len(lines), nil
 }
