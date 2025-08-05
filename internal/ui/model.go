@@ -888,7 +888,12 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 				if len(status["untracked"]) > 0 {
 					m.outputByLevel("\\ctUntracked:\n " + strings.Join(status["untracked"], "\n ") + "\n╌\n")
 				}
-				m.Success = fmt.Sprintf("Changes detected: %d files", length)
+				m.Success = fmt.Sprintf("Changes detected: %d %s", length, func() string {
+					if length == 1 {
+						return "file"
+					}
+					return "files"
+				}())
 			}
 		}
 		return m, tea.Quit
