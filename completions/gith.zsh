@@ -1,0 +1,23 @@
+#compdef gith
+_gith() {
+    local context state line
+    _arguments \
+        '1:command:(version config help)' \
+        '*::arg:->args'
+    
+    case $state in
+        args)
+            case $words[1] in
+                version)
+                    _arguments '1:subcommand:(check)'
+                    ;;
+                config)
+                    _arguments \
+                        '1:subcommand:(show reset path update help)' \
+                        '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
+                        '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
+                    ;;
+            esac
+            ;;
+    esac
+}
