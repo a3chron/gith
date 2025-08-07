@@ -108,14 +108,14 @@ gith config update --flavor=Latte --accent=Red
 Useful for example if you want a script to switch between
 light and dark mode in all your catppuccin themed apps.
 
-> [!INFO]
+> [!NOTE]
 > Run `gith config help` for more info
 
 ## Troubleshooting
 
 **I update gith via `go install github.com/a3chron/gith@latest`, but nothing changes / version stays the same**
 
-> [!INFO]
+> [!NOTE]
 > If you get any output when running `go install github.com/a3chron/gith@latest`,
 > you probably don't have this issue.  
 > Consider opening an issue.
