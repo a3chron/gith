@@ -271,13 +271,41 @@ func (m Model) renderRemoteSubActions2() string {
 		content.WriteString(bullet + " " + TextStyle.Render(m.RemoteModel.SelectedAction) + "\n")
 
 		// If no remote is selected yet, show the list of remotes to choose from.
-		if m.RemoteModel.Selected == "" {
+		if m.RemoteModel.SelectedOption == "" {
 			if len(m.RemoteModel.Options) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.RemoteModel.Options, m.CurrentStep == StepRemoteSelect))
 				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else { // A remote has been selected, show it as completed.
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.Selected) + "\n")
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedOption) + "\n")
+		}
+	case "Add Remote":
+		content.WriteString(bullet + " " + TextStyle.Render("Add Tag") + "\n")
+
+		if m.CurrentStep == StepRemoteNameInput {
+			// Show input field
+			if m.Err == "" {
+				content.WriteString(AccentStyle.Render("├╌") + " " + AccentStyle.Render("Remote Name:") + " " + DimStyle.Render("(e.g. origin)") + "\n")
+				content.WriteString(m.renderRemoteInput())
+			}
+		} else {
+			// Completed Remote Name Input
+			// Show second input for url input
+			if m.CurrentStep == StepRemoteUrlInput && m.Err == "" && m.Success == "" {
+				// Show input of still active add remote input
+				content.WriteString(AccentStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.NameInput) + "\n")
+
+				// Show input field
+				if m.Err == "" {
+					content.WriteString(AccentStyle.Render("├╌") + " " + AccentStyle.Render("Remote Url:") + " " + DimStyle.Render("(e.g. git@github.com:a3chron/gith.git)") + "\n")
+					content.WriteString(m.renderRemoteInput())
+				}
+			} else {
+				// Show completed selection
+				content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.NameInput) + "\n")
+				// Show completed selection
+				content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.UrlInput) + "\n")
+			}
 		}
 	}
 
@@ -469,6 +497,33 @@ func (m Model) renderBranchInput() string {
 	return content.String()
 }
 
+func (m Model) renderRemoteInput() string {
+	var content strings.Builder
+	var inputText string
+
+	cursor := "_"
+	line := LineStyle.Render("│")
+	accentLine := AccentStyle.Render("│")
+
+	if m.CurrentStep == StepRemoteNameInput {
+		inputText = m.RemoteModel.NameInput
+	} else {
+		inputText = m.RemoteModel.UrlInput
+	}
+
+	// Add cursor at the end
+	displayText := inputText + cursor
+
+	if m.Success == "" {
+		content.WriteString(accentLine + " " + AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+	} else {
+		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+	}
+
+	return content.String()
+}
+
 // renderOutput displays command output at a specific interaction level.
 // It handles multi-line and color-coded messages.
 func (m Model) renderOutput(line string, level int) string {
@@ -541,7 +596,7 @@ func (m Model) renderResult() string {
 // renderNavigationHints displays help text for the user.
 func (m Model) renderNavigationHints() string {
 	switch m.CurrentStep {
-	case StepTagInput, StepBranchInput:
+	case StepTagInput, StepBranchInput, StepRemoteNameInput, StepRemoteUrlInput:
 		return "\n\n" + DimStyle.Render("Type name, enter to confirm, ctrl+h to go back, esc to quit")
 	case StepOptionsAccentSelect:
 		return "\n\n" + DimStyle.Render("Select Accent to preview, enter to confirm, ctrl+h to go back, esc to quit")

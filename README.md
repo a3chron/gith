@@ -179,7 +179,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] List Remotes
 
-  - [ ] Add Remote
+  - [x] Add Remote
 
   - [x] Remove Remote
 
@@ -271,6 +271,8 @@ so we don't do the same thing twice.
 - [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
 
 - [ ] add commands like `gith push tag` or `gith add remote` to instantly get to selection for quicker use
+
+- [ ] move the git commands in `model.go` to `/git/xy.go`
 
 <br />
 

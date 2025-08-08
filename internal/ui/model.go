@@ -18,18 +18,26 @@ type Step int
 const (
 	StepLoad Step = iota
 	StepAction
+
 	StepBranchAction
 	StepBranchSelect
 	StepBranchCreate
 	StepBranchInput
+
 	StepCommit
+
 	StepTag
 	StepTagSelect
 	StepTagAdd
 	StepTagInput
+
 	StepRemote
 	StepRemoteSelect
+	StepRemoteNameInput
+	StepRemoteUrlInput
+
 	StepChanges
+
 	StepOptions
 	StepOptionsFlavorSelect
 	StepOptionsAccentSelect
@@ -70,7 +78,9 @@ type RemoteModel struct {
 	Actions        []string
 	SelectedAction string
 	Options        []string
-	Selected       string
+	SelectedOption string
+	NameInput      string
+	UrlInput       string
 }
 
 type ConfigModel struct {
@@ -157,6 +167,16 @@ func (m Model) getCurrentOptions() []string {
 	}
 }
 
+// isInputStep returns true if the current step expects free-text input
+func isInputStep(step Step) bool {
+	switch step {
+	case StepTagInput, StepBranchInput, StepRemoteNameInput, StepRemoteUrlInput:
+		return true
+	default:
+		return false
+	}
+}
+
 func (m *Model) handleNavigation(key string) {
 	options := m.getCurrentOptions()
 	if len(options) == 0 {
@@ -208,6 +228,9 @@ func (m *Model) resetState() {
 	m.TagModel.ManualInput = ""
 
 	m.RemoteModel.SelectedAction = ""
+	m.RemoteModel.SelectedOption = ""
+	m.RemoteModel.NameInput = ""
+	m.RemoteModel.UrlInput = ""
 
 	m.ConfigModel.SelectedAccent = ""
 	m.ConfigModel.SelectedFlavor = ""
@@ -589,8 +612,9 @@ func (m *Model) handleRemoteOperation() (*Model, tea.Cmd) {
 		return m, tea.Quit
 
 	case "Add Remote":
-		m.Err = "Add Remote functionality not implemented yet"
-		return m, tea.Quit
+		m.CurrentStep = StepRemoteNameInput
+		m.Level = 3
+		return m, nil
 
 	case "Remove Remote":
 		return m.prepareRemoteSelection()
@@ -615,7 +639,7 @@ func (m *Model) prepareRemoteSelection() (*Model, tea.Cmd) {
 
 	m.Selected = 0
 	m.RemoteModel.Options = strings.Split(strings.TrimSpace(out), "\n")
-	m.RemoteModel.Selected = ""
+	m.RemoteModel.SelectedOption = ""
 	m.CurrentStep = StepRemoteSelect
 	m.Level = 3
 	return m, nil
@@ -624,13 +648,13 @@ func (m *Model) prepareRemoteSelection() (*Model, tea.Cmd) {
 func (m *Model) executeRemoteAction() (*Model, tea.Cmd) {
 	switch m.RemoteModel.SelectedAction {
 	case "Remove Remote":
-		out, err := git.RemoveRemote(m.RemoteModel.Selected)
+		out, err := git.RemoveRemote(m.RemoteModel.SelectedOption)
 		if err != "" {
 			m.outputByLevel("\\crError:\n%s" + err)
 			m.Err = out
 		} else {
 			m.outputByLevel(out)
-			m.Success = fmt.Sprintf("Removed Remote '%s'", m.RemoteModel.Selected)
+			m.Success = fmt.Sprintf("Removed Remote '%s'", m.RemoteModel.SelectedOption)
 		}
 	}
 	return m, tea.Quit
@@ -762,7 +786,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.Spinner.Tick
 
 	case tea.KeyMsg:
-		if m.CurrentStep == StepTagInput || m.CurrentStep == StepBranchInput {
+		if isInputStep(m.CurrentStep) {
 			switch msg.String() {
 			case "ctrl+c", "esc":
 				m.Err = "User cancelled"
@@ -770,28 +794,64 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+h":
 				m.resetState()
 			case "enter":
-				if m.CurrentStep == StepTagInput {
+				switch m.CurrentStep {
+				case StepTagInput:
 					return m.handleTagInputSubmit()
-				} else {
+				case StepBranchInput:
 					return m.handleBranchInputSubmit()
+				case StepRemoteNameInput:
+					// proceed to URL input if name provided
+					if strings.TrimSpace(m.RemoteModel.NameInput) == "" {
+						m.Err = "Remote name cannot be empty"
+						return m, tea.Quit
+					}
+					m.CurrentStep = StepRemoteUrlInput
+					return m, nil
+				case StepRemoteUrlInput:
+					if strings.TrimSpace(m.RemoteModel.UrlInput) == "" {
+						m.Err = "Remote URL cannot be empty"
+						return m, tea.Quit
+					}
+					out, err := exec.Command("git", "remote", "add", m.RemoteModel.NameInput, m.RemoteModel.UrlInput).CombinedOutput()
+					if err != nil {
+						m.outputByLevel(string(out))
+						m.Err = "Failed to add remote"
+					} else {
+						m.Success = fmt.Sprintf("Added Remote '%s' -> %s", m.RemoteModel.NameInput, m.RemoteModel.UrlInput)
+					}
+					return m, tea.Quit
 				}
 			case "backspace":
-				if m.CurrentStep == StepTagInput {
+				switch m.CurrentStep {
+				case StepTagInput:
 					if len(m.TagModel.ManualInput) > 0 {
 						m.TagModel.ManualInput = m.TagModel.ManualInput[:len(m.TagModel.ManualInput)-1]
 					}
-				} else {
+				case StepBranchInput:
 					if len(m.BranchModel.Input) > 0 {
 						m.BranchModel.Input = m.BranchModel.Input[:len(m.BranchModel.Input)-1]
+					}
+				case StepRemoteNameInput:
+					if len(m.RemoteModel.NameInput) > 0 {
+						m.RemoteModel.NameInput = m.RemoteModel.NameInput[:len(m.RemoteModel.NameInput)-1]
+					}
+				case StepRemoteUrlInput:
+					if len(m.RemoteModel.UrlInput) > 0 {
+						m.RemoteModel.UrlInput = m.RemoteModel.UrlInput[:len(m.RemoteModel.UrlInput)-1]
 					}
 				}
 			default:
 				// Add character to input
 				if len(msg.String()) == 1 {
-					if m.CurrentStep == StepTagInput {
+					switch m.CurrentStep {
+					case StepTagInput:
 						m.TagModel.ManualInput += msg.String()
-					} else {
+					case StepBranchInput:
 						m.BranchModel.Input += msg.String()
+					case StepRemoteNameInput:
+						m.RemoteModel.NameInput += msg.String()
+					case StepRemoteUrlInput:
+						m.RemoteModel.UrlInput += msg.String()
 					}
 				}
 			}
@@ -965,6 +1025,6 @@ func (m Model) handleRemoteActionSelection() (tea.Model, tea.Cmd) {
 }
 
 func (m Model) handleRemoteSelection() (tea.Model, tea.Cmd) {
-	m.RemoteModel.Selected = m.RemoteModel.Options[m.Selected]
+	m.RemoteModel.SelectedOption = m.RemoteModel.Options[m.Selected]
 	return m.executeRemoteAction()
 }
