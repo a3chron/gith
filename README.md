@@ -193,7 +193,9 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [ ] View diff of changes
 
-  - [ ] Stage/unstage individual files
+  - [ ] Stage individual files
+
+  - [ ] Unstage individual files
 
 - [x] Options
 
@@ -260,7 +262,7 @@ so we don't do the same thing twice.
 
 - [ ] "remove remote" add dimmed remote url in selection -> for all add Label with name & optional description
 
-- [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, siwth these two
+- [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, switch these two
 
 - [ ] "Push Tag" Load All functionality
 
