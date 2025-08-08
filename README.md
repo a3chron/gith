@@ -58,7 +58,7 @@ This is the full setup, for only starship scroll down to the starship section.
 - [Customization](#customization)
 - [Usage in scripts](#usage-in-scripts)
 - [Troubleshooting](#troubleshooting)
-- [What is an what will be (features)](#what-is-and-what-will-be)
+- [What is and what will be (features)](#what-is-and-what-will-be)
 - [Completions](#completions)
 - [Contributing](#contributing)
 - [Thanks](#thanks)
@@ -258,15 +258,13 @@ so we don't do the same thing twice.
 
 - [ ] add confirmation for things like force branch delete
 
-- [ ] adjust version info for small terminals & imprve display / coloring
-
 - [ ] "remove remote" add dimmed remote url in selection -> for all add Label with name & optional description
 
 - [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, siwth these two
 
 - [ ] "Push Tag" Load All functionality
 
-- [ ] bug: double space before success end
+- [ ] bug: double space before success end (this could be a feature?)
 
 - [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
 
