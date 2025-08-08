@@ -31,6 +31,12 @@
 > [!WARNING]
 > Still in development
 
+> **Why should I use gith?**  
+> Well first of all, it just look good.  
+> If that doesn't convince you, it also features some improvements,
+> that _sometimes_ make working with git a little bit more convinient or faster.  
+> For an example, check out the "Add Tag" functionality (also shown in "More Images", right below the preview gif)
+
 ![](/assets/peek-usage-preview.gif)
 
 <details>
@@ -44,8 +50,8 @@
 <summary>More Images</summary>
 
 ![](/assets/preview-actions.png)
-![](/assets/preview-tags.png)
 ![](/assets/preview-status.png)
+![](/assets/preview-add-tag.png)
 
 </details>
 
@@ -273,6 +279,8 @@ so we don't do the same thing twice.
 - [ ] add commands like `gith push tag` or `gith add remote` to instantly get to selection for quicker use
 
 - [ ] move the git commands in `model.go` to `/git/xy.go`
+
+- [ ] last succes bullet still filled after finished
 
 <br />
 
