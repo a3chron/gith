@@ -270,6 +270,8 @@ so we don't do the same thing twice.
 
 - [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
 
+- [ ] add commands like `gith push tag` or `gith add remote` to instantly get to selection for quicker use
+
 <br />
 
 <p align="center">
