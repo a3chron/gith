@@ -41,17 +41,19 @@ func (m Model) renderMainView() string {
 	content.WriteString(m.renderHeader())
 	content.WriteString(m.renderOutput(line, 0)) // For initial/global output
 
-	content.WriteString(m.renderActionSelection())
-	content.WriteString(m.renderOutput(line, 1)) // Output for level 1
+	if m.StartAt == "" {
+		content.WriteString(m.renderActionSelection())
+		content.WriteString(m.renderOutput(line, 1)) // Output for level 1
+	}
 
-	if m.ActionModel.SelectedAction != "" {
+	if m.ActionModel.SelectedAction != "" || m.StartAt != "" {
 		content.WriteString(m.renderSubActions())
 		content.WriteString(m.renderOutput(line, 2)) // Output for level 2
 
 		content.WriteString(m.renderSubActions2())
 		content.WriteString(m.renderOutput(line, 3)) // Output for level 3
 
-		if m.CurrentStep == StepTagInput {
+		if m.CurrentStep == StepTagInput { // TODO: output for add remote probably needed here too?
 			content.WriteString(m.renderOutput(line, 4)) // Output for level 4
 		}
 	}
@@ -280,7 +282,7 @@ func (m Model) renderRemoteSubActions2() string {
 			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedOption) + "\n")
 		}
 	case "Add Remote":
-		content.WriteString(bullet + " " + TextStyle.Render("Add Tag") + "\n")
+		content.WriteString(bullet + " " + TextStyle.Render("Add Remote") + "\n")
 
 		if m.CurrentStep == StepRemoteNameInput {
 			// Show input field

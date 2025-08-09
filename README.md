@@ -90,6 +90,20 @@ After the installation finished, just run:
 gith
 ```
 
+Some commands like adding tags are also accessible via quick select,
+check out the [What is and what will be (features)](#what-is-and-what-will-be) section,
+to see which commands are supported.
+
+As an example, quick select for "git tag <tag>":
+
+```bash
+gith add tag
+```
+
+which will start interactive mode, but already at a point to select the tag, i.e. patch / minor / major / manual input.
+
+This approach tries to use intuitive, natural language commands, such as `gith add tag` or `gith update remote url`.
+
 ## Customization
 
 You can set your preferred flavor and accent in the Options.  
@@ -179,7 +193,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] Push Tag (prompts to confirm pusing the latest tag)
 
-  - [x] Add Tag
+  - [x] Add Tag _supports quick select_
 
 - [ ] Remote
 
@@ -276,11 +290,11 @@ so we don't do the same thing twice.
 
 - [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
 
-- [ ] add commands like `gith push tag` or `gith add remote` to instantly get to selection for quicker use
-
 - [ ] move the git commands in `model.go` to `/git/xy.go`
 
 - [ ] last succes bullet still filled after finished
+
+- [ ] resolve TODOs in code
 
 <br />
 

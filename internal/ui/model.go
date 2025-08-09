@@ -108,6 +108,7 @@ type Model struct {
 	Output        []string
 	Err           string
 	Success       string
+	StartAt       string // allows jumping directly to a specific flow when the UI loads
 }
 
 type repoUpdatedMsg struct{}
@@ -770,9 +771,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case repoUpdatedMsg:
 		m.Loading = false
-		m.CurrentStep = StepAction
-		m.Level = 1
-		return m, nil
+		// quick-start flows triggered via StartAt
+		switch strings.ToLower(m.StartAt) {
+		case "add-tag":
+			m.CurrentStep = StepTagAdd
+			m.Level = 3
+			return m.prepareTagAddition()
+		default:
+			m.CurrentStep = StepAction
+			m.Level = 1
+			return m, nil
+		}
 
 	case repoUpdateErrorMsg:
 		m.Loading = false
