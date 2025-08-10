@@ -35,7 +35,7 @@
 > It brings little quality-of-life improvements that can make
 > working with git feel smoother and sometimes even a bit quicker.
 > For example, the “Add Tag” feature (also shown under “More Images” below the preview GIF)
-> adds a nice touch to your workflow.  
+> offers Patch / Minor / Major besides the Manual Input of tags.
 > Apart from that, it also just looks good ;)
 
 ![](/assets/peek-usage-preview.gif)
