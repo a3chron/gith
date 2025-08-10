@@ -31,11 +31,12 @@
 > [!WARNING]
 > Still in development
 
-> **Why should I use gith?**  
-> Well first of all, it just look good.  
-> If that doesn't convince you, it also features some improvements,
-> that _sometimes_ make working with git a little bit more convinient or faster.  
-> For an example, check out the "Add Tag" functionality (also shown in "More Images", right below the preview gif)
+> **Why try gith?**  
+> It brings little quality-of-life improvements that can make
+> working with git feel smoother and sometimes even a bit quicker.
+> For example, the “Add Tag” feature (also shown under “More Images” below the preview GIF)
+> adds a nice touch to your workflow.  
+> Apart from that, it also just looks good ;)
 
 ![](/assets/peek-usage-preview.gif)
 
