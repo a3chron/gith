@@ -109,6 +109,7 @@ type Model struct {
 	Err           string
 	Success       string
 	StartAt       string // allows jumping directly to a specific flow when the UI loads
+	StartAtLevel  int
 }
 
 type repoUpdatedMsg struct{}
@@ -241,6 +242,7 @@ func (m *Model) resetState() {
 	m.Output = []string{} // TODO add m.Output[0] if exisiting
 	m.Err = ""
 	m.Success = ""
+	m.StartAt = ""
 }
 
 func (m *Model) outputByLevel(out string) {
@@ -772,12 +774,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case repoUpdatedMsg:
 		m.Loading = false
 		// quick-start flows triggered via StartAt
-		switch strings.ToLower(m.StartAt) {
+		switch m.StartAt {
 		case "add-tag":
-			m.CurrentStep = StepTagAdd
-			m.Level = 3
-			return m.prepareTagAddition()
+			m.prepareTagAddition()
+			m.ActionModel.SelectedAction = "Tag"
+			m.TagModel.SelectedAction = "Add Tag"
+			return m, nil
 		default:
+			// default behaviour, start from beginning
 			m.CurrentStep = StepAction
 			m.Level = 1
 			return m, nil
@@ -785,10 +789,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case repoUpdateErrorMsg:
 		m.Loading = false
-		m.CurrentStep = StepAction
-		m.outputByLevel("Failed to fetch from remote")
-		m.Level = 1
-		return m, nil
+		// Even if fetch fails (e.g., no remotes/offline), still honor quick-start flows
+		switch m.StartAt {
+		case "add-tag":
+			m.outputByLevel("Failed to fetch from remote")
+			m.prepareTagAddition()
+			m.ActionModel.SelectedAction = "Tag"
+			m.TagModel.SelectedAction = "Add Tag"
+			return m, nil
+		default:
+			m.CurrentStep = StepAction
+			m.outputByLevel("Failed to fetch from remote")
+			m.Level = 1
+			return m, nil
+		}
 
 	case spinner.TickMsg:
 		m.Spinner, _ = m.Spinner.Update(msg)

@@ -296,6 +296,8 @@ so we don't do the same thing twice.
 
 - [ ] resolve TODOs in code
 
+- [ ] add completions for quick select
+
 <br />
 
 <p align="center">

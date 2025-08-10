@@ -65,17 +65,20 @@ func initialModel() ui.Model {
 			Flavors: config.GetAvailableFlavors(),
 			Accents: config.GetAvailableAccents(),
 		},
-		Selected: 0,
-		Level:    0,
-		Spinner:  s,
+		Selected:     0,
+		Level:        0,
+		StartAt:      "",
+		StartAtLevel: 0,
+		Spinner:      s,
 	}
 }
 
 // initialModelWithStart returns the base model but allows setting a quick-start flow.
-func initialModelWithStart(startAt string) ui.Model {
-    m := initialModel()
-    m.StartAt = startAt
-    return m
+func initialModelWithStart(startAt string, startAtLevel int) ui.Model {
+	m := initialModel()
+	m.StartAt = startAt
+	m.StartAtLevel = startAtLevel
+	return m
 }
 
 func main() {
@@ -117,30 +120,30 @@ func run() error {
 }
 
 // runQuick starts the UI directly at a specific flow (e.g., add-tag).
-func runQuick(startAt string) error {
-    cfg, err := config.LoadConfig()
-    if err != nil {
-        // Fall back to defaults if config loading fails
-        fmt.Fprintf(os.Stderr, "Warning: failed to load config, using defaults: %v\n", err)
-        cfg = &config.Config{
-            Accent: config.DefaultConfig.Accent,
-            Flavor: config.DefaultConfig.Flavor,
-        }
-    }
+func runQuick(startAt string, startAtLevel int) error {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		// Fall back to defaults if config loading fails
+		fmt.Fprintf(os.Stderr, "Warning: failed to load config, using defaults: %v\n", err)
+		cfg = &config.Config{
+			Accent: config.DefaultConfig.Accent,
+			Flavor: config.DefaultConfig.Flavor,
+		}
+	}
 
-    // Initialize styles with the loaded config
-    ui.UpdateStylesByConfig(cfg)
+	// Initialize styles with the loaded config
+	ui.UpdateStylesByConfig(cfg)
 
-    isRepo, err := internal.IsGitRepository()
-    if err != nil || !isRepo {
-        return fmt.Errorf("not in a git repository")
-    }
+	isRepo, err := internal.IsGitRepository()
+	if err != nil || !isRepo {
+		return fmt.Errorf("not in a git repository")
+	}
 
-    p := tea.NewProgram(initialModelWithStart(startAt))
-    if _, err := p.Run(); err != nil {
-        return fmt.Errorf("failed to run program: %w", err)
-    }
-    return nil
+	p := tea.NewProgram(initialModelWithStart(startAt, startAtLevel))
+	if _, err := p.Run(); err != nil {
+		return fmt.Errorf("failed to run program: %w", err)
+	}
+	return nil
 }
 
 func handleCliArgs() error {
@@ -175,11 +178,11 @@ func handleCliArgs() error {
 		}
 		switch os.Args[2] {
 		case "tag":
-            // Start UI directly at tag add selection
-            return runQuick("add-tag")
+			// Start UI directly at tag add selection
+			return runQuick("add-tag", 3)
 		case "remote":
-            // TODO: implement quick remote add input path
-            return fmt.Errorf("add remote: not implemented yet")
+			// TODO: implement quick remote add input path
+			return fmt.Errorf("'add remote' not implemented yet")
 		default:
 			os.Exit(1)
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
