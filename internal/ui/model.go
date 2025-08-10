@@ -771,8 +771,13 @@ func (m Model) handleOptionsAccentSelection() (tea.Model, tea.Cmd) {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case repoUpdatedMsg:
+	case repoUpdatedMsg, repoUpdateErrorMsg:
 		m.Loading = false
+
+		if _, isErr := msg.(repoUpdateErrorMsg); isErr {
+			m.outputByLevel("Failed to fetch from remote")
+		}
+
 		// quick-start flows triggered via StartAt
 		switch m.StartAt {
 		case "add-tag":
@@ -781,25 +786,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.TagModel.SelectedAction = "Add Tag"
 			return m, nil
 		default:
-			// default behaviour, start from beginning
 			m.CurrentStep = StepAction
-			m.Level = 1
-			return m, nil
-		}
-
-	case repoUpdateErrorMsg:
-		m.Loading = false
-		// Even if fetch fails (e.g., no remotes/offline), still honor quick-start flows
-		switch m.StartAt {
-		case "add-tag":
-			m.outputByLevel("Failed to fetch from remote")
-			m.prepareTagAddition()
-			m.ActionModel.SelectedAction = "Tag"
-			m.TagModel.SelectedAction = "Add Tag"
-			return m, nil
-		default:
-			m.CurrentStep = StepAction
-			m.outputByLevel("Failed to fetch from remote")
 			m.Level = 1
 			return m, nil
 		}
