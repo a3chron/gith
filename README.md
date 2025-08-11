@@ -35,7 +35,7 @@
 > It brings little quality-of-life improvements that can make
 > working with git feel smoother and sometimes even a bit quicker.
 > For example, the “Add Tag” feature (also shown under “More Images” below the preview GIF)
-> offers Patch / Minor / Major besides the Manual Input of tags.
+> offers Patch / Minor / Major besides the Manual Input of tags.  
 > Apart from that, it also just looks good ;)
 
 ![](/assets/peek-usage-preview.gif)
@@ -164,7 +164,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
 - [x] Branch
 
-  - [x] Switch Branch (supports checking out remote branches locally)
+  - [x] Switch Branch
 
   - [x] List Branches
 
@@ -188,13 +188,13 @@ go: downloading github.com/a3chron/gith v0.6.0
 
 - [x] Tag
 
-  - [x] List Tags (shows 10 latest, sorted by semantic versioning)
+  - [x] List Tags
 
   - [x] Remove Tag
 
-  - [x] Push Tag (prompts to confirm pusing the latest tag)
+  - [x] Push Tag
 
-  - [x] Add Tag _supports quick select_
+  - [x] Add Tag _-- supports quick select --_
 
 - [ ] Remote
 
@@ -249,8 +249,9 @@ gith completion zsh > ~/.local/share/zsh/site-functions/_gith
 
 ## Contributing
 
-Contributions are welcome, but please remember to use [conventional commits](https://www.conventionalcommits.org/) (at least when naming the PR).
-For features or possible improvements please create an issue.
+Contributions are welcome, please use [conventional commits](https://www.conventionalcommits.org/) for constant commit message style.
+If you struggle with conventinal commits, check out [Meteor](https://github.com/stefanlogue/meteor).  
+For feature requests or possible improvements please create an issue.
 
 Build using:
 
@@ -267,7 +268,7 @@ Then run with:
 ## Thanks
 
 - [BubbleTea](https://github.com/charmbracelet/bubbletea) for making it possible to build this
-- [opencode](https://github.com/opencode-ai/opencode) for the design inspiration (I copied their starting dialog 1:1)
+- [opencode](https://github.com/opencode-ai/opencode) for the design inspiration (copied their starting dialog 1:1)
 
 ## TODOs
 
