@@ -368,6 +368,10 @@ Usage:
   gith version             Show version information  
   gith version check       Show version & check for updates
 
+  // Quick Selects - Jump right to a specific selection
+  gith add tag             Quick Select: Add Tag
+  gith push tag            Quick Select: Push Tag
+
   gith config help         Show config related help message
   gith help                Show this help message
 

@@ -294,11 +294,9 @@ so we don't do the same thing twice.
 
 - [ ] move the git commands in `model.go` to `/git/xy.go`
 
-- [ ] last succes bullet still filled after finished
+- [ ] bug: last success bullet still filled after finished
 
 - [ ] resolve TODOs in code
-
-- [ ] add completions for quick select
 
 <br />
 
