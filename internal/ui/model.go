@@ -784,12 +784,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.prepareTagAddition()
 			m.ActionModel.SelectedAction = "Tag"
 			m.TagModel.SelectedAction = "Add Tag"
-			return m, nil
+
+		case "push-tag":
+			m.prepareTagSelection()
+			m.ActionModel.SelectedAction = "Tag"
+			m.TagModel.SelectedAction = "Push Tag"
+
 		default:
 			m.CurrentStep = StepAction
 			m.Level = 1
-			return m, nil
 		}
+
+		return m, nil
 
 	case spinner.TickMsg:
 		m.Spinner, _ = m.Spinner.Update(msg)

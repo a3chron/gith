@@ -192,7 +192,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] Remove Tag
 
-  - [x] Push Tag
+  - [x] Push Tag _-- supports quick select --_
 
   - [x] Add Tag _-- supports quick select --_
 

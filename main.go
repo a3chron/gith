@@ -188,6 +188,20 @@ func handleCliArgs() error {
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
 		}
 
+	case "push":
+		if len(os.Args) != 3 {
+			fmt.Fprintf(os.Stderr, "Usage: gith push tag\n")
+			os.Exit(1)
+		}
+		switch os.Args[2] {
+		case "tag":
+			// Start UI directly at push tag selection
+			return runQuick("push-tag", 3)
+		default:
+			os.Exit(1)
+			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
+		}
+
 	default:
 		return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1])
 	}
