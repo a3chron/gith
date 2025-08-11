@@ -2,7 +2,7 @@
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version config help)' \
+        '1:command:(version config help add push)' \
         '*::arg:->args'
     
     case $state in
@@ -16,6 +16,12 @@ _gith() {
                         '1:subcommand:(show reset path update help)' \
                         '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
                         '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
+                    ;;
+                add)
+                    _arguments '1:subcommand:(tag)'
+                    ;;
+                push)
+                    _arguments '1:subcommand:(tag)'
                     ;;
             esac
             ;;

@@ -7,7 +7,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version config help"
+            opts="version config help add push"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -18,6 +18,16 @@ _gith() {
             ;;
         config)
             opts="show reset path update help"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        add)
+            opts="tag"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        push)
+            opts="tag"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;

@@ -397,11 +397,13 @@ func GenerateCompletions(shell string) error {
 	case "fish":
 		fmt.Print(`# Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version config help" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version config help add push" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l accent -d "Catppuccin accent" -a "rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender"
+complete -c gith -n "__fish_seen_subcommand_from add" -a "tag" -d "Quick Select: Add Tag"
+complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
 complete -c gith -s h -l help -d "Show help"
 `)
 	case "bash":
@@ -414,7 +416,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version config help"
+            opts="version config help add push"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -425,6 +427,16 @@ _gith() {
             ;;
         config)
             opts="show reset path update help"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        add)
+            opts="tag"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        push)
+            opts="tag"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -447,7 +459,7 @@ complete -F _gith gith
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version config help)' \
+        '1:command:(version config help add push)' \
         '*::arg:->args'
     
     case $state in
@@ -461,6 +473,12 @@ _gith() {
                         '1:subcommand:(show reset path update help)' \
                         '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
                         '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
+                    ;;
+                add)
+                    _arguments '1:subcommand:(tag)'
+                    ;;
+                push)
+                    _arguments '1:subcommand:(tag)'
                     ;;
             esac
             ;;
