@@ -28,9 +28,6 @@
 	<a href="https://github.com/a3chron/gith/actions/workflows/lint.yaml"><img src="https://img.shields.io/github/check-runs/a3chron/gith/main?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
 </p>
 
-> [!WARNING]
-> Still in development
-
 > **Why try gith?**  
 > It brings little quality-of-life improvements that can make
 > working with git feel smoother and sometimes even a bit quicker.
