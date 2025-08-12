@@ -270,6 +270,12 @@ Then run with:
 - [BubbleTea](https://github.com/charmbracelet/bubbletea) for making it possible to build this
 - [opencode](https://github.com/opencode-ai/opencode) for the design inspiration (copied their starting dialog 1:1)
 
+## Support
+
+If you want to support me, feel free to upvote gith on producthunt, and give some feedback :)
+
+<a href="https://www.producthunt.com/products/gith?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-gith&#0045;beta" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1004160&theme=neutral&t=1754987210952" alt="Gith&#0032;&#0040;beta&#0041; - A&#0032;Terminal&#0032;UI&#0032;for&#0032;git | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 ## TODOs
 
 This is mostly a list for me, but here so you can see what you don't need to create an issue for.
