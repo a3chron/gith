@@ -376,14 +376,9 @@ func (m *Model) deleteBranch() (*Model, tea.Cmd) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		m.outputByLevel(string(output) + "\n")
-		// If that fails, try force delete
-		cmd = exec.Command("git", "branch", "-D", m.BranchModel.SelectedBranch)
-		output, err = cmd.CombinedOutput()
-		if err != nil {
-			m.Err = fmt.Sprintf("Delete failed: %s", string(output))
-		} else {
-			m.Success = fmt.Sprintf("Force deleted branch '%s'", m.BranchModel.SelectedBranch)
-		}
+		// suggest force delete:
+		m.outputByLevel("\\cpTo force delete use: \ngit branch -D" + m.BranchModel.SelectedBranch)
+		m.Err = "Delete failed"
 	} else {
 		m.outputByLevel(string(output) + "\n")
 		m.Success = fmt.Sprintf("Deleted branch '%s'", m.BranchModel.SelectedBranch)

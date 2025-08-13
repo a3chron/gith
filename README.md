@@ -165,7 +165,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] List Branches
 
-  - [x] Delete Branch (with fallback to force delete)
+  - [x] Delete Branch
 
   - [x] Create Branch
 

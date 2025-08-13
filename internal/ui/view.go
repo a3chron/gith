@@ -559,7 +559,9 @@ func (m Model) renderOutput(line string, level int) string {
 					renderedLines = append(renderedLines, line+" "+GreenStyle.Render(text))
 				case "y":
 					renderedLines = append(renderedLines, line+" "+YellowStyle.Render(text))
-				case "r":
+				case "p", "w":
+					renderedLines = append(renderedLines, line+" "+PeachStyle.Render(text))
+				case "r", "e":
 					renderedLines = append(renderedLines, line+" "+RedStyle.Render(text))
 				case "t":
 					renderedLines = append(renderedLines, line+" "+TextStyle.Render(text))

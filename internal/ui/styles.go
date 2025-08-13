@@ -23,6 +23,7 @@ var (
 	ContainerStyle lipgloss.Style
 	GreenStyle     lipgloss.Style
 	YellowStyle    lipgloss.Style
+	PeachStyle	   lipgloss.Style
 	RedStyle       lipgloss.Style
 )
 
@@ -80,6 +81,9 @@ func UpdateStyles(flavor catppuccingo.Flavor, accentColor catppuccingo.Color) {
 
 	YellowStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color(flavor.Yellow().Hex))
+
+	PeachStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color(flavor.Peach().Hex))
 
 	RedStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color(flavor.Red().Hex))
