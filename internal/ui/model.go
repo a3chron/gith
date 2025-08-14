@@ -324,14 +324,14 @@ func (m Model) handleBranchCreateSelection() (tea.Model, tea.Cmd) {
 	if m.BranchModel.SelectedOption == "Manual Input" {
 		// Switch to input mode
 		m.BranchModel.Input = ""
-		m.CurrentStep = StepBranchInput
-		return m, nil
 	} else {
 		// Add prefix to input & switch to input mode
 		m.BranchModel.Input = m.BranchModel.SelectedOption
-		m.CurrentStep = StepBranchInput
-		return m, nil
 	}
+
+	m.Selected = 0
+	m.CurrentStep = StepBranchInput
+	return m, nil
 }
 
 // function to handle manual branch input submission
@@ -1020,6 +1020,7 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 		m.CurrentStep = StepRemote
 		m.Level = 2
 	case "Changes":
+		m.Selected = 0
 		m.CurrentStep = StepChanges
 		m.Level = 2
 		m.Err = "Changes will come here soon"
@@ -1057,6 +1058,7 @@ func (m Model) handleCommitSelection() (tea.Model, tea.Cmd) {
 	}
 
 	m.Level = 3
+	m.Selected = 0
 	m.CurrentStep = StepCommitSelectPrefix
 	return m, nil
 }
@@ -1068,6 +1070,7 @@ func (m Model) handleCommitPrefixSelection() (tea.Model, tea.Cmd) {
 		m.CommitModel.CommitMessage = m.CommitModel.SelectedPrefix + ": "
 	}
 
+	m.Selected = 0
 	m.CurrentStep = StepCommitInput
 	return m, nil
 }
