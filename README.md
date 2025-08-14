@@ -135,8 +135,8 @@ light and dark mode in all your catppuccin themed apps.
 
 > [!NOTE]
 > If you get any output when running `go install github.com/a3chron/gith@latest`,
-> you probably don't have this issue.  
-> Consider opening an issue.
+> you probably just discovered some other bug.  
+> Consider opening an issue at [Featurebase](https://gith.featurebase.app/) or GitHub.
 
 Sometimes it takes some time for the go proxy server to recognize a new release,
 so it is possible that the latest release for the proxy server is still the old one.
@@ -158,6 +158,8 @@ go: downloading github.com/a3chron/gith v0.6.0
 > or by simply running `gith version check`
 
 ## What is and what will be
+
+**You can view the Roadmap / upvote Feature Requests and Bugs at [Featurebase](https://gith.featurebase.app/).**
 
 - [x] Branch
 
@@ -248,7 +250,7 @@ gith completion zsh > ~/.local/share/zsh/site-functions/_gith
 
 Contributions are welcome, please use [conventional commits](https://www.conventionalcommits.org/) for constant commit message style.
 If you reaaally struggle with conventinal commits, check out [Meteor](https://github.com/stefanlogue/meteor), or just use gith's built in commit feature.  
-For feature requests or possible improvements please create an issue.
+For feature requests or possible improvements please create an issue at [Featurebase](https://gith.featurebase.app/).
 
 Build using:
 
@@ -270,48 +272,9 @@ Then run with:
 ## Support
 
 If you want to support me, feel free to upvote gith on producthunt, and give some feedback :)
+You can also upvote feature requests or bugs that you want fixed at [Featurebase](https://gith.featurebase.app/).
 
 <a href="https://www.producthunt.com/products/gith?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-gith&#0045;beta" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1004160&theme=neutral&t=1754987210952" alt="Gith&#0032;&#0040;beta&#0041; - A&#0032;Terminal&#0032;UI&#0032;for&#0032;git | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-
-## TODOs
-
-This is mostly a list for me, but here so you can see what you don't need to create an issue for.
-Also good starting point if you'd want to contribute, but please create an issue stating that you started working on it,
-so we don't do the same thing twice.
-
-- [ ] add loading states when fetching sth
-
-- [ ] improve remove tag only show n latest tags with "pagination" instead of optional show all
-
-- [ ] add confirmation for things like force branch delete
-
-- [ ] "remove remote" add dimmed remote url in selection -> for all add Label with name & optional description
-
-- [ ] clarify "out, err := git.GetRemotes(); m.Err = out" logic, switch these two
-
-- [ ] "Push Tag" Load All functionality
-
-- [ ] bug: double space before success end (this could be a feature?)
-
-- [ ] delete tag deletes localy not remote, for remote: git push origin --delete <tagname>
-
-- [ ] move the git commands in `model.go` to `/git/xy.go`
-
-- [ ] bug: last success bullet still filled after finished
-
-- [ ] resolve TODOs in code
-
-- [ ] make ctrl+h work for startAt too
-
-- [ ] add dimmed info to commit prefixes
-
-- [ ] improve all inputs (can't go back with cursor currently, only backspace and add at end)
-
-- [ ] major refactor to clean up a little
-
-- [ ] move todos too feature board / project board
-
-- [ ] add commit quick selects (gith commit, gith commit all)
 
 <br />
 
