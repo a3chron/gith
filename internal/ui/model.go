@@ -24,7 +24,9 @@ const (
 	StepBranchCreate
 	StepBranchInput
 
-	StepCommit
+	StepCommitAction
+	StepCommitSelectPrefix
+	StepCommitInput
 
 	StepTag
 	StepTagSelect
@@ -61,6 +63,9 @@ type BranchModel struct {
 type CommitModel struct {
 	Actions        []string
 	SelectedAction string
+	CommitPrefixes []string
+	SelectedPrefix string
+	CommitMessage  string
 }
 
 type TagModel struct {
@@ -143,8 +148,10 @@ func (m Model) getCurrentOptions() []string {
 	case StepBranchCreate:
 		return m.BranchModel.Options
 
-	case StepCommit:
+	case StepCommitAction:
 		return m.CommitModel.Actions
+	case StepCommitSelectPrefix:
+		return m.CommitModel.CommitPrefixes
 
 	case StepTag:
 		return m.TagModel.Actions
@@ -172,7 +179,7 @@ func (m Model) getCurrentOptions() []string {
 // isInputStep returns true if the current step expects free-text input
 func isInputStep(step Step) bool {
 	switch step {
-	case StepTagInput, StepBranchInput, StepRemoteNameInput, StepRemoteUrlInput:
+	case StepTagInput, StepBranchInput, StepRemoteNameInput, StepRemoteUrlInput, StepCommitInput:
 		return true
 	default:
 		return false
@@ -222,6 +229,8 @@ func (m *Model) resetState() {
 	m.BranchModel.Input = ""
 
 	m.CommitModel.SelectedAction = ""
+	m.CommitModel.SelectedPrefix = ""
+	m.CommitModel.CommitMessage = ""
 
 	m.TagModel.SelectedAction = ""
 	m.TagModel.SelectedOption = ""
@@ -293,8 +302,6 @@ func (m *Model) handleBranchOperation() (*Model, tea.Cmd) {
 }
 
 func (m *Model) prepareBranchAddition() (*Model, tea.Cmd) {
-	m.BranchModel.Options = []string{"feat/", "fix/", "refactor/", "docs/", "Manual Input"}
-
 	m.Selected = 0
 	m.CurrentStep = StepBranchCreate
 	m.Level = 3
@@ -383,6 +390,32 @@ func (m *Model) deleteBranch() (*Model, tea.Cmd) {
 		m.outputByLevel(string(output) + "\n")
 		m.Success = fmt.Sprintf("Deleted branch '%s'", m.BranchModel.SelectedBranch)
 	}
+	return m, tea.Quit
+}
+
+// function to handle commit message submission
+func (m *Model) handleCommitMessageSubmit() (*Model, tea.Cmd) {
+	if strings.TrimSpace(m.CommitModel.CommitMessage) == "" {
+		m.Err = "Commit message cannot be empty"
+		return m, tea.Quit
+	}
+
+	var out string
+	var err error
+
+	if m.CommitModel.SelectedAction == "Commit Staged" {
+		out, err = git.CommitStaged(m.CommitModel.CommitMessage)
+	} else {
+		out, err = git.CommitAll(m.CommitModel.CommitMessage)
+	}
+
+	if err != nil {
+		m.outputByLevel("\\ceError:\n" + out)
+		m.Err = "Failed to Commit"
+	} else {
+		m.Success = "Commited Changes"
+	}
+
 	return m, tea.Quit
 }
 
@@ -831,6 +864,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						m.Success = fmt.Sprintf("Added Remote '%s' -> %s", m.RemoteModel.NameInput, m.RemoteModel.UrlInput)
 					}
 					return m, tea.Quit
+				case StepCommitInput:
+					return m.handleCommitMessageSubmit()
 				}
 			case "backspace":
 				switch m.CurrentStep {
@@ -850,6 +885,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					if len(m.RemoteModel.UrlInput) > 0 {
 						m.RemoteModel.UrlInput = m.RemoteModel.UrlInput[:len(m.RemoteModel.UrlInput)-1]
 					}
+				case StepCommitInput:
+					if len(m.CommitModel.CommitMessage) > 0 {
+						m.CommitModel.CommitMessage = m.CommitModel.CommitMessage[:len(m.CommitModel.CommitMessage)-1]
+					}
 				}
 			default:
 				// Add character to input
@@ -863,6 +902,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						m.RemoteModel.NameInput += msg.String()
 					case StepRemoteUrlInput:
 						m.RemoteModel.UrlInput += msg.String()
+					case StepCommitInput:
+						m.CommitModel.CommitMessage += msg.String()
 					}
 				}
 			}
@@ -901,11 +942,11 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.handleBranchSelection()
 	case StepBranchCreate:
 		return m.handleBranchCreateSelection()
-	case StepBranchInput:
-		return m.handleBranchInputSubmit()
 
-	case StepCommit:
+	case StepCommitAction:
 		return m.handleCommitSelection()
+	case StepCommitSelectPrefix:
+		return m.handleCommitPrefixSelection()
 
 	case StepTag:
 		return m.handleTagActionSelection()
@@ -913,8 +954,6 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.handleTagSelection()
 	case StepTagAdd:
 		return m.handleTagAddSelection()
-	case StepTagInput:
-		return m.handleTagInputSubmit()
 
 	case StepRemote:
 		return m.handleRemoteActionSelection()
@@ -970,7 +1009,7 @@ func (m Model) handleActionSelection() (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 	case "Commit":
 		m.Selected = 0
-		m.CurrentStep = StepCommit
+		m.CurrentStep = StepCommitAction
 		m.Level = 2
 	case "Tag":
 		m.Selected = 0
@@ -1006,8 +1045,7 @@ func (m Model) handleBranchSelection() (tea.Model, tea.Cmd) {
 func (m Model) handleCommitSelection() (tea.Model, tea.Cmd) {
 	m.CommitModel.SelectedAction = m.CommitModel.Actions[m.Selected]
 
-	switch m.CommitModel.SelectedAction {
-	case "Undo Last Commit":
+	if m.CommitModel.SelectedAction == "Undo Last Commit" {
 		out, err := git.UndoLastCommit()
 		m.outputByLevel(out)
 		if err != nil {
@@ -1017,6 +1055,20 @@ func (m Model) handleCommitSelection() (tea.Model, tea.Cmd) {
 		}
 		return m, tea.Quit
 	}
+
+	m.Level = 3
+	m.CurrentStep = StepCommitSelectPrefix
+	return m, nil
+}
+
+func (m Model) handleCommitPrefixSelection() (tea.Model, tea.Cmd) {
+	m.CommitModel.SelectedPrefix = m.CommitModel.CommitPrefixes[m.Selected]
+
+	if m.CommitModel.SelectedPrefix != "Custom Prefix" {
+		m.CommitModel.CommitMessage = m.CommitModel.SelectedPrefix + ": "
+	}
+
+	m.CurrentStep = StepCommitInput
 	return m, nil
 }
 

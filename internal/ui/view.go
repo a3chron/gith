@@ -57,7 +57,7 @@ func (m Model) renderMainView() string {
 			content.WriteString(m.renderOutput(line, 3)) // Output for level 3
 		}
 
-		if m.CurrentStep == StepTagInput { // TODO: output for add remote probably needed here too?
+		if isInputStep(m.CurrentStep) { // TODO: check if for all output this many levels
 			content.WriteString(m.renderOutput(line, 4)) // Output for level 4
 		}
 	}
@@ -117,6 +117,8 @@ func (m Model) renderSubActions2() string {
 	switch m.ActionModel.SelectedAction {
 	case "Branch":
 		return m.renderBranchSubActions2()
+	case "Commit":
+		return m.renderCommitSubActions2()
 	case "Tag":
 		return m.renderTagSubActions2()
 	case "Remote":
@@ -196,11 +198,40 @@ func (m Model) renderCommitActions() string {
 
 	if m.CommitModel.SelectedAction == "" && len(m.CommitModel.Actions) > 0 {
 		if m.Err == "" {
-			content.WriteString(m.renderOptions(m.CommitModel.Actions, m.CurrentStep == StepCommit))
+			content.WriteString(m.renderOptions(m.CommitModel.Actions, m.CurrentStep == StepCommitAction))
 			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else if m.CommitModel.SelectedAction != "" {
 		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
+	}
+
+	return content.String()
+}
+
+// renderCommitSubActions2 handles input of a commit message
+func (m Model) renderCommitSubActions2() string {
+	var content strings.Builder
+	bullet := m.getBullet(3)
+
+	switch m.CommitModel.SelectedAction {
+	case "Commit Staged", "Commit All":
+		content.WriteString(bullet + " " + TextStyle.Render("Select prefix") + "\n")
+
+		if m.CommitModel.SelectedPrefix == "" {
+			// Show prefix options (feat, fix, ...)
+			if len(m.CommitModel.CommitPrefixes) > 0 && m.Err == "" {
+				content.WriteString(m.renderOptions(m.CommitModel.CommitPrefixes, true))
+				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else if m.CurrentStep == StepCommitInput {
+			// Show input field
+			if m.Err == "" {
+				content.WriteString(m.renderCommitMessageInput())
+			}
+		} else {
+			// Show completed selection
+			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.CommitMessage) + "\n")
+		}
 	}
 
 	return content.String()
@@ -488,6 +519,30 @@ func (m Model) renderBranchInput() string {
 	if m.Success == "" {
 		line = AccentStyle.Render("│")
 		content.WriteString(line + " " + NormalStyle.Render("Enter branch name:") + "\n")
+	}
+
+	// Add cursor at the end
+	displayText := inputText + cursor
+
+	if m.Success == "" {
+		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+	} else {
+		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+	}
+
+	return content.String()
+}
+
+func (m Model) renderCommitMessageInput() string {
+	var content strings.Builder
+	cursor := "_"
+	line := LineStyle.Render("│")
+	inputText := m.CommitModel.CommitMessage
+
+	if m.Success == "" {
+		line = AccentStyle.Render("│")
+		content.WriteString(line + " " + NormalStyle.Render("Enter commit message:") + "\n")
 	}
 
 	// Add cursor at the end

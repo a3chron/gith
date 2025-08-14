@@ -177,9 +177,9 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] Undo Last Commit
 
-  - [ ] Commit staged changes
+  - [x] Commit staged changes
 
-  - [ ] Commit all changes
+  - [x] Commit all changes
 
   - [ ] Amend last commit
 
@@ -247,7 +247,7 @@ gith completion zsh > ~/.local/share/zsh/site-functions/_gith
 ## Contributing
 
 Contributions are welcome, please use [conventional commits](https://www.conventionalcommits.org/) for constant commit message style.
-If you struggle with conventinal commits, check out [Meteor](https://github.com/stefanlogue/meteor).  
+If you reaaally struggle with conventinal commits, check out [Meteor](https://github.com/stefanlogue/meteor), or just use gith's built in commit feature.  
 For feature requests or possible improvements please create an issue.
 
 Build using:
@@ -281,7 +281,7 @@ so we don't do the same thing twice.
 
 - [ ] add loading states when fetching sth
 
-- [ ] improve remove tag only show n latest tags wiht "pagination" instead of optional show all
+- [ ] improve remove tag only show n latest tags with "pagination" instead of optional show all
 
 - [ ] add confirmation for things like force branch delete
 
@@ -300,6 +300,10 @@ so we don't do the same thing twice.
 - [ ] bug: last success bullet still filled after finished
 
 - [ ] resolve TODOs in code
+
+- [ ] make ctrl+h work for startAt too
+
+- [ ] add dimmed info to commit prefixes
 
 <br />
 

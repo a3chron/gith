@@ -50,9 +50,11 @@ func initialModel() ui.Model {
 		},
 		BranchModel: ui.BranchModel{
 			Actions: []string{"Switch Branch", "Create Branch", "List Branches", "Delete Branch"},
+			Options: []string{"feat/", "fix/", "refactor/", "docs/", "Manual Input"},
 		},
 		CommitModel: ui.CommitModel{
-			Actions: []string{"Undo Last Commit"},
+			Actions:        []string{"Commit Staged", "Commit All", "Undo Last Commit"},
+			CommitPrefixes: []string{"feat", "fix", "build", "chore", "ci", "test", "perf", "refactor", "revert", "style", "docs", "Custom Prefix"},
 		},
 		TagModel: ui.TagModel{
 			Actions: []string{"Add Tag", "Remove Tag", "List Tags", "Push Tag"},
