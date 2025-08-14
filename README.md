@@ -305,6 +305,10 @@ so we don't do the same thing twice.
 
 - [ ] add dimmed info to commit prefixes
 
+- [ ] improve all inputs (can't go back with cursor currently, only backspace and add at end)
+
+- [ ] major refactor to clean up a little
+
 <br />
 
 <p align="center">
