@@ -59,6 +59,7 @@ This is the full setup, for only starship scroll down to the starship section.
 ## Table of Contents
 
 - [Installation](#installation)
+- [Usage](#usage)
 - [Customization](#customization)
 - [Usage in scripts](#usage-in-scripts)
 - [Troubleshooting](#troubleshooting)
@@ -70,17 +71,13 @@ This is the full setup, for only starship scroll down to the starship section.
 
 ## Installation
 
-> [!NOTE]
-> If you don't have Go installed, check out the [gith project page](https://a3chron.vercel.app/projects/gith),
-> Go installation is included there.
+If you already have Go installed, or plan to do so (easy to get new updates):
+[Install via Go](https://gith.featurebase.app/help/articles/6375101-installation-via-go)
 
-Install directly using Go
+Otherwise you can install gith via Binaries:
+[Install via Binaries](https://gith.featurebase.app/help/articles/2452108-installation-via-binaries)
 
-```bash
-go install github.com/a3chron/gith@latest
-```
-
-or using one of the [pre-built releases](https://github.com/a3chron/gith/releases/latest).
+## Usage
 
 After the installation finished, just run:
 
