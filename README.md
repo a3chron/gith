@@ -309,6 +309,10 @@ so we don't do the same thing twice.
 
 - [ ] major refactor to clean up a little
 
+- [ ] move todos too feature board / project board
+
+- [ ] add commit quick selects (gith commit, gith commit all)
+
 <br />
 
 <p align="center">
