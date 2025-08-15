@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -52,7 +51,7 @@ type VersionComparison struct {
 func Update() error {
 	out, err := exec.Command("go", "install", "github.com/a3chron/gith@latest").CombinedOutput()
 
-	fmt.Fprintf(os.Stdout, "%s", string(out))
+	fmt.Println(string(out))
 
 	if err != nil {
 		return fmt.Errorf("failed to update gith: %w", err)
