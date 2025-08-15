@@ -92,12 +92,13 @@ to see which commands are supported.
 As an example, quick select for "git tag <tag>":
 
 ```bash
-gith add tag
+gith tag
 ```
 
 which will start interactive mode, but already at a point to select the tag, i.e. patch / minor / major / manual input.
 
-This approach tries to use intuitive, natural language commands, such as `gith add tag` or `gith update remote url`.
+This approach tries to use intuitive, natural language commands,
+combined with the usual git commands, for example `gith tag` or `gith update remote url`.
 
 ## Customization
 

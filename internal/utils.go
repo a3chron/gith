@@ -363,17 +363,19 @@ func PrintHelp() {
 	fmt.Print(`gith - TUI Git Helper
 
 Usage:
-  gith                     Start interactive mode
+  gith                      Start interactive mode
 
-  gith version             Show version information  
-  gith version check       Show version & check for updates
+  gith version              Show version information  
+  gith version check        Show version & check for updates
 
   // Quick Selects - Jump right to a specific selection
-  gith add tag             Quick Select: Add Tag
-  gith push tag            Quick Select: Push Tag
+  gith tag             	    Add Tag
+  gith push tag             Push Tag
+  gith commit [staged]		Commit Staged
+  gith commit all			Commit All Files
 
-  gith config help         Show config related help message
-  gith help                Show this help message
+  gith config help          Show config related help message
+  gith help                 Show this help message
 
 Interactive Commands:
   ↑↓ or j/k            Navigate menu items
@@ -401,14 +403,13 @@ func GenerateCompletions(shell string) error {
 	case "fish":
 		fmt.Print(`# Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version config help add push" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version config help add push tag" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
-complete -c gith -n "__fish_seen_subcommand_from config update" -l accent -d "Catppuccin accent" -a "rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender"
-complete -c gith -n "__fish_seen_subcommand_from add" -a "tag" -d "Quick Select: Add Tag"
+complete -c gith -n "__fish_seen_subcommand_from config update" -l accent -d "Catppuccin accent" -a "rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender gray"
+complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
-complete -c gith -s h -l help -d "Show help"
 `)
 	case "bash":
 		fmt.Print(`# Bash completion for gith
@@ -420,7 +421,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version config help add push"
+            opts="version config help add push tag"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -434,8 +435,8 @@ _gith() {
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
-        add)
-            opts="tag"
+		add)
+            opts="remote"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -474,12 +475,12 @@ _gith() {
                     ;;
                 config)
                     _arguments \
-                        '1:subcommand:(show reset path update help)' \
+                        '1:subcommand:(show reset path update help tag)' \
                         '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
                         '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
                     ;;
                 add)
-                    _arguments '1:subcommand:(tag)'
+                    _arguments '1:subcommand:(remote)'
                     ;;
                 push)
                     _arguments '1:subcommand:(tag)'

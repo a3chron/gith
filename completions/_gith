@@ -13,12 +13,12 @@ _gith() {
                     ;;
                 config)
                     _arguments \
-                        '1:subcommand:(show reset path update help)' \
+                        '1:subcommand:(show reset path update help tag)' \
                         '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
                         '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
                     ;;
                 add)
-                    _arguments '1:subcommand:(tag)'
+                    _arguments '1:subcommand:(remote)'
                     ;;
                 push)
                     _arguments '1:subcommand:(tag)'

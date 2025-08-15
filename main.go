@@ -175,13 +175,10 @@ func handleCliArgs() error {
 
 	case "add":
 		if len(os.Args) != 3 {
-			fmt.Fprintf(os.Stderr, "Usage: gith add ( tag | remote )\n")
+			fmt.Fprintf(os.Stderr, "Usage: gith add remote\n")
 			os.Exit(1)
 		}
 		switch os.Args[2] {
-		case "tag":
-			// Start UI directly at tag add selection
-			return runQuick("add-tag", 3)
 		case "remote":
 			// TODO: implement quick remote add input path
 			return fmt.Errorf("'add remote' not implemented yet")
@@ -189,6 +186,15 @@ func handleCliArgs() error {
 			os.Exit(1)
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
 		}
+
+	case "tag":
+		if len(os.Args) != 2 {
+			fmt.Fprintf(os.Stderr, "Usage: gith tag\n")
+			os.Exit(1)
+		}
+
+		// Start UI directly at tag selection
+		return runQuick("add-tag", 3)
 
 	case "push":
 		if len(os.Args) != 3 {
