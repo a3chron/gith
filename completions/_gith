@@ -2,7 +2,7 @@
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version config help add push)' \
+        '1:command:(version update config help add push)' \
         '*::arg:->args'
     
     case $state in

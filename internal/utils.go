@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -46,6 +47,18 @@ type VersionComparison struct {
 	Color       string
 	Message     string
 	ShowUpgrade bool
+}
+
+func Update() error {
+	out, err := exec.Command("go", "install", "github.com/a3chron/gith@latest").CombinedOutput()
+
+	fmt.Fprintf(os.Stdout, "%s", string(out))
+
+	if err != nil {
+		return fmt.Errorf("failed to update gith: %w", err)
+	}
+
+	return nil
 }
 
 func PrintVersion(checkForUpdate bool, version string, commit string, date string, builtBy string) {
@@ -367,6 +380,7 @@ Usage:
 
   gith version              Show version information  
   gith version check        Show version & check for updates
+  gith update				Update to the latest version (for go users)
 
   // Quick Selects - Jump right to a specific selection
   gith tag             	    Add Tag
@@ -403,7 +417,7 @@ func GenerateCompletions(shell string) error {
 	case "fish":
 		fmt.Print(`# Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version config help add push tag" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
@@ -421,7 +435,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version config help add push tag"
+            opts="version update config help add push tag"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -464,7 +478,7 @@ complete -F _gith gith
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version config help add push)' \
+        '1:command:(version update config help add push)' \
         '*::arg:->args'
     
     case $state in

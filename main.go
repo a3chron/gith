@@ -159,6 +159,20 @@ func handleCliArgs() error {
 		internal.PrintHelp()
 		return nil
 
+	case "update":
+		if version == "dev" {
+			// installed via go install (or actual dev build lol)
+			err := internal.Update()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				os.Exit(1)
+			}
+			return nil
+		}
+
+		fmt.Fprintf(os.Stderr, "To update via 'gith update' install gith via go\n")
+		os.Exit(1)
+
 	case "config":
 		return handleConfigCommand()
 
