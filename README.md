@@ -67,15 +67,21 @@ This is the full setup, for only starship scroll down to the starship section.
 - [Completions](#completions)
 - [Contributing](#contributing)
 - [Thanks](#thanks)
-- [TODOs](#todos)
 
 ## Installation
 
 If you already have Go installed, or plan to do so (easy to get new updates):
 [Install via Go](https://gith.featurebase.app/help/articles/6375101-installation-via-go)
 
+> [!TIP]
+> If you installed gith via `go install`, you can run `gith update` to get the latest version.
+
+---
+
 Otherwise you can install gith via Binaries:
 [Install via Binaries](https://gith.featurebase.app/help/articles/2452108-installation-via-binaries)
+
+> For updates, you have to download the new binaries, and install them
 
 ## Usage
 
