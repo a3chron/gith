@@ -403,9 +403,10 @@ func (m *Model) handleCommitMessageSubmit() (*Model, tea.Cmd) {
 	var out string
 	var err error
 
-	if m.CommitModel.SelectedAction == "Commit Staged" {
+	switch m.CommitModel.SelectedAction {
+	case "Commit Staged":
 		out, err = git.CommitStaged(m.CommitModel.CommitMessage)
-	} else {
+	case "Commit All":
 		out, err = git.CommitAll(m.CommitModel.CommitMessage)
 	}
 
@@ -817,6 +818,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.prepareTagSelection()
 			m.ActionModel.SelectedAction = "Tag"
 			m.TagModel.SelectedAction = "Push Tag"
+
+		case "commit-staged":
+			m.Level = 3
+			m.Selected = 0
+			m.CurrentStep = StepCommitSelectPrefix
+			m.ActionModel.SelectedAction = "Commit"
+			m.CommitModel.SelectedAction = "Commit Staged"
+
+		case "commit-all":
+			m.Level = 3
+			m.Selected = 0
+			m.CurrentStep = StepCommitSelectPrefix
+			m.ActionModel.SelectedAction = "Commit"
+			m.CommitModel.SelectedAction = "Commit All"
 
 		default:
 			m.CurrentStep = StepAction

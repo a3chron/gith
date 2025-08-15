@@ -175,7 +175,7 @@ func handleCliArgs() error {
 
 	case "add":
 		if len(os.Args) != 3 {
-			fmt.Fprintf(os.Stderr, "Usage: gith add [ tag | remote ]\n")
+			fmt.Fprintf(os.Stderr, "Usage: gith add ( tag | remote )\n")
 			os.Exit(1)
 		}
 		switch os.Args[2] {
@@ -204,9 +204,26 @@ func handleCliArgs() error {
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
 		}
 
-	default:
-		return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1])
+	case "commit":
+		if len(os.Args) >= 4 {
+			fmt.Fprintf(os.Stderr, "Usage: gith commit [ all | staged ]\n")
+			os.Exit(1)
+		}
+		if len(os.Args) == 2 {
+			return runQuick("commit-staged", 3)
+		}
+
+		switch os.Args[2] {
+		case "all":
+			return runQuick("commit-all", 3)
+		case "staged":
+			return runQuick("commit-staged", 3)
+		}
 	}
+
+	fmt.Fprintf(os.Stderr, "unknown command: %s\nUse 'gith help' for usage information", strings.Join(os.Args[1:], " "))
+	os.Exit(1)
+	return fmt.Errorf("unknown command")
 }
 
 func handleConfigCommand() error {

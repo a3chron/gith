@@ -176,9 +176,9 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] Undo Last Commit
 
-  - [x] Commit staged changes
+  - [x] Commit staged changes _-- supports quick select --_
 
-  - [x] Commit all changes
+  - [x] Commit all changes _-- supports quick select --_
 
   - [ ] Amend last commit
 
@@ -245,17 +245,17 @@ gith completion zsh > ~/.local/share/zsh/site-functions/_gith
 
 ## Contributing
 
-Contributions are welcome, please use [conventional commits](https://www.conventionalcommits.org/) for constant commit message style.
+Contributions are welcome, please use [conventional commits](https://www.conventionalcommits.org/) for a constant commit message style.
 If you reaaally struggle with conventinal commits, check out [Meteor](https://github.com/stefanlogue/meteor), or just use gith's built in commit feature.  
 For feature requests or possible improvements please create an issue at [Featurebase](https://gith.featurebase.app/).
 
-Build using:
+For local development, fork & clone the repo, then build using:
 
 ```bash
 go build -o gith
 ```
 
-Then run with:
+Run with:
 
 ```bash
 ./gith
