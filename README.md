@@ -97,7 +97,9 @@ gith tag
 
 which will start interactive mode, but already at a point to select the tag, i.e. patch / minor / major / manual input.
 
-This approach tries to use intuitive, natural language commands,
+For more info run `gith help` or check out the [help articles](https://gith.featurebase.app/help).
+
+Gith tries to use intuitive, natural language commands,
 combined with the usual git commands, for example `gith tag` or `gith update remote url`.
 
 ## Customization
@@ -111,7 +113,9 @@ otherwise at `~/.config/gith/config.json`.
 
 You can also manually edit the config file, although editing with gith ensures that no invalid configurations are used.
 
-**If you have anything you'd like to configure in the settings or options, don't hesitate to open an issue.**
+**If you have anything you'd like to configure in the settings or options, don't hesitate to open an issue or [Feature Request](https://gith.featurebase.app/).**
+
+For more info check out the [help articles](https://gith.featurebase.app/help).
 
 ## Usage in scripts
 
