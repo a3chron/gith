@@ -45,3 +45,21 @@ func GetNLatestTags(n int) (string, error) {
 	result := strings.Join(outArr[:n], "\n")
 	return result, nil
 }
+
+func CreateTag(tagName string) (string, error) {
+	out, err := exec.Command("git", "tag", tagName).CombinedOutput()
+	if err != nil {
+		return string(out), err
+	} else {
+		return string(out), nil
+	}
+}
+
+func DeleteTag(tagName string) (string, error) {
+	out, err := exec.Command("git", "tag", "-d", tagName).CombinedOutput()
+	if err != nil {
+		return string(out), err
+	} else {
+		return string(out), nil
+	}
+}

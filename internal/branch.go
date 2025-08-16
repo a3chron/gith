@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"os/exec"
 	"strings"
 
 	"github.com/a3chron/gith/internal/git"
@@ -58,9 +57,30 @@ func (m *Model) PrepareBranchAddition() (*Model, tea.Cmd) {
 func (m *Model) ExecuteBranchAction() (*Model, tea.Cmd) {
 	switch m.BranchModel.SelectedAction {
 	case "Switch Branch":
-		return m.SwitchBranch()
+		out, err := git.SwitchBranch(m.BranchModel.SelectedBranch)
+
+		m.OutputByLevel(out)
+
+		if err != nil {
+			m.Err = "Failed to Switch Branch"
+		} else {
+			m.Success = "Switched Branch"
+		}
+
+		return m, tea.Quit
+
 	case "Delete Branch":
-		return m.DeleteBranch()
+		out, err := git.DeleteBranch(m.BranchModel.SelectedBranch)
+
+		m.OutputByLevel(out)
+
+		if err != nil {
+			m.Err = "Failed to Delete Branch"
+		} else {
+			m.Success = "Deleted Branch"
+		}
+
+		return m, tea.Quit
 	}
 	return m, tea.Quit
 }
@@ -88,55 +108,16 @@ func (m *Model) HandleBranchInputSubmit() (*Model, tea.Cmd) {
 		return m, tea.Quit
 	}
 
-	return m.CreateBranch(strings.TrimSpace(m.BranchModel.Input))
-}
+	out, err := git.CreateBranch(strings.TrimSpace(m.BranchModel.Input))
 
-func (m *Model) CreateBranch(branchName string) (*Model, tea.Cmd) {
-	out, err := exec.Command("git", "checkout", "-b", branchName).CombinedOutput()
+	m.OutputByLevel(out)
+
 	if err != nil {
-		m.OutputByLevel(string(out))
-		m.Err = fmt.Sprintf("Failed to create branch: %s", string(out))
+		m.Err = "Failed to Create Branch"
 	} else {
-		m.Success = fmt.Sprintf("Successfully created branch '%s'", branchName)
-	}
-	return m, tea.Quit
-}
-
-func (m *Model) SwitchBranch() (*Model, tea.Cmd) {
-	cmd := exec.Command("git", "show-ref", "--verify", "--quiet", "refs/heads/"+m.BranchModel.SelectedBranch)
-	err := cmd.Run()
-
-	var switchCmd *exec.Cmd
-	if err != nil {
-		// Branch doesn't exist locally, create and track remote
-		switchCmd = exec.Command("git", "checkout", "-b", m.BranchModel.SelectedBranch, "origin/"+m.BranchModel.SelectedBranch)
-	} else {
-		// Branch exists locally, just switch
-		switchCmd = exec.Command("git", "switch", m.BranchModel.SelectedBranch)
+		m.Success = "Created Branch"
 	}
 
-	output, err := switchCmd.CombinedOutput()
-	if err != nil {
-		m.Err = fmt.Sprintf("Switch failed: %s", string(output))
-	} else {
-		m.Success = fmt.Sprintf("Switched to branch '%s'", m.BranchModel.SelectedBranch)
-	}
-	return m, tea.Quit
-}
-
-func (m *Model) DeleteBranch() (*Model, tea.Cmd) {
-	// Try to delete local branch first
-	cmd := exec.Command("git", "branch", "-d", m.BranchModel.SelectedBranch)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		m.OutputByLevel(string(output) + "\n")
-		// suggest force delete:
-		m.OutputByLevel("\\cpTo force delete use: \ngit branch -D" + m.BranchModel.SelectedBranch)
-		m.Err = "Delete failed"
-	} else {
-		m.OutputByLevel(string(output) + "\n")
-		m.Success = fmt.Sprintf("Deleted branch '%s'", m.BranchModel.SelectedBranch)
-	}
 	return m, tea.Quit
 }
 

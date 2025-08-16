@@ -33,7 +33,18 @@ func (m Model) HandleTagAddSelection() (tea.Model, tea.Cmd) {
 		end := strings.Index(m.TagModel.SelectedAddTag, ")")
 		if start != -1 && end != -1 && end > start {
 			newTag := m.TagModel.SelectedAddTag[start+1 : end]
-			return m.CreateTag(newTag)
+
+			out, err := git.CreateTag(newTag)
+
+			m.OutputByLevel(out)
+
+			if err != nil {
+				m.Err = "Faile to Create Tag"
+			} else {
+				m.Success = "Created new Tag"
+			}
+
+			return m, tea.Quit
 		} else {
 			m.Err = "Failed to parse version from selection"
 			return m, tea.Quit
@@ -69,17 +80,16 @@ func (m Model) HandleTagInputSubmit() (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 	}
 
-	return m.CreateTag(strings.TrimSpace(m.TagModel.ManualInput))
-}
+	out, err := git.CreateTag(strings.TrimSpace(m.TagModel.ManualInput))
 
-func (m *Model) CreateTag(tagName string) (*Model, tea.Cmd) {
-	out, err := exec.Command("git", "tag", tagName).CombinedOutput()
+	m.OutputByLevel(out)
+
 	if err != nil {
-		m.OutputByLevel(string(out))
-		m.Err = fmt.Sprintf("Failed to create tag: %s", string(out))
+		m.Err = "Failed to Create Tag"
 	} else {
-		m.Success = fmt.Sprintf("Successfully created tag '%s'", tagName)
+		m.Success = "Created Tag"
 	}
+
 	return m, tea.Quit
 }
 
@@ -193,12 +203,14 @@ func (m *Model) ExecuteTagAction() (*Model, tea.Cmd) {
 			m.PrepareTagSelection()
 			return m, nil
 		default:
-			out, err := exec.Command("git", "tag", "-d", m.TagModel.SelectedOption).CombinedOutput()
-			m.OutputByLevel(string(out))
+			out, err := git.DeleteTag(m.TagModel.SelectedOption)
+
+			m.OutputByLevel(out)
+
 			if err != nil {
-				m.Err = fmt.Sprintf("Failed to remove: %s", string(out))
+				m.Err = "Failed to Remove Tag"
 			} else {
-				m.Success = fmt.Sprintf("Removed Tag '%s'", m.TagModel.SelectedOption)
+				m.Success = "Removed Tag"
 			}
 		}
 	case "Push Tag":

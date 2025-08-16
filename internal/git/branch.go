@@ -62,3 +62,45 @@ func GetCurrentBranch() (string, error) {
 	}
 	return strings.TrimSpace(string(out)), nil
 }
+
+func CreateBranch(branchName string) (string, error) {
+	out, err := exec.Command("git", "checkout", "-b", branchName).CombinedOutput()
+	if err != nil {
+		return string(out), err
+	} else {
+		return string(out), nil
+	}
+}
+
+func SwitchBranch(selectedBranch string) (string, error) {
+	cmd := exec.Command("git", "show-ref", "--verify", "--quiet", "refs/heads/"+selectedBranch)
+	err := cmd.Run()
+
+	var switchCmd *exec.Cmd
+	if err != nil {
+		// Branch doesn't exist locally, create and track remote
+		switchCmd = exec.Command("git", "checkout", "-b", selectedBranch, "origin/"+selectedBranch)
+	} else {
+		// Branch exists locally, just switch
+		switchCmd = exec.Command("git", "switch", selectedBranch)
+	}
+
+	out, err := switchCmd.CombinedOutput()
+	if err != nil {
+		return string(out), err
+	} else {
+		return string(out), nil
+	}
+}
+
+func DeleteBranch(selectedBranch string) (string, error) {
+	// Try to delete local branch first
+	cmd := exec.Command("git", "branch", "-d", selectedBranch)
+	out, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return string(out) + "\n" + "\\cpTo force delete use: \ngit branch -D" + selectedBranch, err
+	} else {
+		return string(out), nil
+	}
+}
