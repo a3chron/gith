@@ -37,32 +37,32 @@ func getVersion() string {
 	return "dev"
 }
 
-func initialModel() ui.Model {
+func initialModel() internal.Model {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = ui.AccentStyle
 
-	return ui.Model{
-		CurrentStep: ui.StepLoad,
+	return internal.Model{
+		CurrentStep: internal.StepLoad,
 		Loading:     true,
-		ActionModel: ui.ActionModel{
+		ActionModel: internal.ActionModel{
 			Actions: []string{"Branch", "Status", "Commit", "Tag", "Remote", "Changes", "Options"},
 		},
-		BranchModel: ui.BranchModel{
+		BranchModel: internal.BranchModel{
 			Actions: []string{"Switch Branch", "Create Branch", "List Branches", "Delete Branch"},
 			Options: []string{"feat/", "fix/", "refactor/", "docs/", "Manual Input"},
 		},
-		CommitModel: ui.CommitModel{
+		CommitModel: internal.CommitModel{
 			Actions:        []string{"Commit Staged", "Commit All", "Undo Last Commit"},
 			CommitPrefixes: []string{"feat", "fix", "build", "chore", "ci", "test", "perf", "refactor", "revert", "style", "docs", "Custom Prefix"},
 		},
-		TagModel: ui.TagModel{
+		TagModel: internal.TagModel{
 			Actions: []string{"Add Tag", "Remove Tag", "List Tags", "Push Tag"},
 		},
-		RemoteModel: ui.RemoteModel{
+		RemoteModel: internal.RemoteModel{
 			Actions: []string{"List Remotes", "Add Remote", "Remove Remote"},
 		},
-		ConfigModel: ui.ConfigModel{
+		ConfigModel: internal.ConfigModel{
 			Actions: []string{"Change Flavor", "Change Accent", "Reset to Defaults"},
 			Flavors: config.GetAvailableFlavors(),
 			Accents: config.GetAvailableAccents(),
@@ -76,7 +76,7 @@ func initialModel() ui.Model {
 }
 
 // initialModelWithStart returns the base model but allows setting a quick-start flow.
-func initialModelWithStart(startAt string, startAtLevel int) ui.Model {
+func initialModelWithStart(startAt string, startAtLevel int) internal.Model {
 	m := initialModel()
 	m.StartAt = startAt
 	m.StartAtLevel = startAtLevel

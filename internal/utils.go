@@ -514,3 +514,21 @@ func IsGitRepository() (bool, error) {
 	err := cmd.Run()
 	return err == nil, nil
 }
+
+// isInputStep returns true if the current step expects free-text input
+func isInputStep(step Step) bool {
+	switch step {
+	case StepTagInput, StepBranchInput, StepRemoteNameInput, StepRemoteUrlInput, StepCommitInput:
+		return true
+	default:
+		return false
+	}
+}
+
+func (m *Model) OutputByLevel(out string) {
+	// Fill output array up to current level
+	for len(m.Output) <= m.Level {
+		m.Output = append(m.Output, "")
+	}
+	m.Output[m.Level] += out
+}

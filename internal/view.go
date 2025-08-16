@@ -1,10 +1,11 @@
-package ui
+package internal
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/a3chron/gith/internal/config"
+	"github.com/a3chron/gith/internal/ui"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -36,7 +37,7 @@ func (m Model) renderLoadingView() string {
 // renderMainView constructs the main application view from its components.
 func (m Model) renderMainView() string {
 	var content strings.Builder
-	line := LineStyle.Render("│")
+	line := ui.LineStyle.Render("│")
 
 	content.WriteString(m.renderHeader())
 	content.WriteString(m.renderOutput(line, 0)) // For initial/global output
@@ -66,12 +67,12 @@ func (m Model) renderMainView() string {
 
 	content.WriteString(m.renderNavigationHints())
 
-	return ContainerStyle.Render(content.String())
+	return ui.ContainerStyle.Render(content.String())
 }
 
 // renderHeader returns the application title bar.
 func (m Model) renderHeader() string {
-	return LineStyle.Render("╭─╌") + " " + AccentStyle.Render("gith") + "\n"
+	return ui.LineStyle.Render("╭─╌") + " " + ui.AccentStyle.Render("gith") + "\n"
 }
 
 // renderActionSelection renders the primary action choices (Branch, Commit, etc.).
@@ -79,17 +80,17 @@ func (m Model) renderActionSelection() string {
 	var content strings.Builder
 	bullet := m.getBullet(1)
 
-	content.WriteString(bullet + " " + TextStyle.Render("Select action") + "\n")
+	content.WriteString(bullet + " " + ui.TextStyle.Render("Select action") + "\n")
 
 	if m.ActionModel.SelectedAction == "" {
 		// Show action options
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.ActionModel.Actions, m.CurrentStep == StepAction))
-			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else {
 		// Show completed action
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ActionModel.SelectedAction) + "\n")
+		content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.ActionModel.SelectedAction) + "\n")
 	}
 
 	return content.String()
@@ -134,15 +135,15 @@ func (m Model) renderBranchActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(bullet + " " + TextStyle.Render("Select branch action") + "\n")
+	content.WriteString(bullet + " " + ui.TextStyle.Render("Select branch action") + "\n")
 
 	if m.BranchModel.SelectedAction == "" && len(m.BranchModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.BranchModel.Actions, m.CurrentStep == StepBranchAction))
-			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else if m.BranchModel.SelectedAction != "" {
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedAction) + "\n")
+		content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.BranchModel.SelectedAction) + "\n")
 	}
 
 	return content.String()
@@ -155,25 +156,25 @@ func (m Model) renderBranchSubActions2() string {
 
 	switch m.BranchModel.SelectedAction {
 	case "Switch Branch", "Delete Branch":
-		content.WriteString(bullet + " " + TextStyle.Render(m.BranchModel.SelectedAction) + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render(m.BranchModel.SelectedAction) + "\n")
 
 		// If no branch is selected yet, show the list of branches to choose from.
 		if m.BranchModel.SelectedBranch == "" {
 			if len(m.BranchModel.Branches) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.BranchModel.Branches, m.CurrentStep == StepBranchSelect))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else { // A branch has been selected, show it as completed.
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedBranch) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.BranchModel.SelectedBranch) + "\n")
 		}
 	case "Create Branch":
-		content.WriteString(bullet + " " + TextStyle.Render("Create Branch") + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Create Branch") + "\n")
 
 		if m.BranchModel.SelectedOption == "" {
 			// Show add options (feat, fix, refactor, ..., manual)
 			if len(m.BranchModel.Options) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.BranchModel.Options, m.CurrentStep == StepBranchCreate))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else if m.CurrentStep == StepBranchInput {
 			// Show input field
@@ -182,7 +183,7 @@ func (m Model) renderBranchSubActions2() string {
 			}
 		} else {
 			// Show completed selection
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.BranchModel.SelectedOption) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.BranchModel.SelectedOption) + "\n")
 		}
 	}
 
@@ -194,15 +195,15 @@ func (m Model) renderCommitActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(bullet + " " + TextStyle.Render("Select commit action") + "\n")
+	content.WriteString(bullet + " " + ui.TextStyle.Render("Select commit action") + "\n")
 
 	if m.CommitModel.SelectedAction == "" && len(m.CommitModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.CommitModel.Actions, m.CurrentStep == StepCommitAction))
-			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else if m.CommitModel.SelectedAction != "" {
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
+		content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.CommitModel.SelectedAction) + "\n")
 	}
 
 	return content.String()
@@ -215,13 +216,13 @@ func (m Model) renderCommitSubActions2() string {
 
 	switch m.CommitModel.SelectedAction {
 	case "Commit Staged", "Commit All":
-		content.WriteString(bullet + " " + TextStyle.Render("Select prefix") + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Select prefix") + "\n")
 
 		if m.CommitModel.SelectedPrefix == "" {
 			// Show prefix options (feat, fix, ...)
 			if len(m.CommitModel.CommitPrefixes) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.CommitModel.CommitPrefixes, true))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else if m.CurrentStep == StepCommitInput {
 			// Show input field
@@ -230,7 +231,7 @@ func (m Model) renderCommitSubActions2() string {
 			}
 		} else {
 			// Show completed selection
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.CommitModel.CommitMessage) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.CommitModel.CommitMessage) + "\n")
 		}
 	}
 
@@ -242,15 +243,15 @@ func (m Model) renderTagActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(bullet + " " + TextStyle.Render("Select tag action") + "\n")
+	content.WriteString(bullet + " " + ui.TextStyle.Render("Select tag action") + "\n")
 
 	if m.TagModel.SelectedAction == "" && len(m.TagModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.TagModel.Actions, m.CurrentStep == StepTag))
-			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else if m.TagModel.SelectedAction != "" {
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAction) + "\n")
+		content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.TagModel.SelectedAction) + "\n")
 	}
 
 	return content.String()
@@ -263,27 +264,27 @@ func (m Model) renderTagSubActions2() string {
 
 	switch m.TagModel.SelectedAction {
 	case "Remove Tag", "Push Tag":
-		content.WriteString(bullet + " " + TextStyle.Render(m.TagModel.SelectedAction) + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render(m.TagModel.SelectedAction) + "\n")
 
 		// If no tag is selected yet, show the list of tags to choose from.
 		if m.TagModel.SelectedOption == "" {
 			if len(m.TagModel.Options) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.TagModel.Options, m.CurrentStep == StepTagSelect))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else { // A tag has been selected, show it as completed.
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedOption) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.TagModel.SelectedOption) + "\n")
 		}
 
 	case "Add Tag":
-		content.WriteString(bullet + " " + TextStyle.Render("Add Tag") + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Add Tag") + "\n")
 
 		if m.TagModel.SelectedAddTag == "" {
 			// Show add options (patch, minor, major, manual)
 			if len(m.TagModel.AddOptions) > 0 && m.Err == "" {
-				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Latest tag:") + " " + NormalStyle.Render(m.TagModel.CurrentTag) + "\n")
+				content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.DimStyle.Render("Latest tag:") + " " + ui.NormalStyle.Render(m.TagModel.CurrentTag) + "\n")
 				content.WriteString(m.renderOptions(m.TagModel.AddOptions, m.CurrentStep == StepTagAdd))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else if m.CurrentStep == StepTagInput {
 			// Show input field
@@ -292,7 +293,7 @@ func (m Model) renderTagSubActions2() string {
 			}
 		} else {
 			// Show completed selection
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.TagModel.SelectedAddTag) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.TagModel.SelectedAddTag) + "\n")
 		}
 	}
 
@@ -305,24 +306,24 @@ func (m Model) renderRemoteSubActions2() string {
 
 	switch m.RemoteModel.SelectedAction {
 	case "Remove Remote":
-		content.WriteString(bullet + " " + TextStyle.Render(m.RemoteModel.SelectedAction) + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render(m.RemoteModel.SelectedAction) + "\n")
 
 		// If no remote is selected yet, show the list of remotes to choose from.
 		if m.RemoteModel.SelectedOption == "" {
 			if len(m.RemoteModel.Options) > 0 && m.Err == "" {
 				content.WriteString(m.renderOptions(m.RemoteModel.Options, m.CurrentStep == StepRemoteSelect))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else { // A remote has been selected, show it as completed.
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedOption) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.RemoteModel.SelectedOption) + "\n")
 		}
 	case "Add Remote":
-		content.WriteString(bullet + " " + TextStyle.Render("Add Remote") + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Add Remote") + "\n")
 
 		if m.CurrentStep == StepRemoteNameInput {
 			// Show input field
 			if m.Err == "" {
-				content.WriteString(AccentStyle.Render("├╌") + " " + AccentStyle.Render("Remote Name:") + " " + DimStyle.Render("(e.g. origin)") + "\n")
+				content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.AccentStyle.Render("Remote Name:") + " " + ui.DimStyle.Render("(e.g. origin)") + "\n")
 				content.WriteString(m.renderRemoteInput())
 			}
 		} else {
@@ -330,18 +331,18 @@ func (m Model) renderRemoteSubActions2() string {
 			// Show second input for url input
 			if m.CurrentStep == StepRemoteUrlInput && m.Err == "" && m.Success == "" {
 				// Show input of still active add remote input
-				content.WriteString(AccentStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.NameInput) + "\n")
+				content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.RemoteModel.NameInput) + "\n")
 
 				// Show input field
 				if m.Err == "" {
-					content.WriteString(AccentStyle.Render("├╌") + " " + AccentStyle.Render("Remote Url:") + " " + DimStyle.Render("(e.g. git@github.com:a3chron/gith.git)") + "\n")
+					content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.AccentStyle.Render("Remote Url:") + " " + ui.DimStyle.Render("(e.g. git@github.com:a3chron/gith.git)") + "\n")
 					content.WriteString(m.renderRemoteInput())
 				}
 			} else {
 				// Show completed selection
-				content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.NameInput) + "\n")
+				content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.RemoteModel.NameInput) + "\n")
 				// Show completed selection
-				content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.UrlInput) + "\n")
+				content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.RemoteModel.UrlInput) + "\n")
 			}
 		}
 	}
@@ -354,15 +355,15 @@ func (m Model) renderRemoteActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(bullet + " " + TextStyle.Render("Select remote action") + "\n")
+	content.WriteString(bullet + " " + ui.TextStyle.Render("Select remote action") + "\n")
 
 	if m.RemoteModel.SelectedAction == "" && len(m.RemoteModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.RemoteModel.Actions, m.CurrentStep == StepRemote))
-			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else if m.RemoteModel.SelectedAction != "" {
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
+		content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.RemoteModel.SelectedAction) + "\n")
 	}
 
 	return content.String()
@@ -373,15 +374,15 @@ func (m Model) renderOptionsActions() string {
 	var content strings.Builder
 	bullet := m.getBullet(2)
 
-	content.WriteString(bullet + " " + TextStyle.Render("Select options action") + "\n")
+	content.WriteString(bullet + " " + ui.TextStyle.Render("Select options action") + "\n")
 
 	if m.ConfigModel.SelectedAction == "" && len(m.ConfigModel.Actions) > 0 {
 		if m.Err == "" {
 			content.WriteString(m.renderOptions(m.ConfigModel.Actions, m.CurrentStep == StepOptions))
-			content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+			content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 		}
 	} else if m.ConfigModel.SelectedAction != "" {
-		content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ConfigModel.SelectedAction) + "\n")
+		content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.ConfigModel.SelectedAction) + "\n")
 	}
 
 	return content.String()
@@ -399,29 +400,29 @@ func (m Model) renderOptionsSubActions2() string {
 
 	switch m.ConfigModel.SelectedAction {
 	case "Change Flavor":
-		content.WriteString(bullet + " " + TextStyle.Render("Select flavor") + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Select flavor") + "\n")
 
 		if m.ConfigModel.SelectedFlavor == "" {
 			if len(m.ConfigModel.Flavors) > 0 && m.Err == "" {
-				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Current: ") + AccentStyle.Render(m.CurrentConfig.Flavor) + "\n")
+				content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.DimStyle.Render("Current: ") + ui.AccentStyle.Render(m.CurrentConfig.Flavor) + "\n")
 				content.WriteString(m.renderOptionsWithPreview(m.ConfigModel.Flavors, m.CurrentStep == StepOptionsFlavorSelect, "flavor"))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else {
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ConfigModel.SelectedFlavor) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.ConfigModel.SelectedFlavor) + "\n")
 		}
 
 	case "Change Accent":
-		content.WriteString(bullet + " " + TextStyle.Render("Select accent") + "\n")
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Select accent") + "\n")
 
 		if m.ConfigModel.SelectedAccent == "" {
 			if len(m.ConfigModel.Accents) > 0 && m.Err == "" {
-				content.WriteString(AccentStyle.Render("├╌") + " " + DimStyle.Render("Current: ") + AccentStyle.Render(m.CurrentConfig.Accent) + "\n")
+				content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.DimStyle.Render("Current: ") + ui.AccentStyle.Render(m.CurrentConfig.Accent) + "\n")
 				content.WriteString(m.renderOptionsWithPreview(m.ConfigModel.Accents, m.CurrentStep == StepOptionsAccentSelect, "accent"))
-				content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 			}
 		} else {
-			content.WriteString(LineStyle.Render("├╌") + " " + CompletedStyle.Render(m.ConfigModel.SelectedAccent) + "\n")
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.ConfigModel.SelectedAccent) + "\n")
 		}
 	}
 
@@ -431,7 +432,7 @@ func (m Model) renderOptionsSubActions2() string {
 // Update renderOptionsWithPreview with safety checks:
 func (m Model) renderOptionsWithPreview(options []string, isCurrentStep bool, optionType string) string {
 	var content strings.Builder
-	accLine := AccentStyle.Render("│")
+	accLine := ui.AccentStyle.Render("│")
 
 	// Safety check for CurrentConfig
 	if m.CurrentConfig == nil {
@@ -455,11 +456,11 @@ func (m Model) renderOptionsWithPreview(options []string, isCurrentStep bool, op
 		}
 
 		if i == m.Selected && isCurrentStep {
-			bullet = BulletStyle.Render("●")
-			content.WriteString(fmt.Sprintf("%s %s %s %s\n", accLine, bullet, SelectedStyle.Render(option), preview))
+			bullet = ui.BulletStyle.Render("●")
+			content.WriteString(fmt.Sprintf("%s %s %s %s\n", accLine, bullet, ui.SelectedStyle.Render(option), preview))
 		} else {
-			bullet = DimStyle.Render("○")
-			content.WriteString(fmt.Sprintf("%s %s %s %s\n", accLine, bullet, NormalStyle.Render(option), preview))
+			bullet = ui.DimStyle.Render("○")
+			content.WriteString(fmt.Sprintf("%s %s %s %s\n", accLine, bullet, ui.NormalStyle.Render(option), preview))
 		}
 	}
 
@@ -469,16 +470,16 @@ func (m Model) renderOptionsWithPreview(options []string, isCurrentStep bool, op
 // renderOptions formats a list of choices for selection.
 func (m Model) renderOptions(options []string, isCurrentStep bool) string {
 	var content strings.Builder
-	accLine := AccentStyle.Render("│")
+	accLine := ui.AccentStyle.Render("│")
 
 	for i, option := range options {
 		var bullet string
 		if i == m.Selected && isCurrentStep {
-			bullet = BulletStyle.Render("●")
-			content.WriteString(fmt.Sprintf("%s %s %s\n", accLine, bullet, SelectedStyle.Render(option)))
+			bullet = ui.BulletStyle.Render("●")
+			content.WriteString(fmt.Sprintf("%s %s %s\n", accLine, bullet, ui.SelectedStyle.Render(option)))
 		} else {
-			bullet = DimStyle.Render("○")
-			content.WriteString(fmt.Sprintf("%s %s %s\n", accLine, bullet, NormalStyle.Render(option)))
+			bullet = ui.DimStyle.Render("○")
+			content.WriteString(fmt.Sprintf("%s %s %s\n", accLine, bullet, ui.NormalStyle.Render(option)))
 		}
 	}
 
@@ -488,22 +489,22 @@ func (m Model) renderOptions(options []string, isCurrentStep bool) string {
 func (m Model) renderTagInput() string {
 	var content strings.Builder
 	cursor := "_"
-	line := LineStyle.Render("│")
+	line := ui.LineStyle.Render("│")
 	inputText := m.TagModel.ManualInput
 
 	if m.Success == "" {
-		line = AccentStyle.Render("│")
-		content.WriteString(line + " " + NormalStyle.Render("Enter tag name:") + "\n")
+		line = ui.AccentStyle.Render("│")
+		content.WriteString(line + " " + ui.NormalStyle.Render("Enter tag name:") + "\n")
 	}
 
 	// Add cursor at the end
 	displayText := inputText + cursor
 
 	if m.Success == "" {
-		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
-		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+		content.WriteString(line + " " + ui.AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 	} else {
-		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+		content.WriteString(line + " " + ui.CompletedStyle.Render("> "+inputText) + "\n")
 	}
 
 	return content.String()
@@ -513,22 +514,22 @@ func (m Model) renderTagInput() string {
 func (m Model) renderBranchInput() string {
 	var content strings.Builder
 	cursor := "_"
-	line := LineStyle.Render("│")
+	line := ui.LineStyle.Render("│")
 	inputText := m.BranchModel.Input
 
 	if m.Success == "" {
-		line = AccentStyle.Render("│")
-		content.WriteString(line + " " + NormalStyle.Render("Enter branch name:") + "\n")
+		line = ui.AccentStyle.Render("│")
+		content.WriteString(line + " " + ui.NormalStyle.Render("Enter branch name:") + "\n")
 	}
 
 	// Add cursor at the end
 	displayText := inputText + cursor
 
 	if m.Success == "" {
-		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
-		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+		content.WriteString(line + " " + ui.AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 	} else {
-		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+		content.WriteString(line + " " + ui.CompletedStyle.Render("> "+inputText) + "\n")
 	}
 
 	return content.String()
@@ -537,22 +538,22 @@ func (m Model) renderBranchInput() string {
 func (m Model) renderCommitMessageInput() string {
 	var content strings.Builder
 	cursor := "_"
-	line := LineStyle.Render("│")
+	line := ui.LineStyle.Render("│")
 	inputText := m.CommitModel.CommitMessage
 
 	if m.Success == "" {
-		line = AccentStyle.Render("│")
-		content.WriteString(line + " " + NormalStyle.Render("Enter commit message:") + "\n")
+		line = ui.AccentStyle.Render("│")
+		content.WriteString(line + " " + ui.NormalStyle.Render("Enter commit message:") + "\n")
 	}
 
 	// Add cursor at the end
 	displayText := inputText + cursor
 
 	if m.Success == "" {
-		content.WriteString(line + " " + AccentStyle.Render("> ") + displayText + "\n")
-		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+		content.WriteString(line + " " + ui.AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 	} else {
-		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+		content.WriteString(line + " " + ui.CompletedStyle.Render("> "+inputText) + "\n")
 	}
 
 	return content.String()
@@ -563,8 +564,8 @@ func (m Model) renderRemoteInput() string {
 	var inputText string
 
 	cursor := "_"
-	line := LineStyle.Render("│")
-	accentLine := AccentStyle.Render("│")
+	line := ui.LineStyle.Render("│")
+	accentLine := ui.AccentStyle.Render("│")
 
 	if m.CurrentStep == StepRemoteNameInput {
 		inputText = m.RemoteModel.NameInput
@@ -576,10 +577,10 @@ func (m Model) renderRemoteInput() string {
 	displayText := inputText + cursor
 
 	if m.Success == "" {
-		content.WriteString(accentLine + " " + AccentStyle.Render("> ") + displayText + "\n")
-		content.WriteString(AccentStyle.Render("╰─╌") + "\n")
+		content.WriteString(accentLine + " " + ui.AccentStyle.Render("> ") + displayText + "\n")
+		content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
 	} else {
-		content.WriteString(line + " " + CompletedStyle.Render("> "+inputText) + "\n")
+		content.WriteString(line + " " + ui.CompletedStyle.Render("> "+inputText) + "\n")
 	}
 
 	return content.String()
@@ -611,24 +612,24 @@ func (m Model) renderOutput(line string, level int) string {
 
 				switch color {
 				case "g":
-					renderedLines = append(renderedLines, line+" "+GreenStyle.Render(text))
+					renderedLines = append(renderedLines, line+" "+ui.GreenStyle.Render(text))
 				case "y":
-					renderedLines = append(renderedLines, line+" "+YellowStyle.Render(text))
+					renderedLines = append(renderedLines, line+" "+ui.YellowStyle.Render(text))
 				case "p", "w":
-					renderedLines = append(renderedLines, line+" "+PeachStyle.Render(text))
+					renderedLines = append(renderedLines, line+" "+ui.PeachStyle.Render(text))
 				case "r", "e":
-					renderedLines = append(renderedLines, line+" "+RedStyle.Render(text))
+					renderedLines = append(renderedLines, line+" "+ui.RedStyle.Render(text))
 				case "t":
-					renderedLines = append(renderedLines, line+" "+TextStyle.Render(text))
+					renderedLines = append(renderedLines, line+" "+ui.TextStyle.Render(text))
 				case "a":
-					renderedLines = append(renderedLines, line+" "+AccentStyle.Render(text))
+					renderedLines = append(renderedLines, line+" "+ui.AccentStyle.Render(text))
 				default:
 					// Fallback for unknown color codes
 					// TODO: add all colors & maybe simplify
-					renderedLines = append(renderedLines, line+" "+DimStyle.Render(outputLine))
+					renderedLines = append(renderedLines, line+" "+ui.DimStyle.Render(outputLine))
 				}
 			} else {
-				renderedLines = append(renderedLines, line+" "+DimStyle.Render(outputLine))
+				renderedLines = append(renderedLines, line+" "+ui.DimStyle.Render(outputLine))
 			}
 		}
 	}
@@ -649,9 +650,9 @@ func (m Model) renderOutput(line string, level int) string {
 // renderResult displays the final success or error message.
 func (m Model) renderResult() string {
 	if m.Err != "" {
-		return LineStyle.Render("│\n╰─╌") + " " + ErrorStyle.Render(m.Err) + "\n"
+		return ui.LineStyle.Render("│\n╰─╌") + " " + ui.ErrorStyle.Render(m.Err) + "\n"
 	} else if m.Success != "" {
-		return LineStyle.Render("│\n╰─╌") + " " + SuccessStyle.Render(m.Success) + "\n"
+		return ui.LineStyle.Render("│\n╰─╌") + " " + ui.SuccessStyle.Render(m.Success) + "\n"
 	}
 	return ""
 }
@@ -660,11 +661,11 @@ func (m Model) renderResult() string {
 func (m Model) renderNavigationHints() string {
 	switch m.CurrentStep {
 	case StepTagInput, StepBranchInput, StepRemoteNameInput, StepRemoteUrlInput:
-		return "\n\n" + DimStyle.Render("Type name, enter to confirm, ctrl+h to go back, esc to quit")
+		return "\n\n" + ui.DimStyle.Render("Type name, enter to confirm, ctrl+h to go back, esc to quit")
 	case StepOptionsAccentSelect:
-		return "\n\n" + DimStyle.Render("Select Accent to preview, enter to confirm, ctrl+h to go back, esc to quit")
+		return "\n\n" + ui.DimStyle.Render("Select Accent to preview, enter to confirm, ctrl+h to go back, esc to quit")
 	default:
-		return "\n\n" + DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
+		return "\n\n" + ui.DimStyle.Render("Use ↑↓ to navigate, enter to select, ctrl+h to go back, q / esc to quit")
 	}
 }
 
@@ -673,11 +674,11 @@ func (m Model) getBullet(forLevel int) string {
 	if forLevel == m.Level {
 		if m.Err != "" {
 			// bullet for failed (=last) selection
-			return ErrorStyle.Render("□")
+			return ui.ErrorStyle.Render("□")
 		}
 		// bullet for current selection
-		return BulletStyle.Render("◆")
+		return ui.BulletStyle.Render("◆")
 	}
 	// bullet for already selected
-	return BulletStyle.Render("◇")
+	return ui.BulletStyle.Render("◇")
 }
