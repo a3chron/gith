@@ -138,6 +138,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActionModel.SelectedAction = "Commit"
 			m.CommitModel.SelectedAction = "Commit All"
 
+		case "add-remote":
+			m.Level = 3
+			m.Selected = 0
+			m.CurrentStep = StepRemoteNameInput
+			m.ActionModel.SelectedAction = "Remote"
+			m.RemoteModel.SelectedAction = "Add Remote"
+
 		default:
 			m.CurrentStep = StepAction
 			m.Level = 1

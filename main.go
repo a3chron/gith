@@ -194,8 +194,7 @@ func handleCliArgs() error {
 		}
 		switch os.Args[2] {
 		case "remote":
-			// TODO: implement quick remote add input path
-			return fmt.Errorf("'add remote' not implemented yet")
+			return runQuick("add-remote", 3)
 		default:
 			os.Exit(1)
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
