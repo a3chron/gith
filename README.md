@@ -210,7 +210,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
   - [x] List Remotes
 
-  - [x] Add Remote
+  - [x] Add Remote _-- supports quick select --_
 
   - [x] Remove Remote
 
