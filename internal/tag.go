@@ -19,39 +19,6 @@ func (m Model) HandleTagSelection() (tea.Model, tea.Cmd) {
 	return m.ExecuteTagAction()
 }
 
-func (m Model) HandleTagAddSelection() (tea.Model, tea.Cmd) {
-	m.TagModel.SelectedAddTag = m.TagModel.AddOptions[m.Selected]
-
-	if m.TagModel.SelectedAddTag == "Manual Input" {
-		// Switch to input mode
-		m.TagModel.ManualInput = ""
-		m.CurrentStep = StepTagInput
-		return m, nil
-	} else {
-		// Extract the version from the option (e.g., "Patch (v1.2.4)" -> "v1.2.4")
-		start := strings.Index(m.TagModel.SelectedAddTag, "(")
-		end := strings.Index(m.TagModel.SelectedAddTag, ")")
-		if start != -1 && end != -1 && end > start {
-			newTag := m.TagModel.SelectedAddTag[start+1 : end]
-
-			out, err := git.CreateTag(newTag)
-
-			m.OutputByLevel(out)
-
-			if err != nil {
-				m.Err = "Faile to Create Tag"
-			} else {
-				m.Success = "Created new Tag"
-			}
-
-			return m, tea.Quit
-		} else {
-			m.Err = "Failed to parse version from selection"
-			return m, tea.Quit
-		}
-	}
-}
-
 func (m *Model) HandleTagOperation() (*Model, tea.Cmd) {
 	switch m.TagModel.SelectedAction {
 	case "List Tags":
@@ -71,26 +38,6 @@ func (m *Model) HandleTagOperation() (*Model, tea.Cmd) {
 		return m.PrepareTagSelection()
 	}
 	return m, nil
-}
-
-// function to handle manual tag input submission
-func (m Model) HandleTagInputSubmit() (tea.Model, tea.Cmd) {
-	if strings.TrimSpace(m.TagModel.ManualInput) == "" {
-		m.Err = "Tag name cannot be empty"
-		return m, tea.Quit
-	}
-
-	out, err := git.CreateTag(strings.TrimSpace(m.TagModel.ManualInput))
-
-	m.OutputByLevel(out)
-
-	if err != nil {
-		m.Err = "Failed to Create Tag"
-	} else {
-		m.Success = "Created Tag"
-	}
-
-	return m, tea.Quit
 }
 
 func (m *Model) PrepareTagSelection() (*Model, tea.Cmd) {
@@ -169,27 +116,57 @@ func (m *Model) PrepareTagAddition() (*Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *Model) LoadAllTags() (*Model, tea.Cmd) {
-	out, err := git.GetAllTags()
+func (m Model) HandleTagAddSelection() (tea.Model, tea.Cmd) {
+	m.TagModel.SelectedAddTag = m.TagModel.AddOptions[m.Selected]
+
+	if m.TagModel.SelectedAddTag == "Manual Input" {
+		// Switch to input mode
+		m.TagModel.ManualInput = ""
+		m.CurrentStep = StepTagInput
+		return m, nil
+	} else {
+		// Extract the version from the option (e.g., "Patch (v1.2.4)" -> "v1.2.4")
+		start := strings.Index(m.TagModel.SelectedAddTag, "(")
+		end := strings.Index(m.TagModel.SelectedAddTag, ")")
+		if start != -1 && end != -1 && end > start {
+			newTag := m.TagModel.SelectedAddTag[start+1 : end]
+
+			out, err := git.CreateTag(newTag)
+
+			m.OutputByLevel(out)
+
+			if err != nil {
+				m.Err = "Faile to Create Tag"
+			} else {
+				m.Success = "Created new Tag"
+			}
+
+			return m, tea.Quit
+		} else {
+			m.Err = "Failed to parse version from selection"
+			return m, tea.Quit
+		}
+	}
+}
+
+// function to handle manual tag input submission
+func (m Model) HandleTagInputSubmit() (tea.Model, tea.Cmd) {
+	if strings.TrimSpace(m.TagModel.ManualInput) == "" {
+		m.Err = "Tag name cannot be empty"
+		return m, tea.Quit
+	}
+
+	out, err := git.CreateTag(strings.TrimSpace(m.TagModel.ManualInput))
+
+	m.OutputByLevel(out)
 
 	if err != nil {
-		m.OutputByLevel("\nError:\n" + fmt.Sprintf("%v", err))
-		m.Err = "Failed to get tags"
-		return m, tea.Quit
+		m.Err = "Failed to Create Tag"
+	} else {
+		m.Success = "Created Tag"
 	}
 
-	if strings.TrimSpace(out) == "" {
-		m.OutputByLevel("You can add tags with Tags -> Add Tag or `git tag <tag_name>`")
-		m.Err = "No tags found"
-		return m, tea.Quit
-	}
-
-	m.Selected = 0
-	m.TagModel.Options = append([]string{"Only load 10 latest tags"}, strings.Split(strings.TrimSpace(out), "\n")...)
-	m.TagModel.SelectedOption = ""
-	m.CurrentStep = StepTagSelect
-	m.Level = 3
-	return m, nil
+	return m, tea.Quit
 }
 
 func (m *Model) ExecuteTagAction() (*Model, tea.Cmd) {
@@ -239,4 +216,27 @@ func (m *Model) ExecuteTagAction() (*Model, tea.Cmd) {
 		}
 	}
 	return m, tea.Quit
+}
+
+func (m *Model) LoadAllTags() (*Model, tea.Cmd) {
+	out, err := git.GetAllTags()
+
+	if err != nil {
+		m.OutputByLevel("\nError:\n" + fmt.Sprintf("%v", err))
+		m.Err = "Failed to get tags"
+		return m, tea.Quit
+	}
+
+	if strings.TrimSpace(out) == "" {
+		m.OutputByLevel("You can add tags with Tags -> Add Tag or `git tag <tag_name>`")
+		m.Err = "No tags found"
+		return m, tea.Quit
+	}
+
+	m.Selected = 0
+	m.TagModel.Options = append([]string{"Only load 10 latest tags"}, strings.Split(strings.TrimSpace(out), "\n")...)
+	m.TagModel.SelectedOption = ""
+	m.CurrentStep = StepTagSelect
+	m.Level = 3
+	return m, nil
 }

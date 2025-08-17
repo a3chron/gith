@@ -8,6 +8,16 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+func (m Model) HandleBranchActionSelection() (tea.Model, tea.Cmd) {
+	m.BranchModel.SelectedAction = m.BranchModel.Actions[m.Selected]
+	return m.HandleBranchOperation()
+}
+
+func (m Model) HandleBranchSelection() (tea.Model, tea.Cmd) {
+	m.BranchModel.SelectedBranch = m.BranchModel.Branches[m.Selected]
+	return m.ExecuteBranchAction()
+}
+
 func (m *Model) HandleBranchOperation() (*Model, tea.Cmd) {
 	switch m.BranchModel.SelectedAction {
 	case "Create Branch":
@@ -119,14 +129,4 @@ func (m *Model) HandleBranchInputSubmit() (*Model, tea.Cmd) {
 	}
 
 	return m, tea.Quit
-}
-
-func (m Model) HandleBranchActionSelection() (tea.Model, tea.Cmd) {
-	m.BranchModel.SelectedAction = m.BranchModel.Actions[m.Selected]
-	return m.HandleBranchOperation()
-}
-
-func (m Model) HandleBranchSelection() (tea.Model, tea.Cmd) {
-	m.BranchModel.SelectedBranch = m.BranchModel.Branches[m.Selected]
-	return m.ExecuteBranchAction()
 }

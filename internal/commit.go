@@ -8,33 +8,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// function to handle commit message submission
-func (m *Model) HandleCommitMessageSubmit() (*Model, tea.Cmd) {
-	if strings.TrimSpace(m.CommitModel.CommitMessage) == "" {
-		m.Err = "Commit message cannot be empty"
-		return m, tea.Quit
-	}
-
-	var out string
-	var err error
-
-	switch m.CommitModel.SelectedAction {
-	case "Commit Staged":
-		out, err = git.CommitStaged(m.CommitModel.CommitMessage)
-	case "Commit All":
-		out, err = git.CommitAll(m.CommitModel.CommitMessage)
-	}
-
-	if err != nil {
-		m.OutputByLevel("\\ceError:\n" + out)
-		m.Err = "Failed to Commit"
-	} else {
-		m.Success = "Commited Changes"
-	}
-
-	return m, tea.Quit
-}
-
 func (m Model) HandleCommitSelection() (tea.Model, tea.Cmd) {
 	m.CommitModel.SelectedAction = m.CommitModel.Actions[m.Selected]
 
@@ -65,4 +38,31 @@ func (m Model) HandleCommitPrefixSelection() (tea.Model, tea.Cmd) {
 	m.Selected = 0
 	m.CurrentStep = StepCommitInput
 	return m, nil
+}
+
+// function to handle commit message submission
+func (m *Model) HandleCommitMessageSubmit() (*Model, tea.Cmd) {
+	if strings.TrimSpace(m.CommitModel.CommitMessage) == "" {
+		m.Err = "Commit message cannot be empty"
+		return m, tea.Quit
+	}
+
+	var out string
+	var err error
+
+	switch m.CommitModel.SelectedAction {
+	case "Commit Staged":
+		out, err = git.CommitStaged(m.CommitModel.CommitMessage)
+	case "Commit All":
+		out, err = git.CommitAll(m.CommitModel.CommitMessage)
+	}
+
+	if err != nil {
+		m.OutputByLevel("\\ceError:\n" + out)
+		m.Err = "Failed to Commit"
+	} else {
+		m.Success = "Commited Changes"
+	}
+
+	return m, tea.Quit
 }

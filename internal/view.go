@@ -611,7 +611,7 @@ func (m Model) renderOutput(line string, level int) string {
 				text := coloredText[1:]
 
 				switch color {
-				case "g":
+				case "g", "s":
 					renderedLines = append(renderedLines, line+" "+ui.GreenStyle.Render(text))
 				case "y":
 					renderedLines = append(renderedLines, line+" "+ui.YellowStyle.Render(text))
