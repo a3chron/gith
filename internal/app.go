@@ -140,7 +140,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "undo-commit":
 			m.Level = 3
-			m.Selected = 2 // FIXME: quick fix because handleEnterKey sets step to selected (add extra handleSelect function, see other modules)
+			m.Selected = 2 // FIXME: (same at status) quick fix because handleEnterKey sets step to selected (add extra handleSelect function, see other modules)
 			m.CurrentStep = StepCommitAction
 			m.ActionModel.SelectedAction = "Commit"
 			m.CommitModel.SelectedAction = "Undo Last Commit"
@@ -152,6 +152,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.CurrentStep = StepRemoteNameInput
 			m.ActionModel.SelectedAction = "Remote"
 			m.RemoteModel.SelectedAction = "Add Remote"
+
+		case "status":
+			m.Level = 1
+			m.Selected = 1 //FIXME: see undo-commit
+			m.CurrentStep = StepAction
+			m.ActionModel.SelectedAction = "Status"
+			return m.handleEnterKey()
 
 		default:
 			m.CurrentStep = StepAction

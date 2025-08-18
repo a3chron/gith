@@ -133,7 +133,7 @@ For more info check out the [help articles](https://gith.featurebase.app/help).
 
 - [x] Status
 
-  - [x] View working tree status (Modified, Added, Deleted, Untracked files)
+  - [x] View working tree status (Modified, Added, Deleted, Untracked files) _-- supports quick select --_
 
 - [ ] Commit
 

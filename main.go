@@ -246,6 +246,14 @@ func handleCliArgs() error {
 		}
 
 		return runQuick("undo-commit", 2)
+
+	case "status":
+		if len(os.Args) != 2 {
+			fmt.Fprintf(os.Stderr, "Usage: gith status\n")
+			os.Exit(1)
+		}
+
+		return runQuick("status", 1)
 	}
 
 	fmt.Fprintf(os.Stderr, "unknown command: %s\nUse 'gith help' for usage information", strings.Join(os.Args[1:], " "))
