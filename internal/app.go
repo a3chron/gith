@@ -138,6 +138,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActionModel.SelectedAction = "Commit"
 			m.CommitModel.SelectedAction = "Commit All"
 
+		case "undo-commit":
+			m.Level = 3
+			m.Selected = 2 // quick fix because handleEnterKey sets step to selected (add extra handleSelect function, see other modules)
+			m.CurrentStep = StepCommitAction
+			m.ActionModel.SelectedAction = "Commit"
+			m.CommitModel.SelectedAction = "Undo Last Commit"
+			return m.handleEnterKey()
+
 		case "add-remote":
 			m.Level = 3
 			m.Selected = 0

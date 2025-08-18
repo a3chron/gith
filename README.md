@@ -61,10 +61,7 @@ This is the full setup, for only starship scroll down to the starship section.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Customization](#customization)
-- [Usage in scripts](#usage-in-scripts)
-- [Troubleshooting](#troubleshooting)
 - [What is and what will be (features)](#what-is-and-what-will-be)
-- [Completions](#completions)
 - [Contributing](#contributing)
 - [Thanks](#thanks)
 
@@ -111,62 +108,14 @@ For more info run `gith help` or check out the [help articles](https://gith.feat
 Gith tries to use intuitive, natural language commands,
 combined with the usual git commands, for example `gith tag` or `gith update remote url`.
 
+You can also get completions for fish, base or zsh: [Completions](https://gith.featurebase.app/help/articles/8096273)
+
 ## Customization
 
 You can set your preferred flavor and accent in the Options.  
 Just run `gith` and select "Options".
 
-When running gith the first time, a config file storing your settings will be created at
-`XDG_CONFIG_HOME/gith/config.json` if `XDG_CONFIG_HOME` is set,
-otherwise at `~/.config/gith/config.json`.
-
-You can also manually edit the config file, although editing with gith ensures that no invalid configurations are used.
-
-**If you have anything you'd like to configure in the settings or options, don't hesitate to open an issue or [Feature Request](https://gith.featurebase.app/).**
-
 For more info check out the [help articles](https://gith.featurebase.app/help).
-
-## Usage in scripts
-
-You are able to easily change flavor and accent of gith in scripts:
-
-```bash
-gith config update --flavor=Latte --accent=Red
-```
-
-Useful for example if you want a script to switch between
-light and dark mode in all your catppuccin themed apps.
-
-> [!NOTE]
-> Run `gith config help` for more info
-
-## Troubleshooting
-
-**I update gith via `go install github.com/a3chron/gith@latest`, but nothing changes / version stays the same**
-
-> [!NOTE]
-> If you get any output when running `go install github.com/a3chron/gith@latest`,
-> you probably just discovered some other bug.  
-> Consider opening an issue at [Featurebase](https://gith.featurebase.app/) or GitHub.
-
-Sometimes it takes some time for the go proxy server to recognize a new release,
-so it is possible that the latest release for the proxy server is still the old one.
-
-In that case, just request a lookup for the specific version, for example `v0.6.0` if this is the latest release:
-
-```bash
-go install github.com/a3chron/gith@v0.6.0
-```
-
-You should now see the output:
-
-```bash
-go: downloading github.com/a3chron/gith v0.6.0
-```
-
-> [!NOTE]
-> You can check for the latest release on [github](https://github.com/a3chron/gith/releases/latest)
-> or by simply running `gith version check`
 
 ## What is and what will be
 
@@ -188,7 +137,7 @@ go: downloading github.com/a3chron/gith v0.6.0
 
 - [ ] Commit
 
-  - [x] Undo Last Commit
+  - [x] Undo Last Commit _-- supports quick select --_
 
   - [x] Commit staged changes _-- supports quick select --_
 
@@ -233,29 +182,6 @@ go: downloading github.com/a3chron/gith v0.6.0
   - [x] Change UI flavor
 
   - [x] Change UI accent color
-
-## Completions
-
-For package installation the completions will be installed automatically.  
-When installing via `go install` you can get completions for the few commands there are by running the following command:
-
-**fish**
-
-```bash
-gith completion fish > ~/.config/fish/completions/gith.fish
-```
-
-**bash**
-
-```bash
-gith completion bash > ~/.local/share/bash-completion/completions/gith
-```
-
-**Zsh**
-
-```bash
-gith completion zsh > ~/.local/share/zsh/site-functions/_gith
-```
 
 ## Contributing
 

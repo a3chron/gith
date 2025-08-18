@@ -237,7 +237,15 @@ func handleCliArgs() error {
 			return runQuick("commit-all", 3)
 		case "staged":
 			return runQuick("commit-staged", 3)
+		} // TODO: all error here if none matched
+
+	case "undo":
+		if len(os.Args) != 3 || os.Args[2] != "commit" {
+			fmt.Fprintf(os.Stderr, "Usage: gith undo commit\n")
+			os.Exit(1)
 		}
+
+		return runQuick("undo-commit", 2)
 	}
 
 	fmt.Fprintf(os.Stderr, "unknown command: %s\nUse 'gith help' for usage information", strings.Join(os.Args[1:], " "))
