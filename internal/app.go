@@ -140,7 +140,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "undo-commit":
 			m.Level = 3
-			m.Selected = 2 // quick fix because handleEnterKey sets step to selected (add extra handleSelect function, see other modules)
+			m.Selected = 2 // FIXME: quick fix because handleEnterKey sets step to selected (add extra handleSelect function, see other modules)
 			m.CurrentStep = StepCommitAction
 			m.ActionModel.SelectedAction = "Commit"
 			m.CommitModel.SelectedAction = "Undo Last Commit"
@@ -170,7 +170,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "ctrl+c", "esc":
 				m.Err = "User cancelled"
 				return m, tea.Quit
-			case "ctrl+h":
+			case "ctrl+h", "ctrl+y":
 				m.resetState()
 			case "enter":
 				switch m.CurrentStep {

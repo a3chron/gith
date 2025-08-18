@@ -393,7 +393,7 @@ Usage:
 Interactive Commands:
   ↑↓ or j/k            Navigate menu items
   Enter                Select item
-  Ctrl+H               Go back to previous step
+  Ctrl+H, Ctrl+Y       Go back to previous step
   Q/Esc                Quit application
 
 Features:
