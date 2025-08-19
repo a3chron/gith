@@ -375,26 +375,29 @@ func PrintHelp() {
 	fmt.Print(`gith - TUI Git Helper
 
 Usage:
-  gith                      Start interactive mode
+  gith                   Start interactive mode
 
-  gith version              Show version information  
-  gith version check        Show version & check for updates
-  gith update				Update to the latest version (for go users)
+  gith version           Show version information  
+  gith version check     Show version & check for updates
+  gith update			 Update to the latest version (for go users)
 
   // Quick Selects - Jump right to a specific selection
-  gith tag             	    Add Tag
-  gith push tag             Push Tag
-  gith commit [staged]		Commit Staged
-  gith commit all			Commit All Files
+  gith tag             	 Add Tag
+  gith push tag          Push Tag
+  gith commit [staged]   Commit Staged
+  gith commit all        Commit All Files
+  gith undo commit       Undo Last Commit
+  gith add remote        Add Remote
+  gith status            Show Status
 
-  gith config help          Show config related help message
-  gith help                 Show this help message
+  gith config help       Show config related help message
+  gith help              Show this help message
 
 Interactive Commands:
-  ↑↓ or j/k            Navigate menu items
-  Enter                Select item
-  Ctrl+H, Ctrl+Y       Go back to previous step
-  Q/Esc                Quit application
+  ↑↓ or j/k              Navigate menu items
+  Enter                  Select item
+  Ctrl+H, Ctrl+Y         Go back to previous step
+  Q/Esc                  Quit application
 
 Features:
   • Branch management
@@ -416,13 +419,14 @@ func GenerateCompletions(shell string) error {
 	case "fish":
 		fmt.Print(`# Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l accent -d "Catppuccin accent" -a "rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender gray"
 complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
+complete -c gith -n "__fish_seen_subcommand_from undo" -a "commit" -d "Quick Select: Status"
 `)
 	case "bash":
 		fmt.Print(`# Bash completion for gith
@@ -434,7 +438,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version update config help add push tag"
+            opts="version update config help add push tag status undo"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -458,6 +462,11 @@ _gith() {
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
+		undo)
+            opts="commit"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
         --flavor)
             opts="latte frappe macchiato mocha"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
@@ -477,7 +486,7 @@ complete -F _gith gith
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version update config help add push)' \
+        '1:command:(version update config help add push status undo)' \
         '*::arg:->args'
     
     case $state in
@@ -497,6 +506,9 @@ _gith() {
                     ;;
                 push)
                     _arguments '1:subcommand:(tag)'
+                    ;;
+				undo)
+                    _arguments '1:subcommand:(commit)'
                     ;;
             esac
             ;;

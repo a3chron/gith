@@ -2,7 +2,7 @@
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version update config help add push)' \
+        '1:command:(version update config help add push status undo)' \
         '*::arg:->args'
     
     case $state in
@@ -22,6 +22,9 @@ _gith() {
                     ;;
                 push)
                     _arguments '1:subcommand:(tag)'
+                    ;;
+                undo)
+                    _arguments '1:subcommand:(commit)'
                     ;;
             esac
             ;;
