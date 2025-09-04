@@ -165,9 +165,9 @@ For more info check out the [help articles](https://gith.featurebase.app/help).
 
   - [ ] Update Remote url
 
-  - [ ] Push to remote
+  - [ ] Push with remotes
 
-  - [ ] Pull from remote
+  - [ ] Pull with remotes
 
 - [ ] Changes
 

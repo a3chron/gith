@@ -54,7 +54,7 @@ func initialModel() internal.Model {
 		},
 		CommitModel: internal.CommitModel{
 			Actions:        []string{"Commit Staged", "Commit All", "Undo Last Commit"},
-			CommitPrefixes: []string{"feat", "fix", "build", "chore", "ci", "test", "perf", "refactor", "revert", "style", "docs", "Custom Prefix"},
+			CommitPrefixes: []string{"feat", "fix", "chore", "build", "ci", "test", "perf", "refactor", "revert", "style", "docs", "Custom Prefix"},
 		},
 		TagModel: internal.TagModel{
 			Actions: []string{"Add Tag", "Remove Tag", "List Tags", "Push Tag"},
