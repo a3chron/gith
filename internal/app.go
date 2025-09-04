@@ -12,7 +12,10 @@ import (
 	"github.com/a3chron/gith/internal/ui"
 )
 
-func UpdateOnInit() tea.Cmd {
+func UpdateOnInit(skip bool) tea.Cmd {
+	if skip {
+		return func() tea.Msg { return RepoUpdatedMsg{} }
+	}
 	return func() tea.Msg {
 		if err := UpdateRepo(); err != nil {
 			return RepoUpdateErrorMsg{}
@@ -22,9 +25,20 @@ func UpdateOnInit() tea.Cmd {
 }
 
 func (m Model) Init() tea.Cmd {
+	skipFetch := true
+
+	switch m.CurrentConfig.InitBehaviour {
+	case "Always fetch on Init":
+		skipFetch = false
+	case "Do not fetch for Quick Selects":
+		if m.StartAt == "" {
+			skipFetch = false
+		}
+	}
+
 	return tea.Batch(
 		m.Spinner.Tick,
-		UpdateOnInit(),
+		UpdateOnInit(skipFetch),
 	)
 }
 
@@ -63,6 +77,8 @@ func (m Model) getCurrentOptions() []string {
 		return m.ConfigModel.Flavors
 	case StepOptionsAccentSelect:
 		return m.ConfigModel.Accents
+	case StepOptionsInitBehaviourSelect:
+		return m.ConfigModel.InitBehaviours
 	default:
 		return []string{}
 	}
@@ -94,6 +110,7 @@ func (m *Model) resetState() {
 
 	m.ConfigModel.SelectedAccent = ""
 	m.ConfigModel.SelectedFlavor = ""
+	m.ConfigModel.SelectedBehaviour = ""
 	m.ConfigModel.SelectedAction = ""
 	m.Selected = 0
 	m.Level = 1
@@ -259,6 +276,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+h":
 			if m.CurrentStep == StepAction || m.CurrentStep == StepLoad {
+				m.Err = "User quit"
 				return m, tea.Quit
 			}
 			m.resetState()
@@ -308,6 +326,8 @@ func (m Model) handleEnterKey() (tea.Model, tea.Cmd) {
 		return m.HandleOptionsFlavorSelection()
 	case StepOptionsAccentSelect:
 		return m.HandleOptionsAccentSelection()
+	case StepOptionsInitBehaviourSelect:
+		return m.HandleOptionsInitBehaviourSelection()
 	}
 	return m, nil
 }

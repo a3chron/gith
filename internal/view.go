@@ -424,6 +424,19 @@ func (m Model) renderOptionsSubActions2() string {
 		} else {
 			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.ConfigModel.SelectedAccent) + "\n")
 		}
+
+	case "Fetch at Init Behaviour":
+		content.WriteString(bullet + " " + ui.TextStyle.Render("Select behaviour") + "\n")
+
+		if m.ConfigModel.SelectedBehaviour == "" {
+			if len(m.ConfigModel.InitBehaviours) > 0 && m.Err == "" {
+				content.WriteString(ui.AccentStyle.Render("├╌") + " " + ui.DimStyle.Render("Current: ") + ui.AccentStyle.Render(m.CurrentConfig.InitBehaviour) + "\n")
+				content.WriteString(m.renderOptions(m.ConfigModel.InitBehaviours, m.CurrentStep == StepOptionsInitBehaviourSelect))
+				content.WriteString(ui.AccentStyle.Render("╰─╌") + "\n")
+			}
+		} else {
+			content.WriteString(ui.LineStyle.Render("├╌") + " " + ui.CompletedStyle.Render(m.ConfigModel.SelectedBehaviour) + "\n")
+		}
 	}
 
 	return content.String()

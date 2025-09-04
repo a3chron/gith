@@ -35,6 +35,7 @@ const (
 	StepOptions
 	StepOptionsFlavorSelect
 	StepOptionsAccentSelect
+	StepOptionsInitBehaviourSelect
 )
 
 type ActionModel struct {
@@ -81,12 +82,14 @@ type RemoteModel struct {
 }
 
 type ConfigModel struct {
-	Actions        []string
-	SelectedAction string
-	Flavors        []string
-	SelectedFlavor string
-	Accents        []string
-	SelectedAccent string
+	Actions           []string
+	SelectedAction    string
+	Flavors           []string
+	SelectedFlavor    string
+	Accents           []string
+	SelectedAccent    string
+	InitBehaviours    []string
+	SelectedBehaviour string
 }
 
 type Model struct {

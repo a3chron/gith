@@ -37,7 +37,7 @@ func getVersion() string {
 	return "dev"
 }
 
-func initialModel() internal.Model {
+func initialModel(cfg *config.Config) internal.Model {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = ui.AccentStyle
@@ -63,21 +63,21 @@ func initialModel() internal.Model {
 			Actions: []string{"List Remotes", "Add Remote", "Remove Remote"},
 		},
 		ConfigModel: internal.ConfigModel{
-			Actions: []string{"Change Flavor", "Change Accent", "Reset to Defaults"},
-			Flavors: config.GetAvailableFlavors(),
-			Accents: config.GetAvailableAccents(),
+			Actions:        []string{"Change Flavor", "Change Accent", "Fetch at Init Behaviour", "Reset to Defaults"},
+			InitBehaviours: []string{"Always fetch on Init", "Do not fetch for Quick Selects", "Never fetch"},
 		},
-		Selected:     0,
-		Level:        0,
-		StartAt:      "",
-		StartAtLevel: 0,
-		Spinner:      s,
+		CurrentConfig: cfg,
+		Selected:      0,
+		Level:         0,
+		StartAt:       "",
+		StartAtLevel:  0,
+		Spinner:       s,
 	}
 }
 
 // initialModelWithStart returns the base model but allows setting a quick-start flow.
-func initialModelWithStart(startAt string, startAtLevel int) internal.Model {
-	m := initialModel()
+func initialModelWithStart(startAt string, startAtLevel int, cfg *config.Config) internal.Model {
+	m := initialModel(cfg)
 	m.StartAt = startAt
 	m.StartAtLevel = startAtLevel
 	return m
@@ -100,8 +100,9 @@ func run() error {
 		// Fall back to defaults if config loading fails
 		fmt.Fprintf(os.Stderr, "Warning: failed to load config, using defaults: %v\n", err)
 		cfg = &config.Config{
-			Accent: config.DefaultConfig.Accent,
-			Flavor: config.DefaultConfig.Flavor,
+			Accent:        config.DefaultConfig.Accent,
+			Flavor:        config.DefaultConfig.Flavor,
+			InitBehaviour: config.DefaultConfig.InitBehaviour,
 		}
 	}
 
@@ -113,7 +114,7 @@ func run() error {
 		return fmt.Errorf("not in a git repository")
 	}
 
-	p := tea.NewProgram(initialModel())
+	p := tea.NewProgram(initialModel(cfg))
 	if _, err := p.Run(); err != nil {
 		return fmt.Errorf("failed to run program: %w", err)
 	}
@@ -141,7 +142,7 @@ func runQuick(startAt string, startAtLevel int) error {
 		return fmt.Errorf("not in a git repository")
 	}
 
-	p := tea.NewProgram(initialModelWithStart(startAt, startAtLevel))
+	p := tea.NewProgram(initialModelWithStart(startAt, startAtLevel, cfg))
 	if _, err := p.Run(); err != nil {
 		return fmt.Errorf("failed to run program: %w", err)
 	}
@@ -170,7 +171,7 @@ func handleCliArgs() error {
 			return nil
 		}
 
-		fmt.Fprintf(os.Stderr, "To update via 'gith update' install gith via go\n")
+		fmt.Fprintf(os.Stderr, "To update via 'gith update' install gith via go\nInstuctions are linked in the repo's readme\n")
 		os.Exit(1)
 
 	case "config":

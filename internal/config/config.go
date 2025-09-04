@@ -12,13 +12,15 @@ import (
 )
 
 type Config struct {
-	Accent string `json:"accent"`
-	Flavor string `json:"flavor"`
+	Accent        string `json:"accent"`
+	Flavor        string `json:"flavor"`
+	InitBehaviour string `json:"init"`
 }
 
 var DefaultConfig = Config{
-	Accent: "Blue",
-	Flavor: "Mocha",
+	Accent:        "Blue",
+	Flavor:        "Mocha",
+	InitBehaviour: "Do not fetch for Quick Selects",
 }
 
 // GetConfigPath returns the path to the config file
@@ -69,6 +71,10 @@ func LoadConfig() (*Config, error) {
 	}
 	if !IsValidAccent(config.Accent) {
 		config.Accent = DefaultConfig.Accent
+	}
+
+	if !IsValidInitBehaviour(config.InitBehaviour) {
+		config.InitBehaviour = DefaultConfig.InitBehaviour
 	}
 
 	return &config, nil
@@ -170,6 +176,11 @@ func IsValidAccent(accent string) bool {
 		"sky", "lavender", "gray",
 	}
 	return slices.Contains(validAccents, lowerAccent)
+}
+
+func IsValidInitBehaviour(behaviour string) bool {
+	validBehaviours := []string{"Always fetch on Init", "Do not fetch for Quick Selects", "Never fetch"}
+	return slices.Contains(validBehaviours, behaviour)
 }
 
 // GetAvailableFlavors returns list of available flavors
