@@ -15,7 +15,8 @@ _gith() {
                     _arguments \
                         '1:subcommand:(show reset path update help tag)' \
                         '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
-                        '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
+                        '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)' \
+                        '--initFetch[Init fetch behaviour]:(always quick never)'
                     ;;
                 add)
                     _arguments '1:subcommand:(remote)'

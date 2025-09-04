@@ -46,6 +46,11 @@ _gith() {
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
+        --initFetch)
+            opts="always quick never"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
     esac
 }
 complete -F _gith gith

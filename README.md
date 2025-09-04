@@ -183,6 +183,8 @@ For more info check out the [help articles](https://gith.featurebase.app/help).
 
   - [x] Change UI accent color
 
+  - [x] Change fetch behaviour on Init
+
 ## Contributing
 
 Contributions are welcome, please use [conventional commits](https://www.conventionalcommits.org/) for a constant commit message style.

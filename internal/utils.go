@@ -424,6 +424,7 @@ complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check f
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l accent -d "Catppuccin accent" -a "rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender gray"
+complete -c gith -n "__fish_seen_subcommand_from config update" -l initFetch -d "Init fetch behaviour" -a "always quick never"
 complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
 complete -c gith -n "__fish_seen_subcommand_from undo" -a "commit" -d "Quick Select: Status"
@@ -477,6 +478,11 @@ _gith() {
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
+		--initFetch)
+            opts="always quick never"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
     esac
 }
 complete -F _gith gith
@@ -499,7 +505,8 @@ _gith() {
                     _arguments \
                         '1:subcommand:(show reset path update help tag)' \
                         '--flavor[Catppuccin flavor]:(latte frappe macchiato mocha)' \
-                        '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)'
+                        '--accent[Catppuccin accent]:(rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire blue lavender)' \
+						'--initFetch[Init fetch behaviour]:(always quick never)'
                     ;;
                 add)
                     _arguments '1:subcommand:(remote)'

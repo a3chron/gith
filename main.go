@@ -282,13 +282,33 @@ func handleConfigCommand() error {
 }
 
 func printConfigUsage() error {
-	fmt.Println("Config commands:")
-	fmt.Println("  gith config show   	- Show current configuration")
-	fmt.Println("  gith config reset  	- Reset configuration to defaults")
-	fmt.Println("  gith config path   	- Show configuration file path")
-	fmt.Println("  gith config update [--flavor=<flavor>] [--accent=<accent>]   - Update configuration")
-	fmt.Println("    <flavor> can be any of the catppuccin flavors (case insensitive)")
-	fmt.Println("    <accent> can be any of the catppuccin accents (case insensitive)")
+	helpText := `
+Config commands:
+  gith config show     - Show current configuration
+  gith config reset    - Reset configuration to defaults
+  gith config path     - Show configuration file path
+
+  gith config update [--flavor=<flavor>] [--accent=<accent>] [--initFetch=<initFetch>]
+    Update your configuration options. Flags are optional and can be combined.
+
+    --flavor=<flavor>
+        Set the Catppuccin flavor (case insensitive). Available options:
+        Latte, Frappe, Macchiato, Mocha
+
+    --accent=<accent>
+        Set the Catppuccin accent color (case insensitive). Available options:
+        Rosewater, Flamingo, Pink, Mauve, Red, Maroon, Peach, Yellow, Green,
+        Teal, Blue, Sapphire, Sky, Lavender, Gray
+
+    --initFetch=<initFetch>
+        Set fetch behavior on init. Available options:
+        always  - always fetch on init
+        quick   - fetch only for full load, skip for quick selects
+        never   - never fetch on init
+`
+
+	fmt.Println(helpText)
+
 	return nil
 }
 
@@ -299,8 +319,9 @@ func showConfig() error {
 	}
 
 	fmt.Printf("Current configuration:\n")
-	fmt.Printf("  Flavor: %s\n", cfg.Flavor)
-	fmt.Printf("  Accent: %s\n", cfg.Accent)
+	fmt.Printf("  Flavor:         %s\n", cfg.Flavor)
+	fmt.Printf("  Accent:         %s\n", cfg.Accent)
+	fmt.Printf("  Init Behaviour: %s\n", cfg.InitBehaviour)
 	return nil
 }
 
@@ -314,46 +335,35 @@ func updateConfig() error {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	// TODO: when adding more to configure, make sure to handle this automatically
+	args := os.Args[3:]
+	for _, arg := range args {
+		arg = strings.ToLower(arg)
 
-	first := strings.ToLower(os.Args[3])
-	second := ""
-
-	if len(os.Args) >= 5 {
-		second = strings.ToLower(os.Args[4])
-	}
-
-	if flavor, found := strings.CutPrefix(first, "--flavor="); found {
-		if config.IsValidFlavor(flavor) {
-			cfg.Flavor = flavor
-		} else {
-			return fmt.Errorf("not a valid flavor: %s\nlist of valid flavors: %s", flavor, config.GetAvailableFlavors())
-		}
-	} else if accent, found := strings.CutPrefix(first, "--accent="); found {
-		if config.IsValidAccent(accent) {
-			cfg.Accent = accent
-		} else {
-			return fmt.Errorf("not a valid accent: %s\nlist of valid accent: %s", accent, config.GetAvailableAccents())
-		}
-	} else {
-		return fmt.Errorf("'%s' is not a valid flag\nRun 'gith config help' to see valid flags", strings.TrimPrefix(strings.Split(first, "=")[0], "--"))
-	}
-
-	if second != "" {
-		if flavor, found := strings.CutPrefix(second, "--flavor="); found {
-			if config.IsValidFlavor(flavor) {
-				cfg.Flavor = flavor
-			} else {
-				return fmt.Errorf("not a valid flavor: %s\nlist of valid flavors: %s", flavor, config.GetAvailableFlavors())
+		switch {
+		case strings.HasPrefix(arg, "--flavor="):
+			val := strings.TrimPrefix(arg, "--flavor=")
+			if !config.IsValidFlavor(val) {
+				return fmt.Errorf("not a valid flavor: %s\nvalid flavors: %s", val, strings.Join(config.GetAvailableFlavors(), ", "))
 			}
-		} else if accent, found := strings.CutPrefix(second, "--accent="); found {
-			if config.IsValidAccent(accent) {
-				cfg.Accent = accent
-			} else {
-				return fmt.Errorf("not a valid accent: %s\nlist of valid accent: %s", accent, config.GetAvailableAccents())
+			cfg.Flavor = val
+
+		case strings.HasPrefix(arg, "--accent="):
+			val := strings.TrimPrefix(arg, "--accent=")
+			if !config.IsValidAccent(val) {
+				return fmt.Errorf("not a valid accent: %s\nvalid accents: %s", val, strings.Join(config.GetAvailableAccents(), ", "))
 			}
-		} else {
-			return fmt.Errorf("'%s' is not a valid flag\nRun 'gith config help' to see valid flags", strings.TrimPrefix(strings.Split(first, "=")[0], "--"))
+			cfg.Accent = val
+
+		case strings.HasPrefix(arg, "--initfetch="):
+			val := strings.TrimPrefix(arg, "--initfetch=")
+			valid := map[string]bool{"always": true, "quick": true, "never": true}
+			if !valid[val] {
+				return fmt.Errorf("not a valid initFetch: %s\nvalid options: always, quick, never", val)
+			}
+			cfg.InitBehaviour = val
+
+		default:
+			return fmt.Errorf("'%s' is not a valid flag\nRun 'gith config help' to see valid flags", strings.Split(arg, "=")[0])
 		}
 	}
 
