@@ -66,9 +66,9 @@ func PrintVersion(checkForUpdate bool, version string, commit string, date strin
 
 	if checkForUpdate {
 		if comparison, err := checkVersionComparison(version); err != nil {
-			printUpdateBox("Error checking for updates", Gray, false) // TODO: +err.Error() for message, but can be long, maybe add verbosity and just print
+			printUpdateBox("Error checking for updates", Gray, false, version == "dev") // TODO: +err.Error() for message, but can be long, maybe add verbosity and just print
 		} else {
-			printUpdateBox(comparison.Message, comparison.Color, comparison.ShowUpgrade)
+			printUpdateBox(comparison.Message, comparison.Color, comparison.ShowUpgrade, version == "dev")
 		}
 	}
 }
@@ -117,15 +117,22 @@ func printVersionBox(version, commit, date, builtBy string) {
 	fmt.Printf("%s%s%s\n", BottomLeft, strings.Repeat(Horizontal, maxWidth-2), BottomRight)
 }
 
-func printUpdateBox(message, color string, showUpgrade bool) {
+func printUpdateBox(message, color string, showUpgrade bool, goInstallation bool) {
 	lines := []string{}
 	for line := range strings.SplitSeq(message, "\n") {
 		lines = append(lines, line)
 	}
 
 	if showUpgrade {
-		lines = append(lines, "To install the latest version run:")
-		lines = append(lines, "go install github.com/a3chron/gith@latest")
+		lines = append(lines, "")
+		if goInstallation {
+			// installed via go install (or actual dev build)
+			lines = append(lines, "To install the latest version run:")
+			lines = append(lines, "gith update OR go install github.com/a3chron/gith@latest")
+		} else {
+			lines = append(lines, "To install the latest version you will have to")
+			lines = append(lines, "download the latest binaries and install them")
+		}
 	}
 
 	maxWidth := 0
