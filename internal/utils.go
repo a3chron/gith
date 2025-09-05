@@ -419,7 +419,7 @@ func GenerateCompletions(shell string) error {
 	case "fish":
 		fmt.Print(`# Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo commit" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
@@ -439,7 +439,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version update config help add push tag status undo"
+            opts="version update config help add push tag status undo commit"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -492,7 +492,7 @@ complete -F _gith gith
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version update config help add push status undo)' \
+        '1:command:(version update config help add push status undo commit)' \
         '*::arg:->args'
     
     case $state in

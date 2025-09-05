@@ -7,7 +7,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version update config help add push tag status undo"
+            opts="version update config help add push tag status undo commit"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
