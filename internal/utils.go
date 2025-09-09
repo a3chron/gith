@@ -131,7 +131,7 @@ func printUpdateBox(message, color string, showUpgrade bool, goInstallation bool
 			lines = append(lines, "gith update OR go install github.com/a3chron/gith@latest")
 		} else {
 			lines = append(lines, "To install the latest version you will have to")
-			lines = append(lines, "download the latest binaries and install them")
+			lines = append(lines, "download the latest binaries from github and install them")
 		}
 	}
 

@@ -26,7 +26,7 @@ func (m *Model) HandleRemoteOperation() (*Model, tea.Cmd) {
 			m.OutputByLevel("\\crError:\n" + err)
 			m.Err = out
 		} else {
-			m.OutputByLevel(out)
+			m.OutputByLevel(git.FormatFancyRemotes(out))
 			m.Success = "Listed all Remotes"
 		}
 		return m, tea.Quit
