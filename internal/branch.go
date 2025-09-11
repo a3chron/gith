@@ -18,39 +18,35 @@ func (m Model) HandleBranchSelection() (tea.Model, tea.Cmd) {
 	return m.ExecuteBranchAction()
 }
 
+func (m *Model) PopulateBranches() (tea.Model, tea.Cmd) {
+	branches, err := git.GetBranches()
+	if err != nil {
+		m.Err = fmt.Sprintf("Failed to fetch branches: %v", err)
+		return m, nil
+	}
+	if len(branches) == 0 {
+		m.Err = "No branches available"
+		return m, tea.Quit
+	}
+
+	m.BranchModel.Branches = branches
+	return m, nil
+}
+
 func (m *Model) HandleBranchOperation() (*Model, tea.Cmd) {
 	switch m.BranchModel.SelectedAction {
 	case "Create Branch":
 		return m.PrepareBranchAddition()
 
 	case "Switch Branch", "Delete Branch":
-		branches, err := git.GetBranches()
-		if err != nil {
-			m.Err = fmt.Sprintf("Failed to fetch branches: %v", err)
-			return m, nil
-		}
-		if len(branches) == 0 {
-			m.Err = "No branches available"
-			return m, tea.Quit
-		}
-
-		m.BranchModel.Branches = branches
+		m.PopulateBranches()
 		m.Selected = 0
 		m.CurrentStep = StepBranchSelect
 		m.Level = 3
 
 	case "List Branches":
-		branches, err := git.GetBranches()
-		if err != nil {
-			m.Err = fmt.Sprintf("Failed to fetch branches: %v", err)
-			return m, nil
-		}
-		if len(branches) == 0 {
-			m.Success = "No branches available"
-			return m, tea.Quit
-		}
-
-		m.OutputByLevel(strings.Join(branches, "\n"))
+		m.PopulateBranches()
+		m.OutputByLevel(strings.Join(m.BranchModel.Branches, "\n"))
 		m.Success = "Listed branches"
 		return m, tea.Quit
 	}

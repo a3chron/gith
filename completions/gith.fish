@@ -1,6 +1,6 @@
 # Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo commit" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo commit switch" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
@@ -9,3 +9,5 @@ complete -c gith -n "__fish_seen_subcommand_from config update" -l initFetch -d 
 complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
 complete -c gith -n "__fish_seen_subcommand_from undo" -a "commit" -d "Quick Select: Status"
+complete -c gith -n "__fish_seen_subcommand_from list" -a "branch" -d "Quick Select: List branch"
+complete -c gith -n "__fish_seen_subcommand_from delete" -a "branch" -d "Quick Select: Delete branch"

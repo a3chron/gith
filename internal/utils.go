@@ -388,15 +388,23 @@ Usage:
   gith version check     Show version & check for updates
   gith update			 Update to the latest version (for go users)
 
-  // Quick Selects - Jump right to a specific selection
+  -- Quick Selects - Jump right to a specific selection --
   gith tag             	 Add Tag
   gith push tag          Push Tag
+
+  gith switch            Switch Branch
+  gith delete branch     Delete Branch
+  gith list branch       List Branches
+
   gith commit [staged]   Commit Staged
   gith commit all        Commit All Files
   gith undo commit       Undo Last Commit
+
   gith add remote        Add Remote
+
   gith status            Show Status
 
+  -- Help --
   gith config help       Show config related help message
   gith help              Show this help message
 
@@ -426,7 +434,7 @@ func GenerateCompletions(shell string) error {
 	case "fish":
 		fmt.Print(`# Fish completion for gith
 complete -c gith -f
-complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo commit" -d "Available commands"
+complete -c gith -n "__fish_use_subcommand" -a "version update config help add push tag status undo commit switch" -d "Available commands"
 complete -c gith -n "__fish_seen_subcommand_from version" -a "check" -d "Check for updates"
 complete -c gith -n "__fish_seen_subcommand_from config" -a "show reset path update help" -d "Config commands"
 complete -c gith -n "__fish_seen_subcommand_from config update" -l flavor -d "Catppuccin flavor" -a "latte frappe macchiato mocha"
@@ -435,6 +443,8 @@ complete -c gith -n "__fish_seen_subcommand_from config update" -l initFetch -d 
 complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
 complete -c gith -n "__fish_seen_subcommand_from undo" -a "commit" -d "Quick Select: Status"
+complete -c gith -n "__fish_seen_subcommand_from list" -a "branch" -d "Quick Select: List branch"
+complete -c gith -n "__fish_seen_subcommand_from delete" -a "branch" -d "Quick Select: Delete branch"
 `)
 	case "bash":
 		fmt.Print(`# Bash completion for gith
@@ -446,7 +456,7 @@ _gith() {
     
     case "${prev}" in
         gith)
-            opts="version update config help add push tag status undo commit"
+            opts="version update config help add push tag status undo commit switch"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -475,6 +485,16 @@ _gith() {
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
+		list)
+            opts="branch"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        delete)
+            opts="branch"
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
         --flavor)
             opts="latte frappe macchiato mocha"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
@@ -499,7 +519,7 @@ complete -F _gith gith
 _gith() {
     local context state line
     _arguments \
-        '1:command:(version update config help add push status undo commit)' \
+        '1:command:(version update config help add push status undo commit switch)' \
         '*::arg:->args'
     
     case $state in
@@ -523,6 +543,12 @@ _gith() {
                     ;;
 				undo)
                     _arguments '1:subcommand:(commit)'
+                    ;;
+				list)
+                    _arguments '1:subcommand:(branch)'
+                    ;;
+                delete)
+                    _arguments '1:subcommand:(branch)'
                     ;;
             esac
             ;;

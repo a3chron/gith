@@ -123,11 +123,11 @@ For more info check out the [help articles](https://gith.featurebase.app/help).
 
 - [x] Branch
 
-  - [x] Switch Branch
+  - [x] Switch Branch _-- supports quick select --_
 
-  - [x] List Branches
+  - [x] List Branches _-- supports quick select --_
 
-  - [x] Delete Branch
+  - [x] Delete Branch _-- supports quick select --_
 
   - [x] Create Branch
 

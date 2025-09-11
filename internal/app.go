@@ -141,6 +141,30 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActionModel.SelectedAction = "Tag"
 			m.TagModel.SelectedAction = "Push Tag"
 
+		case "switch-branch":
+			m.PopulateBranches()
+			m.Selected = 0
+			m.Level = 3
+			m.CurrentStep = StepBranchSelect
+			m.ActionModel.SelectedAction = "Branch"
+			m.BranchModel.SelectedAction = "Switch Branch"
+
+		case "delete-branch":
+			m.PopulateBranches()
+			m.Selected = 0
+			m.Level = 3
+			m.CurrentStep = StepBranchSelect
+			m.ActionModel.SelectedAction = "Branch"
+			m.BranchModel.SelectedAction = "Delete Branch"
+
+		case "list-branch":
+			m.Selected = 0
+			m.Level = 2
+			m.CurrentStep = StepBranchAction
+			m.ActionModel.SelectedAction = "Branch"
+			m.BranchModel.SelectedAction = "List Branches"
+			return m.HandleBranchOperation()
+
 		case "commit-staged":
 			m.Level = 3
 			m.Selected = 0

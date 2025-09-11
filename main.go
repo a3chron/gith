@@ -210,6 +210,14 @@ func handleCliArgs() error {
 		// Start UI directly at tag selection
 		return runQuick("add-tag", 3)
 
+	case "switch":
+		if len(os.Args) != 2 {
+			fmt.Fprintf(os.Stderr, "Usage: gith switch\n")
+			os.Exit(1)
+		}
+
+		return runQuick("switch-branch", 3)
+
 	case "push":
 		if len(os.Args) != 3 {
 			fmt.Fprintf(os.Stderr, "Usage: gith push tag\n")
@@ -219,6 +227,32 @@ func handleCliArgs() error {
 		case "tag":
 			// Start UI directly at push tag selection
 			return runQuick("push-tag", 3)
+		default:
+			os.Exit(1)
+			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
+		}
+
+	case "delete":
+		if len(os.Args) != 3 {
+			fmt.Fprintf(os.Stderr, "Usage: gith delete branch\n")
+			os.Exit(1)
+		}
+		switch os.Args[2] {
+		case "branch":
+			return runQuick("delete-branch", 3)
+		default:
+			os.Exit(1)
+			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
+		}
+
+	case "list":
+		if len(os.Args) != 3 {
+			fmt.Fprintf(os.Stderr, "Usage: gith list branch\n")
+			os.Exit(1)
+		}
+		switch os.Args[2] {
+		case "branch":
+			return runQuick("list-branch", 2)
 		default:
 			os.Exit(1)
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
@@ -238,7 +272,10 @@ func handleCliArgs() error {
 			return runQuick("commit-all", 3)
 		case "staged":
 			return runQuick("commit-staged", 3)
-		} // TODO: all error here if none matched
+		default:
+			os.Exit(1)
+			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])
+		}
 
 	case "undo":
 		if len(os.Args) != 3 || os.Args[2] != "commit" {
