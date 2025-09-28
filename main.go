@@ -247,12 +247,14 @@ func handleCliArgs() error {
 
 	case "list":
 		if len(os.Args) != 3 {
-			fmt.Fprintf(os.Stderr, "Usage: gith list branch\n")
+			fmt.Fprintf(os.Stderr, "Usage: gith list [ branch | tag ]\n")
 			os.Exit(1)
 		}
 		switch os.Args[2] {
 		case "branch":
 			return runQuick("list-branch", 2)
+		case "tag":
+			return runQuick("list-tag", 2)
 		default:
 			os.Exit(1)
 			return fmt.Errorf("unknown command: %s\nUse 'gith help' for usage information", os.Args[1]+" "+os.Args[2])

@@ -141,6 +141,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ActionModel.SelectedAction = "Tag"
 			m.TagModel.SelectedAction = "Push Tag"
 
+		case "list-tag":
+			m.ActionModel.SelectedAction = "Tag"
+			m.TagModel.SelectedAction = "List Tags"
+			m.Level = 2
+			m.CurrentStep = StepTag
+			return m.HandleTagOperation()
+
 		case "switch-branch":
 			m.PopulateBranches()
 			m.Selected = 0

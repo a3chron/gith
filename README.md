@@ -147,7 +147,7 @@ For more info check out the [help articles](https://gith.featurebase.app/help).
 
 - [x] Tag
 
-  - [x] List Tags
+  - [x] List Tags _-- supports quick select --_
 
   - [x] Remove Tag
 

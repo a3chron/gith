@@ -391,6 +391,7 @@ Usage:
   -- Quick Selects - Jump right to a specific selection --
   gith tag             	 Add Tag
   gith push tag          Push Tag
+  gith list tag          List 10 latest tags
 
   gith switch            Switch Branch
   gith delete branch     Delete Branch
@@ -443,7 +444,7 @@ complete -c gith -n "__fish_seen_subcommand_from config update" -l initFetch -d 
 complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
 complete -c gith -n "__fish_seen_subcommand_from undo" -a "commit" -d "Quick Select: Status"
-complete -c gith -n "__fish_seen_subcommand_from list" -a "branch" -d "Quick Select: List branch"
+complete -c gith -n "__fish_seen_subcommand_from list" -a "branch tag" -d "Quick Select: List"
 complete -c gith -n "__fish_seen_subcommand_from delete" -a "branch" -d "Quick Select: Delete branch"
 `)
 	case "bash":
@@ -486,7 +487,7 @@ _gith() {
             return 0
             ;;
 		list)
-            opts="branch"
+            opts="branch tag"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;
@@ -545,7 +546,7 @@ _gith() {
                     _arguments '1:subcommand:(commit)'
                     ;;
 				list)
-                    _arguments '1:subcommand:(branch)'
+                    _arguments '1:subcommand:(branch tag)'
                     ;;
                 delete)
                     _arguments '1:subcommand:(branch)'

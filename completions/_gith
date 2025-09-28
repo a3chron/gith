@@ -28,7 +28,7 @@ _gith() {
                     _arguments '1:subcommand:(commit)'
                     ;;
                 list)
-                    _arguments '1:subcommand:(branch)'
+                    _arguments '1:subcommand:(branch tag)'
                     ;;
                 delete)
                     _arguments '1:subcommand:(branch)'

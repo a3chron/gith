@@ -37,7 +37,7 @@ _gith() {
             return 0
             ;;
         list)
-            opts="branch"
+            opts="branch tag"
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
             return 0
             ;;

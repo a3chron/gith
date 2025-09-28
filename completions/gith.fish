@@ -9,5 +9,5 @@ complete -c gith -n "__fish_seen_subcommand_from config update" -l initFetch -d 
 complete -c gith -n "__fish_seen_subcommand_from add" -a "remote" -d "Quick Select: Add Remote"
 complete -c gith -n "__fish_seen_subcommand_from push" -a "tag" -d "Quick Select: Push Tag"
 complete -c gith -n "__fish_seen_subcommand_from undo" -a "commit" -d "Quick Select: Status"
-complete -c gith -n "__fish_seen_subcommand_from list" -a "branch" -d "Quick Select: List branch"
+complete -c gith -n "__fish_seen_subcommand_from list" -a "branch tag" -d "Quick Select: List branch"
 complete -c gith -n "__fish_seen_subcommand_from delete" -a "branch" -d "Quick Select: Delete branch"
