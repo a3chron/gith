@@ -218,5 +218,5 @@ You can also upvote feature requests or bugs that you want fixed at [Featurebase
 <br />
 
 <p align="center">
- <a href="https://github.com/a3chron/gith/LICENSE"><img src="https://img.shields.io/github/license/a3chron/gith?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
+ <a href="https://github.com/a3chron/gith/blob/main/LICENSE"><img src="https://img.shields.io/github/license/a3chron/gith?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
 </p>
